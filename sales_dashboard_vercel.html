@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Dashboard Tracking — Globish Pro</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f7f8fb;
+    --card: #ffffff;
+    --border: #e7e9f0;
+    --text: #1c2033;
+    --muted: #6b7185;
+    --accent: #4f46e5;
+    --accent-light: #eef0fe;
+    --new: #3b82f6;
+    --retention: #a855f7;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --zin: #6366f1;
+    --benz: #06b6d4;
+    --mimii: #f59e0b;
+    --emmy: #ec4899;
+    --others: #94a3b8;
+    --hot: #f97316;
+    --cold: #0ea5e9;
+  }
+  * { box-sizing: border-box; min-width: 0; }
+  html, body { margin: 0; max-width: 100%; overflow-x: hidden; }
+  .wrap {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px 24px 40px;
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+  canvas { max-width: 100%; }
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .header h1 { font-size: 21px; margin: 0 0 4px; font-weight: 700; }
+  .header .sub { font-size: 13px; color: var(--muted); }
+  .header .sub a { color: var(--accent); text-decoration: none; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .controls label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+  select {
+    font-size: 13px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-weight: 600;
+  }
+  .reload-btn {
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .reload-btn:hover { background: var(--accent-light); }
+
+  .tabs { display: flex; gap: 6px; margin: 4px 0 18px; border-bottom: 1px solid var(--border); }
+  .tab-btn {
+    font-size: 13px; font-weight: 700; padding: 9px 16px; border: none; background: transparent;
+    color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .fc-note { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .fc-note.warn { color: #b45309; }
+  .fc-badge { display: inline-block; font-size: 10px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .card .label { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+  .card .value { font-size: 24px; font-weight: 800; letter-spacing: -0.3px; }
+  .card .delta { font-size: 12px; margin-top: 6px; font-weight: 600; }
+  .delta.up { color: var(--good); }
+  .delta.down { color: var(--bad); }
+  .delta.flat { color: var(--muted); }
+  .card .sub2 { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .section-title { font-size: 14px; font-weight: 700; margin: 22px 0 10px; display: flex; align-items: center; gap: 8px; }
+  .section-title .n { width: 22px; height: 22px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-hint { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .chart-card h3 { font-size: 13px; margin: 0 0 12px; font-weight: 700; }
+  .chart-card .chart-wrap { position: relative; height: 240px; }
+  .chart-wrap.tall { height: 300px; }
+  .chart-wrap.short { height: 170px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-1-2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }
+
+  .funnel { display: flex; flex-direction: column; gap: 16px; margin: 6px 0 4px; }
+  .funnel-item { display: flex; flex-direction: column; gap: 4px; }
+  .funnel-row { display: flex; align-items: center; gap: 10px; }
+  .funnel-label { width: 96px; font-size: 12px; color: var(--muted); font-weight: 600; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .funnel-bar-track { flex: 1; background: #f1f2f8; border-radius: 8px; overflow: hidden; height: 30px; position: relative; }
+  .funnel-bar-fill { height: 100%; border-radius: 8px; display: flex; align-items: center; padding: 0 10px; color: #fff; font-size: 12px; font-weight: 700; white-space: nowrap; transition: width .3s; position: relative; z-index: 1; }
+  .funnel-conv { width: 74px; font-size: 11px; color: var(--muted); text-align: right; flex-shrink: 0; }
+  .funnel-conv b { color: var(--text); font-size: 12px; }
+  .funnel-bench { position: absolute; top: 0; bottom: 0; width: 2px; background: #0f172a; box-shadow: 0 0 0 1.5px rgba(255,255,255,0.9); z-index: 2; }
+  .funnel-bench-line { font-size: 11px; color: var(--muted); margin-left: 106px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .funnel-bench-line b { color: var(--text); }
+  .funnel-legend { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); margin: -4px 0 2px; }
+  .funnel-legend .tick { width: 3px; height: 12px; background: #0f172a; border-radius: 2px; box-shadow: 0 0 0 1px #fff; display: inline-block; }
+
+  .chip-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .chip { background: var(--accent-light); color: var(--accent); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700; }
+  .chip span { color: var(--muted); font-weight: 500; margin-right: 4px; }
+
+  .legend-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 11px; color: var(--muted); }
+  .legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 999px; margin-right: 5px; }
+
+  .footnote { font-size: 11px; color: var(--muted); margin-top: 26px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 14px; }
+  .state-msg { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
+  .err { color: var(--bad); }
+
+  .chart-hint { font-size: 11px; color: var(--muted); margin-top: 8px; display: flex; align-items: center; gap: 5px; }
+  .chart-hint::before { content: "👆"; font-size: 11px; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal-panel { background: var(--card); border-radius: 16px; max-width: 780px; width: 100%; max-height: 86vh; overflow-y: auto; padding: 22px 24px 20px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); }
+  .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+  .modal-title { font-size: 16px; font-weight: 800; }
+  .modal-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .modal-close { border: none; background: #f1f2f8; width: 30px; height: 30px; border-radius: 999px; cursor: pointer; font-size: 13px; color: var(--muted); flex-shrink: 0; }
+  .modal-close:hover { background: #e5e7f0; }
+  .modal-section-title { font-size: 11px; font-weight: 700; color: var(--muted); margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .modal-actions { margin-top: 18px; display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 14px; }
+  .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .detail-table th { text-align: right; font-weight: 700; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .detail-table th:first-child, .detail-table td:first-child { text-align: left; }
+  .detail-table td { text-align: right; padding: 6px 8px; border-bottom: 1px solid #f1f2f8; white-space: nowrap; }
+  .detail-table tr.current td { background: var(--accent-light); font-weight: 700; }
+  .rep-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rep-chip { border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700; }
+  .month-link { cursor: pointer; }
+  .month-link:hover { color: var(--accent); text-decoration: underline; }
+
+  @media (max-width: 900px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-1-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>Sales Dashboard Tracking — Globish Pro</h1>
+      <div class="sub" id="subline">กำลังโหลดข้อมูลจาก Google Sheet…</div>
+    </div>
+    <div class="controls">
+      <div>
+        <label for="monthSel">เดือน</label>
+        <select id="monthSel"></select>
+      </div>
+      <div>
+        <label for="periodSel">Snapshot ณ วันที่</label>
+        <select id="periodSel"></select>
+      </div>
+      <button class="reload-btn" id="reloadBtn">↻ รีเฟรชข้อมูล</button>
+    </div>
+  </div>
+
+  <div id="content" style="display:none;">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overview" id="tabBtnOverview">Overview</button>
+      <button class="tab-btn" data-tab="leadtype" id="tabBtnLeadType">Lead Pool Breakdown</button>
+      <button class="tab-btn" data-tab="forecast" id="tabBtnForecast">Forecast</button>
+    </div>
+
+    <div id="panel-overview" class="tab-panel active">
+    <div class="cards" id="cards"></div>
+
+    <div class="section-title"><span class="n">1</span> Revenue Total — เทียบรายเดือน ณ snapshot เดียวกัน <span class="section-hint">(cumulative ในแต่ละเดือน)</span></div>
+    <div class="chart-card">
+      <div class="chart-wrap tall"><canvas id="chartRevTrend"></canvas></div>
+      <div class="chart-hint">คลิกที่แท่งกราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+    </div>
+
+    <div class="section-title"><span class="n">2</span> Breakdown รายคน (WH Total)</div>
+    <div class="grid-1-2">
+      <div class="chart-card">
+        <h3 id="repBarTitle">ยอดขายรายคน</h3>
+        <div id="repBenchRows"></div>
+        <div class="chart-hint">คลิกที่ชื่อเซลเพื่อดูรายละเอียดย้อนหลัง</div>
+      </div>
+      <div class="chart-card">
+        <h3>เทรนด์รายคน ณ snapshot เดียวกัน</h3>
+        <div class="chart-wrap"><canvas id="chartRepTrend"></canvas></div>
+        <div class="chart-hint">คลิกที่จุดบนกราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="n">3</span> Breakdown New vs Retention &amp; Other</div>
+    <div class="grid-1-2">
+      <div class="chart-card">
+        <h3 id="newRetTitle">สัดส่วน New vs Retention&amp;Other</h3>
+        <div class="chart-wrap"><canvas id="chartNewRetDonut"></canvas></div>
+        <div class="legend-row">
+          <span><span class="legend-dot" style="background:var(--new)"></span>New (ERP)</span>
+          <span><span class="legend-dot" style="background:var(--retention)"></span>Retention &amp; Other (Est.)</span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>เทรนด์สัดส่วนรายเดือน ณ snapshot เดียวกัน</h3>
+        <div class="chart-wrap"><canvas id="chartNewRetStack"></canvas></div>
+        <div class="chart-hint">คลิกที่แท่งกราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="n">4</span> Customer Journey — เฉพาะลูกค้าใหม่ (ERP)</div>
+    <div class="grid-1-2">
+      <div class="chart-card">
+        <h3 id="funnelTitle">Lead → Book → Consult Done → Close Call → Won</h3>
+        <div class="chart-hint" style="margin:0 0 10px;">คลิกที่แต่ละสเตจเพื่อดูรายละเอียดของเดือนนี้</div>
+        <div class="funnel" id="funnel"></div>
+        <div class="chip-row" id="funnelChips"></div>
+      </div>
+      <div class="chart-card">
+        <h3>เทรนด์ Lead vs Won ณ snapshot เดียวกัน</h3>
+        <div class="chart-wrap"><canvas id="chartLeadWonTrend"></canvas></div>
+        <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="n">5</span> Relative Metrics</div>
+    <div class="grid-2">
+      <div class="chart-card">
+        <h3>CVR All vs CVR In-In</h3>
+        <div class="chart-wrap short"><canvas id="chartCVR"></canvas></div>
+        <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+        <div class="footnote" style="margin-top:10px;border:none;padding-top:0;">
+          <b>CVR All</b> = Won ในช่วงนั้น ÷ Lead ในช่วงนั้น (ไม่สนใจว่า Won มาจาก Lead ช่วงไหน) &nbsp;·&nbsp;
+          <b>CVR In-In</b> = Won ที่มาจาก Lead ในช่วงนั้นจริง ๆ ÷ Lead ในช่วงนั้น (performance แท้จริงของ lead รุ่นนั้น)
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>BKS &amp; Revenue / Lead</h3>
+        <div class="chart-wrap short"><canvas id="chartBKS"></canvas></div>
+        <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+        <div class="footnote" style="margin-top:10px;border:none;padding-top:0;">
+          <b>BKS</b> = Revenue ÷ Won (มูลค่าเฉลี่ยต่อดีล) &nbsp;·&nbsp; <b>Revenue/Lead</b> = Revenue ÷ Lead (มูลค่าเฉลี่ยต่อ lead ที่เข้ามา)
+        </div>
+      </div>
+    </div>
+
+    <div class="footnote">
+      ข้อมูลดึงสดจากชีท “B2C Trakcing DB_For Sharing” ทุกครั้งที่เปิด/รีเฟรช แดชบอร์ดนี้ · Revenue Total (WH) ประกอบด้วย New (ERP) + Retention &amp; Other (Est.) · ตัวเลข Retention &amp; Other เป็นค่าประมาณจาก WH Total − ERP New
+    </div>
+    </div>
+
+    <div id="panel-leadtype" class="tab-panel">
+      <div class="section-title">Hot Lead vs Cold Lead <span class="section-hint" id="ltSubtitle"></span></div>
+      <div class="cards" id="ltCards"></div>
+
+      <div class="section-title"><span class="n">1</span> สัดส่วน Hot Lead vs Cold Lead</div>
+      <div class="grid-1-2">
+        <div class="chart-card">
+          <h3>สัดส่วนจำนวน Lead — เดือนที่เลือก</h3>
+          <div class="chart-wrap"><canvas id="chartLtDonut"></canvas></div>
+          <div class="legend-row">
+            <span><span class="legend-dot" style="background:var(--hot)"></span>Hot Lead (HL)</span>
+            <span><span class="legend-dot" style="background:var(--cold)"></span>Cold Lead (CL)</span>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>เทรนด์จำนวน Lead ณ snapshot เดียวกัน</h3>
+          <div class="chart-wrap"><canvas id="chartLtLeadTrend"></canvas></div>
+          <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="n">2</span> Conversion — Lead → Won ตาม Lead Type</div>
+      <div class="grid-1-2">
+        <div class="chart-card">
+          <h3>เปรียบเทียบจำนวน Lead และ Won</h3>
+          <div id="ltLeadWonLegend"></div>
+          <div class="chart-wrap"><canvas id="chartLtLeadWonCompare"></canvas></div>
+          <div class="chart-hint">คลิกที่แท่งกราฟเพื่อดูรายละเอียดย้อนหลัง</div>
+          <div class="chip-row" id="ltLeadWonChips"></div>
+        </div>
+        <div class="chart-card">
+          <h3>เทรนด์ CVR All ตาม Lead Type</h3>
+          <div class="chart-wrap"><canvas id="chartLtCvrTrend"></canvas></div>
+          <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="n">3</span> Revenue &amp; BKS ตาม Lead Type</div>
+      <div class="grid-2">
+        <div class="chart-card">
+          <h3>เทรนด์ Revenue</h3>
+          <div class="chart-wrap short"><canvas id="chartLtRevTrend"></canvas></div>
+          <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+        </div>
+        <div class="chart-card">
+          <h3>เทรนด์ BKS</h3>
+          <div class="chart-wrap short"><canvas id="chartLtBksTrend"></canvas></div>
+          <div class="chart-hint">คลิกที่กราฟเพื่อดูรายละเอียดของเดือนนั้น</div>
+        </div>
+      </div>
+
+      <div class="footnote">
+        <b>Hot Lead (HL)</b> และ <b>Cold Lead (CL)</b> เป็นการแบ่งย่อยของ Lead ใหม่ตามความพร้อม/ความสนใจของลูกค้า ณ ตอนที่เข้ามา (ข้อมูลจากส่วน “Globish Pro New Lead Analysis” ในชีทต้นทาง) · HL + CL ในแต่ละ snapshot ควรรวมได้เท่ากับ Lead รวมในแท็บภาพรวม · บางช่วงอาจไม่มีค่า (แสดง —) เนื่องจากชีทต้นทางยังไม่ได้บันทึกหรือคำนวณไม่ได้ (#N/A)
+      </div>
+    </div>
+
+    <div id="panel-forecast" class="tab-panel">
+      <div class="section-title">คาดการณ์สิ้นเดือน <span class="section-hint" id="fcSubtitle"></span></div>
+      <div class="cards" id="fcCards"></div>
+
+      <div class="section-title"><span class="n">1</span> Revenue Total — ยอดจริงย้อนหลัง เทียบกับคาดการณ์เดือนนี้</div>
+      <div class="chart-card">
+        <div class="chart-wrap tall"><canvas id="chartFcRevBar"></canvas></div>
+        <div class="chart-hint">คลิกที่แท่งเดือนก่อนหน้าเพื่อดูรายละเอียดของเดือนนั้น</div>
+        <div class="fc-note" id="fcRevNote"></div>
+      </div>
+
+      <div class="section-title"><span class="n">2</span> รูปแบบการสะสมยอดขายรายวัน (Pacing) เทียบเดือนก่อนหน้า</div>
+      <div class="chart-card">
+        <div class="chart-wrap tall"><canvas id="chartFcPacing"></canvas></div>
+        <div class="fc-note">เส้นเทา = แต่ละเดือนก่อนหน้า (ปิดเดือนแล้ว) · เส้นน้ำเงินหนา = ค่าเฉลี่ยรูปแบบการสะสม · เส้นทึบเข้ม = เดือนนี้ (ข้อมูลจริง) · เส้นประ = ค่าคาดการณ์ต่อจนสิ้นเดือน โดยอิงรูปแบบเฉลี่ย</div>
+      </div>
+
+      <div class="section-title"><span class="n">3</span> New vs Retention &amp; Other — คาดการณ์</div>
+      <div class="chart-card">
+        <div class="chart-wrap tall"><canvas id="chartFcNewRet"></canvas></div>
+        <div class="chart-hint">คลิกที่แท่งเดือนก่อนหน้าเพื่อดูรายละเอียดของเดือนนั้น</div>
+      </div>
+
+      <div class="section-title"><span class="n">4</span> Customer Journey (New) — คาดการณ์ Lead / Won</div>
+      <div class="chart-card">
+        <div class="chip-row" id="fcFunnelChips"></div>
+        <div class="fc-note" id="fcFunnelNote" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="section-title"><span class="n">5</span> Breakdown รายคน — คาดการณ์สิ้นเดือน</div>
+      <div class="chart-card">
+        <div class="chart-wrap"><canvas id="chartFcRep"></canvas></div>
+      </div>
+
+      <div class="footnote">
+        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ snapshot เดียวกับที่เลือกอยู่ ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
+      </div>
+    </div>
+  </div>
+
+  <div id="stateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
+
+  <div class="modal-overlay" id="monthModalOverlay">
+    <div class="modal-panel" id="monthModalPanel">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="modalTitle">รายละเอียดเดือน</div>
+          <div class="modal-sub" id="modalSub"></div>
+        </div>
+        <button class="modal-close" id="modalCloseBtn">✕</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const SHEET_ID = '1MwOPoqZP_3v7OMwy7sUX20cGJUGaHSuri5ckjIo4ShM';
+  const SHEET_EDIT_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+  const PERIODS = ['1-5', '1-10', '1-15', '1-20', '1-25', '1-31'];
+  const MONTH_LABEL = { '01': 'ม.ค.', '02': 'ก.พ.', '03': 'มี.ค.', '04': 'เม.ย.', '05': 'พ.ค.', '06': 'มิ.ย.', '07': 'ก.ค.', '08': 'ส.ค.', '09': 'ก.ย.', '10': 'ต.ค.', '11': 'พ.ย.', '12': 'ธ.ค.' };
+  const REP_COLORS = { Zin: '#6366f1', Benz: '#06b6d4', Mimii: '#f59e0b', Emmy: '#ec4899', Others: '#94a3b8' };
+  const REPS = ['Zin', 'Benz', 'Mimii', 'Emmy', 'Others'];
+
+  let parsed = null;
+  let monthsWithData = [];
+  let charts = {};
+
+  // ---------- CSV parsing ----------
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQuotes = false; }
+        else field += c;
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else if (c === '\r') { /* skip */ }
+        else field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function parseNumber(raw) {
+    if (raw == null) return null;
+    let s = String(raw).trim();
+    if (s === '' || s === '-') return null;
+    let isPct = false;
+    if (s.endsWith('%')) { isPct = true; s = s.slice(0, -1); }
+    let neg = false;
+    if (s.startsWith('(') && s.endsWith(')')) { neg = true; s = s.slice(1, -1); }
+    s = s.replace(/,/g, '').trim();
+    if (s === '' || s === '-') return null;
+    let n = parseFloat(s);
+    if (isNaN(n)) return null;
+    if (neg) n = -n;
+    return isPct ? { value: n, isPct: true } : n;
+  }
+
+  const MONTH_RE = /^\d{2}\/\d{4}$/;
+  const PERIOD_RE = /^\d+-\d+$/;
+
+  // Google's public gviz/tq CSV export (used here instead of the Drive API, since
+  // this build has no window.cowork bridge) blanks out literal header-label cells
+  // (e.g. "Revenue", "Zin", "Hot Lead (HL)") even though every other cell in the
+  // same row — month headers, period labels, numeric values — survives intact.
+  // When a block's label comes back empty, we infer it positionally: within each
+  // fixed column-group, blocks always appear in the same known order top-to-bottom
+  // (verified against the live sheet). Column 13/14 both map to the table2 group
+  // since a couple of its blocks have historically drifted one column left.
+  const BLOCK_LABEL_TEMPLATES = {
+    0: ['Revenue', 'Zin', 'Benz', 'Mimii', 'Emmy', 'Others'],
+    13: ['Revenue', 'Lead', 'Book', 'Consult Done', 'Close Call', 'Won', 'CVR All', 'CVR In-In', 'BKS', 'Revenue/Lead',
+         'Hot Lead (HL)', 'HL Won', 'HL CVR All', 'HL BKS', 'HL Revenue',
+         'Cold Lead (CL)', 'CL Won', 'CL CVR All', 'CL BKS', 'CL Revenue'],
+    14: ['Revenue', 'Lead', 'Book', 'Consult Done', 'Close Call', 'Won', 'CVR All', 'CVR In-In', 'BKS', 'Revenue/Lead',
+         'Hot Lead (HL)', 'HL Won', 'HL CVR All', 'HL BKS', 'HL Revenue',
+         'Cold Lead (CL)', 'CL Won', 'CL CVR All', 'CL BKS', 'CL Revenue'],
+    28: ['Revenue']
+  };
+
+  function scanBlocks(grid) {
+    const blocks = [];
+    for (let r = 0; r < grid.length; r++) {
+      const row = grid[r];
+      for (let c = 0; c < row.length; c++) {
+        const cell = (row[c] || '').trim();
+        const next = (row[c + 1] || '').trim();
+        if (!MONTH_RE.test(cell) && MONTH_RE.test(next)) {
+          const months = [];
+          let cc = c + 1;
+          while (MONTH_RE.test((row[cc] || '').trim())) { months.push((row[cc] || '').trim()); cc++; }
+          const dataRows = [];
+          let rr = r + 1;
+          while (rr < grid.length) {
+            const prow = grid[rr];
+            let pc = -1;
+            for (const off of [0, -1, 1, -2, 2]) {
+              const cand = (prow[c + off] || '').trim();
+              if (PERIOD_RE.test(cand)) { pc = c + off; break; }
+            }
+            if (pc === -1) break;
+            const period = (prow[pc] || '').trim();
+            const values = {};
+            for (let mi = 0; mi < months.length; mi++) values[months[mi]] = parseNumber(prow[pc + 1 + mi]);
+            dataRows.push({ period, values });
+            rr++;
+          }
+          blocks.push({ label: cell, col: c, row: r, months, dataRows });
+        }
+      }
+    }
+    // Positional fallback for blocks whose label came back blank.
+    const byCol = {};
+    blocks.forEach(b => { (byCol[b.col] = byCol[b.col] || []).push(b); });
+    Object.keys(byCol).forEach(colKey => {
+      const template = BLOCK_LABEL_TEMPLATES[Number(colKey)];
+      if (!template) return;
+      byCol[colKey].sort((a, b) => a.row - b.row).forEach((b, i) => {
+        if (!b.label && template[i]) b.label = template[i];
+      });
+    });
+    return blocks;
+  }
+
+  function buildModel(csvText) {
+    const grid = parseCSV(csvText);
+    const blocks = scanBlocks(grid);
+    const t1 = blocks.filter(b => b.col < 13);
+    const t2 = blocks.filter(b => b.col >= 13 && b.col < 27);
+    const t3 = blocks.filter(b => b.col >= 27);
+    const byLabel = (list, label) => list.find(b => b.label === label);
+    const model = {
+      months: (byLabel(t1, 'Revenue') || {}).months || [],
+      table1: { total: byLabel(t1, 'Revenue'), reps: {} },
+      table2: {
+        revenue: byLabel(t2, 'Revenue'), lead: byLabel(t2, 'Lead'), book: byLabel(t2, 'Book'),
+        consultDone: byLabel(t2, 'Consult Done'), closeCall: byLabel(t2, 'Close Call'), won: byLabel(t2, 'Won'),
+        cvrAll: byLabel(t2, 'CVR All'), cvrInIn: byLabel(t2, 'CVR In-In'), bks: byLabel(t2, 'BKS'), revPerLead: byLabel(t2, 'Revenue/Lead')
+      },
+      table3: { total: byLabel(t3, 'Revenue') },
+      table4: {
+        hlLead: byLabel(t2, 'Hot Lead (HL)'), hlWon: byLabel(t2, 'HL Won'), hlCvrAll: byLabel(t2, 'HL CVR All'), hlBks: byLabel(t2, 'HL BKS'), hlRevenue: byLabel(t2, 'HL Revenue'),
+        clLead: byLabel(t2, 'Cold Lead (CL)'), clWon: byLabel(t2, 'CL Won'), clCvrAll: byLabel(t2, 'CL CVR All'), clBks: byLabel(t2, 'CL BKS'), clRevenue: byLabel(t2, 'CL Revenue')
+      }
+    };
+    REPS.forEach(r => { model.table1.reps[r] = byLabel(t1, r); });
+    return model;
+  }
+
+  function getValue(block, period, month) {
+    if (!block) return null;
+    const dr = block.dataRows.find(d => d.period === period);
+    if (!dr) return null;
+    const v = dr.values[month];
+    if (v == null) return null;
+    return typeof v === 'object' ? v.value : v;
+  }
+
+  // ---------- formatting ----------
+  function fmtBaht(n) { if (n == null) return '—'; const s = n < 0 ? '-' : ''; return s + '฿' + Math.round(Math.abs(n)).toLocaleString('en-US'); }
+  function fmtNum(n) { if (n == null) return '—'; return Math.round(n).toLocaleString('en-US'); }
+  function fmtPct(n) { if (n == null) return '—'; return n.toFixed(2) + '%'; }
+  function monthLabel(m) { const [mm, yyyy] = m.split('/'); return MONTH_LABEL[mm] + ' ' + yyyy.slice(2); }
+  function deltaBadge(cur, prev, isPct) {
+    if (cur == null || prev == null) return '<span class="delta flat">ไม่มีข้อมูลเทียบ</span>';
+    const diff = cur - prev;
+    const pct = prev !== 0 ? (diff / Math.abs(prev)) * 100 : null;
+    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+    const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
+    const val = isPct ? (Math.abs(diff)).toFixed(2) + 'pp' : fmtBaht(Math.abs(diff));
+    const pctStr = pct != null ? ` (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)` : '';
+    return `<span class="delta ${cls}">${arrow} ${val}${isPct ? '' : pctStr}</span>`;
+  }
+
+  // ---------- state helpers ----------
+  function availablePeriodsFor(month) {
+    return PERIODS.filter(p => getValue(parsed.table1.total, p, month) != null);
+  }
+
+  function computeMonthsWithData() {
+    return parsed.months.filter(m => availablePeriodsFor(m).length > 0);
+  }
+
+  function prevMonthOf(m) {
+    const idx = parsed.months.indexOf(m);
+    return idx > 0 ? parsed.months[idx - 1] : null;
+  }
+
+  // ---------- UI: selectors ----------
+  const monthSel = document.getElementById('monthSel');
+  const periodSel = document.getElementById('periodSel');
+
+  function populateMonthSelect(defaultMonth) {
+    monthSel.innerHTML = '';
+    monthsWithData.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = monthLabel(m);
+      monthSel.appendChild(opt);
+    });
+    monthSel.value = defaultMonth;
+  }
+
+  function populatePeriodSelect(month, defaultPeriod) {
+    const avail = availablePeriodsFor(month);
+    periodSel.innerHTML = '';
+    avail.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p; opt.textContent = 'ถึงวันที่ ' + p.split('-')[1];
+      periodSel.appendChild(opt);
+    });
+    periodSel.value = avail.includes(defaultPeriod) ? defaultPeriod : avail[avail.length - 1];
+  }
+
+  // ---------- chart helpers ----------
+  function destroyChart(key) { if (charts[key]) { charts[key].destroy(); delete charts[key]; } }
+
+  // Returns Chart.js options for onClick/onHover that resolve the clicked dataset
+  // (via datasetKeys, one metric-registry key per dataset in the chart) and open
+  // that metric's detail modal — regardless of which month/x-position was clicked.
+  function metricDrilldownOptions(datasetKeys) {
+    return {
+      onClick: (evt, elements) => {
+        if (!elements || !elements.length) return;
+        const key = datasetKeys[elements[0].datasetIndex];
+        if (key) openMetricDetail(key);
+      },
+      onHover: (evt, elements) => { if (evt.native && evt.native.target) evt.native.target.style.cursor = elements.length ? 'pointer' : 'default'; }
+    };
+  }
+
+  function makeGradientBars(count, focusIdx, baseColor, focusColor) {
+    return Array.from({ length: count }, (_, i) => i === focusIdx ? focusColor : baseColor);
+  }
+
+  // Draws a dark tick mark (with a white halo so it reads over any bar color) at
+  // each bar's benchmark value. Datasets opt in by attaching a parallel
+  // `benchmarks` array (one value or null per data point) alongside `data`.
+  const benchTickPlugin = {
+    id: 'benchTick',
+    afterDatasetsDraw(chart) {
+      const { ctx, scales } = chart;
+      const valueScale = chart.options.indexAxis === 'y' ? scales.x : scales.y;
+      chart.data.datasets.forEach((ds, dsIndex) => {
+        if (!ds.benchmarks) return;
+        const meta = chart.getDatasetMeta(dsIndex);
+        meta.data.forEach((bar, i) => {
+          const bench = ds.benchmarks[i];
+          if (bench == null || !bar) return;
+          const pos = valueScale.getPixelForValue(bench);
+          const horizontal = chart.options.indexAxis === 'y';
+          ctx.save();
+          ctx.lineCap = 'round';
+          if (horizontal) {
+            const half = (bar.height || 20) / 2 * 0.85;
+            const y0 = bar.y - half, y1 = bar.y + half;
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(pos, y0); ctx.lineTo(pos, y1); ctx.stroke();
+            ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(pos, y0); ctx.lineTo(pos, y1); ctx.stroke();
+          } else {
+            const half = (bar.width || 20) / 2 * 0.85;
+            const x0 = bar.x - half, x1 = bar.x + half;
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(x0, pos); ctx.lineTo(x1, pos); ctx.stroke();
+            ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(x0, pos); ctx.lineTo(x1, pos); ctx.stroke();
+          }
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+  // ---------- render ----------
+  function renderCards(month, period) {
+    const total = getValue(parsed.table1.total, period, month);
+    const newRev = getValue(parsed.table2.revenue, period, month) || 0;
+    const retRev = getValue(parsed.table3.total, period, month) || 0;
+    const avail = availablePeriodsFor(month);
+    const idx = avail.indexOf(period);
+    const prevPeriod = idx > 0 ? avail[idx - 1] : null;
+    const prevPeriodVal = prevPeriod ? getValue(parsed.table1.total, prevPeriod, month) : null;
+    const pMonth = prevMonthOf(month);
+    const momVal = pMonth ? getValue(parsed.table1.total, period, pMonth) : null;
+
+    const newPct = total ? (newRev / total) * 100 : null;
+    const retPct = total ? (retRev / total) * 100 : null;
+
+    const cardsHtml = `
+      <div class="card">
+        <div class="label">Total Revenue (WH) — ${monthLabel(month)}, ถึงวันที่ ${period.split('-')[1]}</div>
+        <div class="value">${fmtBaht(total)}</div>
+        <div class="sub2">เทียบ snapshot ก่อนหน้าในเดือนนี้: ${deltaBadge(total, prevPeriodVal, false)}</div>
+        <div class="sub2">เทียบเดือนก่อนหน้า (snapshot เดียวกัน): ${deltaBadge(total, momVal, false)}</div>
+      </div>
+      <div class="card">
+        <div class="label">New Revenue (ERP)</div>
+        <div class="value" style="color:var(--new)">${fmtBaht(newRev)}</div>
+        <div class="sub2">${newPct != null ? newPct.toFixed(1) + '% ของ Total' : '—'}</div>
+      </div>
+      <div class="card">
+        <div class="label">Retention &amp; Other (Est.)</div>
+        <div class="value" style="color:var(--retention)">${fmtBaht(retRev)}</div>
+        <div class="sub2">${retPct != null ? retPct.toFixed(1) + '% ของ Total' : '—'}</div>
+      </div>
+      <div class="card">
+        <div class="label">Won / CVR All (New)</div>
+        <div class="value">${fmtNum(getValue(parsed.table2.won, period, month))} <span style="font-size:13px;color:var(--muted);font-weight:600;">deals</span></div>
+        <div class="sub2">CVR All ${fmtPct(getValue(parsed.table2.cvrAll, period, month))} · CVR In-In ${fmtPct(getValue(parsed.table2.cvrInIn, period, month))}</div>
+      </div>
+    `;
+    document.getElementById('cards').innerHTML = cardsHtml;
+  }
+
+  function renderRevTrend(month, period) {
+    const labels = monthsWithData.map(monthLabel);
+    const data = monthsWithData.map(m => getValue(parsed.table1.total, period, m));
+    const focusIdx = monthsWithData.indexOf(month);
+    destroyChart('revTrend');
+    const ctx = document.getElementById('chartRevTrend');
+    charts.revTrend = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Total Revenue ถึงวันที่ ' + period.split('-')[1],
+          data,
+          backgroundColor: makeGradientBars(labels.length, focusIdx, '#c7d2fe', '#4f46e5'),
+          borderRadius: 6,
+          maxBarThickness: 48
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmtBaht(c.raw) } } },
+        scales: { y: { ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['totalRevenue'])
+      }
+    });
+  }
+
+  function repBenchRowsHtml(month, period) {
+    const values = REPS.map(r => getValue(parsed.table1.reps[r], period, month));
+    const benchmarks = REPS.map(r => computeBenchmark(parsed.table1.reps[r], month, period));
+    const maxV = Math.max(...values.filter(v => v != null), ...benchmarks.filter(b => b).map(b => b.max), 1);
+    let html = funnelLegendHtml(period);
+    REPS.forEach((r, i) => {
+      const v = values[i];
+      const b = benchmarks[i];
+      const w = v != null ? Math.max((v / maxV) * 100, 4) : 0;
+      const bw = b ? Math.min((b.avg / maxV) * 100, 100) : null;
+      const benchMarker = b != null ? `<div class="funnel-bench" style="left:${bw}%" title="เกณฑ์เฉลี่ย ${b.n} เดือนก่อนหน้า ณ snapshot เดียวกัน: ${fmtBaht(b.avg)}"></div>` : '';
+      html += `
+        <div class="funnel-item">
+          <div class="funnel-row rep-bench-row" data-rep="${r}" style="cursor:pointer;">
+            <div class="funnel-label">${r}</div>
+            <div class="funnel-bar-track">${benchMarker}<div class="funnel-bar-fill" style="width:${w}%;background:${REP_COLORS[r]}">${v != null ? fmtBaht(v) : '—'}</div></div>
+          </div>
+          <div class="funnel-bench-line">${b != null ? `เกณฑ์ (เฉลี่ย ${b.n} เดือนก่อนหน้า): <b>${fmtBaht(Math.round(b.avg))}</b> ${benchDeltaHtml(v, b.avg)}` : 'ยังไม่มีเดือนก่อนหน้าสำหรับเทียบเกณฑ์'}</div>
+        </div>`;
+    });
+    return html;
+  }
+
+  function renderRepCharts(month, period) {
+    document.getElementById('repBarTitle').textContent = `ยอดขายรายคน — ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}`;
+    document.getElementById('repBenchRows').innerHTML = repBenchRowsHtml(month, period);
+    document.getElementById('repBenchRows').querySelectorAll('.rep-bench-row').forEach(row => {
+      row.addEventListener('click', () => openMetricDetail('rep' + row.dataset.rep));
+    });
+
+    const labels = monthsWithData.map(monthLabel);
+    destroyChart('repTrend');
+    charts.repTrend = new Chart(document.getElementById('chartRepTrend'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: REPS.map(r => ({
+          label: r,
+          data: monthsWithData.map(m => getValue(parsed.table1.reps[r], period, m)),
+          borderColor: REP_COLORS[r], backgroundColor: REP_COLORS[r],
+          tension: 0.3, spanGaps: true, pointRadius: 3
+        }))
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } },
+        scales: { y: { ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['repZin', 'repBenz', 'repMimii', 'repEmmy', 'repOthers'])
+      }
+    });
+  }
+
+  function renderNewRetCharts(month, period) {
+    const newRev = getValue(parsed.table2.revenue, period, month) || 0;
+    const retRev = getValue(parsed.table3.total, period, month) || 0;
+    document.getElementById('newRetTitle').textContent = `New vs Retention&Other — ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}`;
+    destroyChart('newRetDonut');
+    charts.newRetDonut = new Chart(document.getElementById('chartNewRetDonut'), {
+      type: 'doughnut',
+      data: { labels: ['New (ERP)', 'Retention & Other'], datasets: [{ data: [Math.max(newRev, 0), Math.max(retRev, 0)], backgroundColor: ['#3b82f6', '#a855f7'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtBaht(c.raw)}` } } } }
+    });
+
+    const labels = monthsWithData.map(monthLabel);
+    destroyChart('newRetStack');
+    charts.newRetStack = new Chart(document.getElementById('chartNewRetStack'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'New (ERP)', data: monthsWithData.map(m => getValue(parsed.table2.revenue, period, m)), backgroundColor: '#3b82f6', stack: 's', borderRadius: 4 },
+          { label: 'Retention & Other', data: monthsWithData.map(m => getValue(parsed.table3.total, period, m)), backgroundColor: '#a855f7', stack: 's', borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } } },
+        ...metricDrilldownOptions(['newRevenue', 'retentionRevenue'])
+      }
+    });
+  }
+
+  const FUNNEL_STAGES = [
+    { key: 'lead', label: 'Lead', color: '#94a3b8' },
+    { key: 'book', label: 'Book', color: '#38bdf8' },
+    { key: 'consultDone', label: 'Consult Done', color: '#818cf8' },
+    { key: 'closeCall', label: 'Close Call', color: '#c084fc' },
+    { key: 'won', label: 'Won', color: '#f472b6' }
+  ];
+
+  // Benchmark = average of this metric's value at the SAME snapshot period,
+  // across all other months that have data at that period (not month-end totals —
+  // an apples-to-apples "where should we be by this point in the month" comparison).
+  function computeBenchmark(block, month, period) {
+    const vals = monthsWithData
+      .filter(m => m !== month)
+      .map(m => getValue(block, period, m))
+      .filter(v => v != null);
+    if (!vals.length) return null;
+    return { avg: average(vals), min: Math.min(...vals), max: Math.max(...vals), n: vals.length };
+  }
+
+  function benchDeltaHtml(actual, bench) {
+    if (actual == null || bench == null || bench === 0) return '';
+    const diff = actual - bench;
+    const pct = (diff / Math.abs(bench)) * 100;
+    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+    const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
+    return `<span class="delta ${cls}">${arrow} ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% เทียบเกณฑ์</span>`;
+  }
+
+  function funnelLegendHtml(period) {
+    return `<div class="funnel-legend"><span class="tick"></span> เส้นเข้ม = เกณฑ์เฉลี่ยของเดือนก่อนหน้า ณ snapshot ถึงวันที่ ${period.split('-')[1]} เดียวกัน</div>`;
+  }
+
+  function funnelRowsHtml(month, period) {
+    const values = FUNNEL_STAGES.map(s => getValue(parsed.table2[s.key], period, month));
+    const benchmarks = FUNNEL_STAGES.map(s => computeBenchmark(parsed.table2[s.key], month, period));
+    const maxV = Math.max(...values.filter(v => v != null), ...benchmarks.filter(b => b).map(b => b.max), 1);
+    let html = '';
+    FUNNEL_STAGES.forEach((s, i) => {
+      const v = values[i];
+      const b = benchmarks[i];
+      const w = v != null ? Math.max((v / maxV) * 100, 6) : 0;
+      const bw = b ? Math.min((b.avg / maxV) * 100, 100) : null;
+      let conv = '';
+      if (i > 0 && values[i - 1] && v != null) {
+        const rate = (v / values[i - 1]) * 100;
+        conv = `<div class="funnel-conv"><b>${rate.toFixed(1)}%</b><br>จาก ${FUNNEL_STAGES[i - 1].label}</div>`;
+      } else {
+        conv = `<div class="funnel-conv"></div>`;
+      }
+      const benchMarker = b != null ? `<div class="funnel-bench" style="left:${bw}%" title="เกณฑ์เฉลี่ย ${b.n} เดือนก่อนหน้า ณ snapshot เดียวกัน: ${fmtNum(b.avg)}"></div>` : '';
+      html += `
+        <div class="funnel-item">
+          <div class="funnel-row">
+            <div class="funnel-label">${s.label}</div>
+            <div class="funnel-bar-track">${benchMarker}<div class="funnel-bar-fill" style="width:${w}%;background:${s.color}">${v != null ? fmtNum(v) : '—'}</div></div>
+            ${conv}
+          </div>
+          <div class="funnel-bench-line">${b != null ? `เกณฑ์ (เฉลี่ย ${b.n} เดือนก่อนหน้า): <b>${fmtNum(Math.round(b.avg))}</b> ${benchDeltaHtml(v, b.avg)}` : 'ยังไม่มีเดือนก่อนหน้าสำหรับเทียบเกณฑ์'}</div>
+        </div>`;
+    });
+    return html;
+  }
+
+  function funnelChipsHtml(month, period) {
+    const cvrAll = getValue(parsed.table2.cvrAll, period, month);
+    const cvrInIn = getValue(parsed.table2.cvrInIn, period, month);
+    const bks = getValue(parsed.table2.bks, period, month);
+    const revPerLead = getValue(parsed.table2.revPerLead, period, month);
+    return `
+      <div class="chip"><span>CVR All</span>${fmtPct(cvrAll)}</div>
+      <div class="chip"><span>CVR In-In</span>${fmtPct(cvrInIn)}</div>
+      <div class="chip"><span>BKS</span>${fmtBaht(bks)}</div>
+      <div class="chip"><span>Revenue/Lead</span>${fmtBaht(revPerLead)}</div>
+    `;
+  }
+
+  function renderFunnel(month, period) {
+    document.getElementById('funnelTitle').textContent = `Lead → Book → Consult Done → Close Call → Won — ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}`;
+    document.getElementById('funnel').innerHTML = funnelLegendHtml(period) + funnelRowsHtml(month, period);
+    document.getElementById('funnel').querySelectorAll('.funnel-row').forEach((row, i) => {
+      row.style.cursor = 'pointer';
+      row.title = 'คลิกเพื่อดูรายละเอียด ' + FUNNEL_STAGES[i].label + ' ย้อนหลังทุกเดือน';
+      row.addEventListener('click', () => openMetricDetail(FUNNEL_STAGES[i].key));
+    });
+    document.getElementById('funnelChips').innerHTML = funnelChipsHtml(month, period);
+
+    const labels = monthsWithData.map(monthLabel);
+    destroyChart('leadWonTrend');
+    charts.leadWonTrend = new Chart(document.getElementById('chartLeadWonTrend'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { type: 'bar', label: 'Lead', data: monthsWithData.map(m => getValue(parsed.table2.lead, period, m)), backgroundColor: '#cbd5e1', borderRadius: 4, yAxisID: 'y' },
+          { type: 'line', label: 'Won', data: monthsWithData.map(m => getValue(parsed.table2.won, period, m)), borderColor: '#f472b6', backgroundColor: '#f472b6', yAxisID: 'y1', tension: 0.3, spanGaps: true }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } },
+        scales: {
+          y: { position: 'left', grid: { color: '#f0f1f6' }, title: { display: true, text: 'Lead', font: { size: 10 } } },
+          y1: { position: 'right', grid: { display: false }, title: { display: true, text: 'Won', font: { size: 10 } } },
+          x: { grid: { display: false } }
+        },
+        ...metricDrilldownOptions(['lead', 'won'])
+      }
+    });
+  }
+
+  function renderRelative(month, period) {
+    const labels = monthsWithData.map(monthLabel);
+    destroyChart('cvr');
+    charts.cvr = new Chart(document.getElementById('chartCVR'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'CVR All', data: monthsWithData.map(m => getValue(parsed.table2.cvrAll, period, m)), borderColor: '#4f46e5', backgroundColor: '#4f46e5', tension: 0.3, spanGaps: true, pointRadius: 3 },
+          { label: 'CVR In-In', data: monthsWithData.map(m => getValue(parsed.table2.cvrInIn, period, m)), borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.3, spanGaps: true, pointRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } }, tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw != null ? c.raw.toFixed(2) + '%' : '—'}` } } },
+        scales: { y: { ticks: { callback: (v) => v + '%' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['cvrAll', 'cvrInIn'])
+      }
+    });
+
+    destroyChart('bks');
+    charts.bks = new Chart(document.getElementById('chartBKS'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'BKS', data: monthsWithData.map(m => getValue(parsed.table2.bks, period, m)), borderColor: '#0891b2', backgroundColor: '#0891b2', tension: 0.3, spanGaps: true, pointRadius: 3, yAxisID: 'y' },
+          { label: 'Revenue/Lead', data: monthsWithData.map(m => getValue(parsed.table2.revPerLead, period, m)), borderColor: '#be185d', backgroundColor: '#be185d', tension: 0.3, spanGaps: true, pointRadius: 3, yAxisID: 'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } }, tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtBaht(c.raw)}` } } },
+        scales: {
+          y: { position: 'left', ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } },
+          y1: { position: 'right', ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { display: false } },
+          x: { grid: { display: false } }
+        },
+        ...metricDrilldownOptions(['bks', 'revPerLead'])
+      }
+    });
+  }
+
+  // ---------- Hot / Cold Lead tab ----------
+  function renderLeadType(month, period) {
+    if (!parsed.table4 || !parsed.table4.hlLead) return; // sheet doesn't have this section yet
+    const t4 = parsed.table4;
+    const hlLead = getValue(t4.hlLead, period, month);
+    const clLead = getValue(t4.clLead, period, month);
+    const hlWon = getValue(t4.hlWon, period, month);
+    const clWon = getValue(t4.clWon, period, month);
+    const hlCvr = getValue(t4.hlCvrAll, period, month);
+    const clCvr = getValue(t4.clCvrAll, period, month);
+    const totalLead = (hlLead || 0) + (clLead || 0);
+    const hlSharePct = totalLead ? (hlLead / totalLead) * 100 : null;
+    const clSharePct = totalLead ? (clLead / totalLead) * 100 : null;
+
+    document.getElementById('ltSubtitle').textContent = `${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}`;
+    document.getElementById('ltCards').innerHTML = `
+      <div class="card">
+        <div class="label">Hot Lead — จำนวน</div>
+        <div class="value" style="color:var(--hot)">${fmtNum(hlLead)}</div>
+        <div class="sub2">${hlSharePct != null ? hlSharePct.toFixed(1) + '% ของ Lead รวม' : '—'}</div>
+      </div>
+      <div class="card">
+        <div class="label">Cold Lead — จำนวน</div>
+        <div class="value" style="color:var(--cold)">${fmtNum(clLead)}</div>
+        <div class="sub2">${clSharePct != null ? clSharePct.toFixed(1) + '% ของ Lead รวม' : '—'}</div>
+      </div>
+      <div class="card">
+        <div class="label">Hot Lead — Won</div>
+        <div class="value" style="color:var(--hot)">${fmtNum(hlWon)}</div>
+        <div class="sub2">CVR All ${fmtPct(hlCvr)}</div>
+      </div>
+      <div class="card">
+        <div class="label">Cold Lead — Won</div>
+        <div class="value" style="color:var(--cold)">${fmtNum(clWon)}</div>
+        <div class="sub2">CVR All ${fmtPct(clCvr)}</div>
+      </div>
+    `;
+
+    destroyChart('ltDonut');
+    charts.ltDonut = new Chart(document.getElementById('chartLtDonut'), {
+      type: 'doughnut',
+      data: { labels: ['Hot Lead (HL)', 'Cold Lead (CL)'], datasets: [{ data: [Math.max(hlLead || 0, 0), Math.max(clLead || 0, 0)], backgroundColor: ['#f97316', '#0ea5e9'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtNum(c.raw)}` } } } }
+    });
+
+    const labels = monthsWithData.map(monthLabel);
+
+    destroyChart('ltLeadTrend');
+    charts.ltLeadTrend = new Chart(document.getElementById('chartLtLeadTrend'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Hot Lead', data: monthsWithData.map(m => getValue(t4.hlLead, period, m)), borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.3, spanGaps: true, pointRadius: 3 },
+          { label: 'Cold Lead', data: monthsWithData.map(m => getValue(t4.clLead, period, m)), borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3, spanGaps: true, pointRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } },
+        scales: { y: { grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['hlLead', 'clLead'])
+      }
+    });
+
+    const leadBenchHL = computeBenchmark(t4.hlLead, month, period);
+    const leadBenchCL = computeBenchmark(t4.clLead, month, period);
+    const wonBenchHL = computeBenchmark(t4.hlWon, month, period);
+    const wonBenchCL = computeBenchmark(t4.clWon, month, period);
+
+    document.getElementById('ltLeadWonLegend').innerHTML = funnelLegendHtml(period);
+
+    destroyChart('ltLeadWonCompare');
+    charts.ltLeadWonCompare = new Chart(document.getElementById('chartLtLeadWonCompare'), {
+      type: 'bar',
+      data: {
+        labels: ['จำนวน Lead', 'จำนวน Won'],
+        datasets: [
+          { label: 'Hot Lead', data: [hlLead, hlWon], backgroundColor: '#f97316', borderRadius: 6, maxBarThickness: 40, benchmarks: [leadBenchHL ? leadBenchHL.avg : null, wonBenchHL ? wonBenchHL.avg : null] },
+          { label: 'Cold Lead', data: [clLead, clWon], backgroundColor: '#0ea5e9', borderRadius: 6, maxBarThickness: 40, benchmarks: [leadBenchCL ? leadBenchCL.avg : null, wonBenchCL ? wonBenchCL.avg : null] }
+        ]
+      },
+      plugins: [benchTickPlugin],
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } },
+          tooltip: {
+            callbacks: {
+              label: (c) => {
+                const b = c.dataset.benchmarks ? c.dataset.benchmarks[c.dataIndex] : null;
+                return b != null ? [`${c.dataset.label}: ${fmtNum(c.raw)}`, `เกณฑ์เฉลี่ย: ${fmtNum(b)}`] : `${c.dataset.label}: ${fmtNum(c.raw)}`;
+              }
+            }
+          }
+        },
+        scales: { x: { ticks: { callback: (v) => fmtNum(v) }, grid: { color: '#f0f1f6' } }, y: { grid: { display: false } } },
+        onClick: (evt, elements) => {
+          if (!elements || !elements.length) return;
+          const el = elements[0];
+          const isHot = el.datasetIndex === 0;
+          const isLead = el.index === 0;
+          const key = isLead ? (isHot ? 'hlLead' : 'clLead') : (isHot ? 'hlWon' : 'clWon');
+          openMetricDetail(key);
+        },
+        onHover: (evt, elements) => { if (evt.native && evt.native.target) evt.native.target.style.cursor = elements.length ? 'pointer' : 'default'; }
+      }
+    });
+
+    document.getElementById('ltLeadWonChips').innerHTML = `
+      <div class="chip"><span>Hot Lead</span>${fmtNum(hlLead)} ${leadBenchHL ? benchDeltaHtml(hlLead, leadBenchHL.avg) : ''}</div>
+      <div class="chip"><span>Cold Lead</span>${fmtNum(clLead)} ${leadBenchCL ? benchDeltaHtml(clLead, leadBenchCL.avg) : ''}</div>
+      <div class="chip"><span>Hot Won</span>${fmtNum(hlWon)} ${wonBenchHL ? benchDeltaHtml(hlWon, wonBenchHL.avg) : ''}</div>
+      <div class="chip"><span>Cold Won</span>${fmtNum(clWon)} ${wonBenchCL ? benchDeltaHtml(clWon, wonBenchCL.avg) : ''}</div>
+    `;
+
+    destroyChart('ltCvrTrend');
+    charts.ltCvrTrend = new Chart(document.getElementById('chartLtCvrTrend'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'CVR All (Hot)', data: monthsWithData.map(m => getValue(t4.hlCvrAll, period, m)), borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.3, spanGaps: true, pointRadius: 3 },
+          { label: 'CVR All (Cold)', data: monthsWithData.map(m => getValue(t4.clCvrAll, period, m)), borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3, spanGaps: true, pointRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } }, tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw != null ? c.raw.toFixed(2) + '%' : '—'}` } } },
+        scales: { y: { ticks: { callback: (v) => v + '%' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['hlCvrAll', 'clCvrAll'])
+      }
+    });
+
+    destroyChart('ltRevTrend');
+    charts.ltRevTrend = new Chart(document.getElementById('chartLtRevTrend'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Revenue (Hot)', data: monthsWithData.map(m => getValue(t4.hlRevenue, period, m)), backgroundColor: '#f97316', borderRadius: 4 },
+          { label: 'Revenue (Cold)', data: monthsWithData.map(m => getValue(t4.clRevenue, period, m)), backgroundColor: '#0ea5e9', borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } }, tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtBaht(c.raw)}` } } },
+        scales: { y: { ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['hlRevenue', 'clRevenue'])
+      }
+    });
+
+    destroyChart('ltBksTrend');
+    charts.ltBksTrend = new Chart(document.getElementById('chartLtBksTrend'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'BKS (Hot)', data: monthsWithData.map(m => getValue(t4.hlBks, period, m)), borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.3, spanGaps: true, pointRadius: 3 },
+          { label: 'BKS (Cold)', data: monthsWithData.map(m => getValue(t4.clBks, period, m)), borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3, spanGaps: true, pointRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } }, tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtBaht(c.raw)}` } } },
+        scales: { y: { ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['hlBks', 'clBks'])
+      }
+    });
+  }
+
+  // ---------- forecast helpers ----------
+  function average(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+
+  function historicalCompleteMonths(block, beforeMonth) {
+    const idx = parsed.months.indexOf(beforeMonth);
+    return parsed.months.slice(0, idx).filter(m => getValue(block, '1-31', m) != null);
+  }
+
+  function computeForecast(block, month, period) {
+    const hist = historicalCompleteMonths(block, month);
+    const currentVal = getValue(block, period, month);
+    const actualFinal = getValue(block, '1-31', month);
+    if (currentVal == null) return { status: 'no-current', hist, actualFinal };
+    if (period === '1-31') return { status: 'complete', currentVal, hist, actualFinal };
+    const fracs = [];
+    hist.forEach(m => {
+      const tot = getValue(block, '1-31', m);
+      const val = getValue(block, period, m);
+      if (tot && val != null) fracs.push(val / tot);
+    });
+    if (fracs.length === 0) return { status: 'no-history', currentVal, hist, actualFinal };
+    const avgFrac = average(fracs);
+    const minFrac = Math.min(...fracs);
+    const maxFrac = Math.max(...fracs);
+    return {
+      status: 'ok', currentVal, avgFrac, minFrac, maxFrac,
+      forecastAvg: currentVal / avgFrac,
+      forecastHigh: currentVal / minFrac,
+      forecastLow: currentVal / maxFrac,
+      histCount: fracs.length, hist, actualFinal
+    };
+  }
+
+  function fcPointValue(fc) {
+    if (fc.status === 'ok') return fc.forecastAvg;
+    if (fc.status === 'complete') return fc.currentVal;
+    return null;
+  }
+
+  function fcCardHtml(title, fc, color, fmt) {
+    fmt = fmt || fmtBaht;
+    if (fc.status === 'complete') {
+      return `<div class="card"><div class="label">${title}</div><div class="value" style="color:${color}">${fmt(fc.currentVal)}</div><div class="fc-note">เดือนนี้ปิดข้อมูลครบแล้ว (ไม่ใช่การพยากรณ์)</div></div>`;
+    }
+    if (fc.status !== 'ok') {
+      const finalNote = fc.actualFinal != null ? `<div class="fc-note">ผลจริงสิ้นเดือน: <b>${fmt(fc.actualFinal)}</b></div>` : '';
+      return `<div class="card"><div class="label">${title}</div><div class="value">—</div><div class="fc-note warn">ยังไม่มีเดือนก่อนหน้าที่ปิดเดือนพอสำหรับพยากรณ์</div>${finalNote}</div>`;
+    }
+    let backtest = '';
+    if (fc.actualFinal != null) {
+      const diffPct = fc.forecastAvg ? ((fc.actualFinal - fc.forecastAvg) / fc.forecastAvg) * 100 : null;
+      backtest = `<div class="fc-note">ผลจริงสิ้นเดือน: <b>${fmt(fc.actualFinal)}</b>${diffPct != null ? ` (คลาดเคลื่อน ${diffPct >= 0 ? '+' : ''}${diffPct.toFixed(1)}%)` : ''}</div>`;
+    }
+    return `<div class="card">
+      <div class="label">${title} <span class="fc-badge">คาดการณ์</span></div>
+      <div class="value" style="color:${color}">${fmt(fc.forecastAvg)}</div>
+      <div class="fc-note">ช่วง ${fmt(fc.forecastLow)} – ${fmt(fc.forecastHigh)} · จาก ${fc.histCount} เดือนก่อนหน้า</div>
+      ${backtest}
+    </div>`;
+  }
+
+  function renderForecastCards(month, period) {
+    const fcTotal = computeForecast(parsed.table1.total, month, period);
+    const fcNew = computeForecast(parsed.table2.revenue, month, period);
+    const fcRet = computeForecast(parsed.table3.total, month, period);
+    const fcWon = computeForecast(parsed.table2.won, month, period);
+    document.getElementById('fcSubtitle').textContent = `อิงข้อมูล ${monthLabel(month)} ณ snapshot ถึงวันที่ ${period.split('-')[1]}`;
+    document.getElementById('fcCards').innerHTML =
+      fcCardHtml('Total Revenue (WH)', fcTotal, 'var(--text)') +
+      fcCardHtml('New Revenue (ERP)', fcNew, 'var(--new)') +
+      fcCardHtml('Retention & Other (Est.)', fcRet, 'var(--retention)') +
+      fcCardHtml('Won (New)', fcWon, 'var(--text)', fmtNum);
+  }
+
+  function renderForecastRevBar(month, period) {
+    const fc = computeForecast(parsed.table1.total, month, period);
+    const hist = fc.hist || [];
+    const labels = hist.map(monthLabel).concat([monthLabel(month) + (fc.status === 'ok' ? ' (คาดการณ์)' : '')]);
+    const actualData = hist.map(m => getValue(parsed.table1.total, '1-31', m));
+    const point = fcPointValue(fc);
+    const data = actualData.concat([point]);
+    const colors = hist.map(() => '#c7d2fe').concat(['#4f46e5']);
+    destroyChart('fcRevBar');
+    charts.fcRevBar = new Chart(document.getElementById('chartFcRevBar'), {
+      type: 'bar',
+      data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 6, maxBarThickness: 48 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (c) => {
+                if (c.dataIndex === data.length - 1 && fc.status === 'ok') {
+                  return [`คาดการณ์: ${fmtBaht(fc.forecastAvg)}`, `ช่วง: ${fmtBaht(fc.forecastLow)} – ${fmtBaht(fc.forecastHigh)}`];
+                }
+                return fmtBaht(c.raw);
+              }
+            }
+          }
+        },
+        scales: { y: { ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } },
+        ...metricDrilldownOptions(['totalRevenue'])
+      }
+    });
+    const note = document.getElementById('fcRevNote');
+    if (fc.status === 'ok') note.textContent = `คาดการณ์จากสัดส่วนสะสมเฉลี่ย ${fc.histCount} เดือนก่อนหน้า ณ snapshot เดียวกัน (${(fc.avgFrac * 100).toFixed(1)}% ของยอดเดือนมักจะสะสมมาถึงจุดนี้แล้ว)`;
+    else if (fc.status === 'complete') note.textContent = 'เดือนที่เลือกมีข้อมูลครบทั้งเดือนแล้ว แท่งสุดท้ายจึงเป็นยอดจริง ไม่ใช่การพยากรณ์';
+    else note.textContent = 'ยังไม่มีข้อมูลเดือนก่อนหน้าที่ปิดเดือนเพียงพอสำหรับคำนวณพยากรณ์';
+  }
+
+  function renderForecastPacing(month, period) {
+    const block = parsed.table1.total;
+    const hist = historicalCompleteMonths(block, month);
+    const labels = PERIODS.map(p => 'ถึง ' + p.split('-')[1]);
+    const histDatasets = hist.map(m => {
+      const tot = getValue(block, '1-31', m);
+      return {
+        label: monthLabel(m),
+        data: PERIODS.map(p => { const v = getValue(block, p, m); return (v != null && tot) ? (v / tot * 100) : null; }),
+        borderColor: 'rgba(148,163,184,0.55)', backgroundColor: 'rgba(148,163,184,0.55)',
+        borderWidth: 1.5, pointRadius: 0, tension: 0.3, spanGaps: true
+      };
+    });
+    const avgData = PERIODS.map(p => {
+      const fracs = hist.map(m => { const tot = getValue(block, '1-31', m); const v = getValue(block, p, m); return (tot && v != null) ? v / tot * 100 : null; }).filter(x => x != null);
+      return fracs.length ? average(fracs) : null;
+    });
+    const fc = computeForecast(block, month, period);
+    const denom = fc.status === 'ok' ? fc.forecastAvg : (fc.status === 'complete' ? fc.currentVal : null);
+    const curIdx = PERIODS.indexOf(period);
+    const currentData = PERIODS.map((p, i) => {
+      if (i > curIdx || !denom) return null;
+      const v = getValue(block, p, month);
+      return v != null ? (v / denom * 100) : null;
+    });
+    const projData = PERIODS.map((p, i) => {
+      if (!denom) return null;
+      if (i === curIdx) return currentData[curIdx];
+      if (i === PERIODS.length - 1) return 100;
+      return null;
+    });
+    destroyChart('fcPacing');
+    charts.fcPacing = new Chart(document.getElementById('chartFcPacing'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          ...histDatasets,
+          { label: 'ค่าเฉลี่ยรูปแบบเดิม', data: avgData, borderColor: '#4f46e5', backgroundColor: '#4f46e5', borderWidth: 2.5, pointRadius: 0, tension: 0.3, spanGaps: true },
+          { label: monthLabel(month) + ' (จริง)', data: currentData, borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 3, pointRadius: 3, tension: 0.3, spanGaps: false },
+          { label: 'คาดการณ์ต่อ', data: projData, borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 2, borderDash: [6, 4], pointRadius: (ctx) => ctx.dataIndex === PERIODS.length - 1 ? 4 : 0, tension: 0, spanGaps: true }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 9 }, filter: (item) => !item.text.startsWith('ถึง') } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw != null ? c.raw.toFixed(1) + '%' : '—'}` } }
+        },
+        scales: { y: { ticks: { callback: (v) => v + '%' }, grid: { color: '#f0f1f6' }, suggestedMax: 105 }, x: { grid: { display: false } } }
+      }
+    });
+  }
+
+  function renderForecastNewRet(month, period) {
+    const fcNew = computeForecast(parsed.table2.revenue, month, period);
+    const fcRet = computeForecast(parsed.table3.total, month, period);
+    const hist = fcNew.hist || [];
+    const labels = hist.map(monthLabel).concat([monthLabel(month) + ' (คาดการณ์)']);
+    const newData = hist.map(m => getValue(parsed.table2.revenue, '1-31', m)).concat([fcPointValue(fcNew)]);
+    const retData = hist.map(m => getValue(parsed.table3.total, '1-31', m)).concat([fcPointValue(fcRet)]);
+    destroyChart('fcNewRet');
+    charts.fcNewRet = new Chart(document.getElementById('chartFcNewRet'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'New (ERP)', data: newData, backgroundColor: '#3b82f6', stack: 's', borderRadius: 4 },
+          { label: 'Retention & Other', data: retData, backgroundColor: '#a855f7', stack: 's', borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'nearest', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } } },
+        ...metricDrilldownOptions(['newRevenue', 'retentionRevenue'])
+      }
+    });
+  }
+
+  function renderForecastFunnel(month, period) {
+    const fcLead = computeForecast(parsed.table2.lead, month, period);
+    const fcWon = computeForecast(parsed.table2.won, month, period);
+    const leadPt = fcPointValue(fcLead);
+    const wonPt = fcPointValue(fcWon);
+    const cvr = (leadPt && wonPt != null) ? (wonPt / leadPt * 100) : null;
+    document.getElementById('fcFunnelChips').innerHTML = `
+      <div class="chip"><span>Lead คาดการณ์</span>${fmtNum(leadPt)}</div>
+      <div class="chip"><span>Won คาดการณ์</span>${fmtNum(wonPt)}</div>
+      <div class="chip"><span>CVR All ที่คาดว่าจะได้</span>${cvr != null ? cvr.toFixed(2) + '%' : '—'}</div>
+    `;
+    const note = document.getElementById('fcFunnelNote');
+    if (fcLead.status === 'ok' && fcWon.status === 'ok') {
+      note.textContent = `Lead: ช่วง ${fmtNum(fcLead.forecastLow)}–${fmtNum(fcLead.forecastHigh)} · Won: ช่วง ${fmtNum(fcWon.forecastLow)}–${fmtNum(fcWon.forecastHigh)} (จากรูปแบบ ${fcLead.histCount} เดือนก่อนหน้า)`;
+    } else {
+      note.textContent = 'ข้อมูลเดือนก่อนหน้าไม่พอสำหรับคาดการณ์ Lead/Won ของช่วงนี้';
+    }
+  }
+
+  function renderForecastRep(month, period) {
+    const fcs = REPS.map(r => computeForecast(parsed.table1.reps[r], month, period));
+    const data = fcs.map(fc => fcPointValue(fc));
+    destroyChart('fcRep');
+    charts.fcRep = new Chart(document.getElementById('chartFcRep'), {
+      type: 'bar',
+      data: { labels: REPS, datasets: [{ data, backgroundColor: REPS.map(r => REP_COLORS[r]), borderRadius: 6, maxBarThickness: 40 }] },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (c) => {
+                const fc = fcs[c.dataIndex];
+                if (fc.status === 'ok') return [`คาดการณ์: ${fmtBaht(fc.forecastAvg)}`, `ช่วง: ${fmtBaht(fc.forecastLow)} – ${fmtBaht(fc.forecastHigh)}`];
+                return fmtBaht(c.raw);
+              }
+            }
+          }
+        },
+        scales: { x: { ticks: { callback: (v) => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, y: { grid: { display: false } } }
+      }
+    });
+  }
+
+  function renderForecast(month, period) {
+    renderForecastCards(month, period);
+    renderForecastRevBar(month, period);
+    renderForecastPacing(month, period);
+    renderForecastNewRet(month, period);
+    renderForecastFunnel(month, period);
+    renderForecastRep(month, period);
+  }
+
+  // ---------- metric detail modal ----------
+  function metricRegistry() {
+    return {
+      totalRevenue: { label: 'Total Revenue (WH)', block: parsed.table1.total, fmt: fmtBaht, color: '#4f46e5', kind: 'currency' },
+      newRevenue: { label: 'New Revenue (ERP)', block: parsed.table2.revenue, fmt: fmtBaht, color: '#3b82f6', kind: 'currency' },
+      retentionRevenue: { label: 'Retention & Other (Est.)', block: parsed.table3.total, fmt: fmtBaht, color: '#a855f7', kind: 'currency' },
+      repZin: { label: 'Zin — Revenue', block: parsed.table1.reps.Zin, fmt: fmtBaht, color: REP_COLORS.Zin, kind: 'currency' },
+      repBenz: { label: 'Benz — Revenue', block: parsed.table1.reps.Benz, fmt: fmtBaht, color: REP_COLORS.Benz, kind: 'currency' },
+      repMimii: { label: 'Mimii — Revenue', block: parsed.table1.reps.Mimii, fmt: fmtBaht, color: REP_COLORS.Mimii, kind: 'currency' },
+      repEmmy: { label: 'Emmy — Revenue', block: parsed.table1.reps.Emmy, fmt: fmtBaht, color: REP_COLORS.Emmy, kind: 'currency' },
+      repOthers: { label: 'Others — Revenue', block: parsed.table1.reps.Others, fmt: fmtBaht, color: REP_COLORS.Others, kind: 'currency' },
+      lead: { label: 'Lead', block: parsed.table2.lead, fmt: fmtNum, color: '#94a3b8', kind: 'count' },
+      book: { label: 'Book', block: parsed.table2.book, fmt: fmtNum, color: '#38bdf8', kind: 'count' },
+      consultDone: { label: 'Consult Done', block: parsed.table2.consultDone, fmt: fmtNum, color: '#818cf8', kind: 'count' },
+      closeCall: { label: 'Close Call', block: parsed.table2.closeCall, fmt: fmtNum, color: '#c084fc', kind: 'count' },
+      won: { label: 'Won', block: parsed.table2.won, fmt: fmtNum, color: '#f472b6', kind: 'count' },
+      cvrAll: { label: 'CVR All', block: parsed.table2.cvrAll, fmt: fmtPct, color: '#4f46e5', kind: 'percent' },
+      cvrInIn: { label: 'CVR In-In', block: parsed.table2.cvrInIn, fmt: fmtPct, color: '#f59e0b', kind: 'percent' },
+      bks: { label: 'BKS', block: parsed.table2.bks, fmt: fmtBaht, color: '#0891b2', kind: 'currency' },
+      revPerLead: { label: 'Revenue / Lead', block: parsed.table2.revPerLead, fmt: fmtBaht, color: '#be185d', kind: 'currency' },
+      hlLead: { label: 'Hot Lead — จำนวน Lead', block: parsed.table4 && parsed.table4.hlLead, fmt: fmtNum, color: '#f97316', kind: 'count' },
+      clLead: { label: 'Cold Lead — จำนวน Lead', block: parsed.table4 && parsed.table4.clLead, fmt: fmtNum, color: '#0ea5e9', kind: 'count' },
+      hlWon: { label: 'Hot Lead — Won', block: parsed.table4 && parsed.table4.hlWon, fmt: fmtNum, color: '#f97316', kind: 'count' },
+      clWon: { label: 'Cold Lead — Won', block: parsed.table4 && parsed.table4.clWon, fmt: fmtNum, color: '#0ea5e9', kind: 'count' },
+      hlCvrAll: { label: 'Hot Lead — CVR All', block: parsed.table4 && parsed.table4.hlCvrAll, fmt: fmtPct, color: '#f97316', kind: 'percent' },
+      clCvrAll: { label: 'Cold Lead — CVR All', block: parsed.table4 && parsed.table4.clCvrAll, fmt: fmtPct, color: '#0ea5e9', kind: 'percent' },
+      hlBks: { label: 'Hot Lead — BKS', block: parsed.table4 && parsed.table4.hlBks, fmt: fmtBaht, color: '#f97316', kind: 'currency' },
+      clBks: { label: 'Cold Lead — BKS', block: parsed.table4 && parsed.table4.clBks, fmt: fmtBaht, color: '#0ea5e9', kind: 'currency' },
+      hlRevenue: { label: 'Hot Lead — Revenue', block: parsed.table4 && parsed.table4.hlRevenue, fmt: fmtBaht, color: '#f97316', kind: 'currency' },
+      clRevenue: { label: 'Cold Lead — Revenue', block: parsed.table4 && parsed.table4.clRevenue, fmt: fmtBaht, color: '#0ea5e9', kind: 'currency' }
+    };
+  }
+
+  function periodsWithValue(block, month) {
+    return PERIODS.filter(p => getValue(block, p, month) != null);
+  }
+
+  function openMetricDetail(key) {
+    if (!parsed) return;
+    const reg = metricRegistry();
+    const m = reg[key];
+    if (!m || !m.block) return;
+
+    // Show the overlay before touching the chart canvas — Chart.js needs the
+    // canvas to already have real layout dimensions (non-zero width/height) at
+    // creation time, otherwise it renders blank and never recovers on its own.
+    document.getElementById('monthModalOverlay').classList.add('show');
+
+    document.getElementById('modalTitle').textContent = m.label;
+    document.getElementById('modalSub').textContent = 'ย้อนหลังทุกเดือน ทุก snapshot (1-5 ถึง 1-31) · คลิกชื่อเดือนเพื่อไปที่เดือนนั้นในแดชบอร์ดหลัก';
+
+    // trend line: latest available value of this metric per month
+    const monthLatest = monthsWithData.map(mo => {
+      const ps = periodsWithValue(m.block, mo);
+      return ps.length ? getValue(m.block, ps[ps.length - 1], mo) : null;
+    });
+
+    // MoM comparison note (last two months that have data)
+    const have = monthLatest.map((v, i) => ({ v, i })).filter(o => o.v != null);
+    let momHtml = '';
+    if (have.length >= 2) {
+      const last = have[have.length - 1], prev = have[have.length - 2];
+      const diff = last.v - prev.v;
+      const pct = prev.v !== 0 ? (diff / Math.abs(prev.v)) * 100 : null;
+      const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+      const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
+      momHtml = `<div class="fc-note">${monthLabel(monthsWithData[last.i])} เทียบ ${monthLabel(monthsWithData[prev.i])}:
+        <span class="delta ${cls}">${arrow} ${m.fmt(Math.abs(diff))}${pct != null ? ` (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)` : ''}</span></div>`;
+    }
+
+    // full matrix: rows = snapshot periods, columns = months (clickable to jump)
+    const theadCols = monthsWithData.map(mo => `<th class="month-link" data-month="${mo}">${monthLabel(mo)}</th>`).join('');
+    const bodyRows = PERIODS.map(p => {
+      const cells = monthsWithData.map(mo => {
+        const v = getValue(m.block, p, mo);
+        return `<td>${v == null ? '—' : m.fmt(v)}</td>`;
+      }).join('');
+      return `<tr><td>ถึงวันที่ ${p.split('-')[1]}</td>${cells}</tr>`;
+    }).join('');
+    const tableHtml = `<table class="detail-table"><thead><tr><th>Snapshot</th>${theadCols}</tr></thead><tbody>${bodyRows}</tbody></table>`;
+
+    document.getElementById('modalBody').innerHTML = `
+      <div class="chart-wrap" style="height:220px;margin-bottom:8px;"><canvas id="modalTrendChart"></canvas></div>
+      ${momHtml}
+      <div class="modal-section-title">รายละเอียดทุก snapshot ของแต่ละเดือน</div>
+      <div style="overflow-x:auto;">${tableHtml}</div>
+    `;
+
+    destroyChart('modalTrend');
+    charts.modalTrend = new Chart(document.getElementById('modalTrendChart'), {
+      type: 'line',
+      data: { labels: monthsWithData.map(monthLabel), datasets: [{ label: m.label, data: monthLatest, borderColor: m.color, backgroundColor: m.color, tension: 0.3, spanGaps: true, pointRadius: 3 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => m.fmt(c.raw) } } },
+        scales: {
+          y: { ticks: { callback: (v) => m.kind === 'percent' ? v + '%' : m.kind === 'currency' ? (v / 1000) + 'k' : v }, grid: { color: '#f0f1f6' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    document.querySelectorAll('#modalBody .month-link').forEach(el => {
+      el.addEventListener('click', () => jumpToMonth(el.dataset.month));
+    });
+  }
+
+  function jumpToMonth(month) {
+    const periods = availablePeriodsFor(month);
+    if (periods.length === 0) return;
+    monthSel.value = month;
+    populatePeriodSelect(month, periods[periods.length - 1]);
+    renderAll();
+    closeMonthDetail();
+    document.querySelector('.tab-btn[data-tab="overview"]').click();
+  }
+
+  function closeMonthDetail() {
+    document.getElementById('monthModalOverlay').classList.remove('show');
+  }
+
+  document.getElementById('modalCloseBtn').addEventListener('click', closeMonthDetail);
+  document.getElementById('monthModalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'monthModalOverlay') closeMonthDetail();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMonthDetail();
+  });
+
+  function renderAll() {
+    const month = monthSel.value;
+    const period = periodSel.value;
+    renderCards(month, period);
+    renderRevTrend(month, period);
+    renderRepCharts(month, period);
+    renderNewRetCharts(month, period);
+    renderFunnel(month, period);
+    renderRelative(month, period);
+    renderLeadType(month, period);
+    renderForecast(month, period);
+  }
+
+  // Charts created while their panel/window wasn't at final size render blank or
+  // squished (Chart.js measures the canvas once at creation time). This forces a
+  // resize pass after layout settles — on initial load, on tab switches (a hidden
+  // tab's charts were still created behind the scenes), and on window resize.
+  function forceChartResize() {
+    requestAnimationFrame(() => {
+      Object.values(charts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } });
+    });
+  }
+  window.addEventListener('resize', forceChartResize);
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      forceChartResize();
+    });
+  });
+
+  monthSel.addEventListener('change', () => {
+    populatePeriodSelect(monthSel.value, PERIODS[PERIODS.length - 1]);
+    renderAll();
+  });
+  periodSel.addEventListener('change', renderAll);
+  document.getElementById('reloadBtn').addEventListener('click', () => load());
+
+  async function load() {
+    const stateMsg = document.getElementById('stateMsg');
+    const content = document.getElementById('content');
+    stateMsg.style.display = 'block';
+    stateMsg.textContent = 'กำลังโหลดข้อมูล…';
+    stateMsg.classList.remove('err');
+    content.style.display = 'none';
+    try {
+      // Cache-bust so every open/refresh pulls the sheet's current state, not a
+      // browser- or CDN-cached copy — mirrors the pattern used by the KPI Dashboard's
+      // Vercel deployment, which reads this same public Google Sheets CSV endpoint.
+      let resp;
+      try {
+        resp = await fetch(CSV_URL + '&cb=' + Date.now(), { cache: 'no-store' });
+      } catch (e0) {
+        await new Promise(res => setTimeout(res, 800));
+        resp = await fetch(CSV_URL + '&cb=' + Date.now(), { cache: 'no-store' });
+      }
+      if (!resp.ok) throw new Error(`ดึงข้อมูลไม่สำเร็จ (HTTP ${resp.status}) — ตรวจสอบว่าชีทยังแชร์แบบ "ทุกคนที่มีลิงก์เข้าถึงได้"`);
+      const csvText = await resp.text();
+      if (!csvText || csvText.trim().length < 50) throw new Error('ได้รับข้อมูลว่างเปล่าจากชีท');
+      parsed = buildModel(csvText);
+      if (!parsed.table1.total) throw new Error('ไม่พบข้อมูลตาราง Revenue — โครงสร้างชีทอาจเปลี่ยนไป');
+      monthsWithData = computeMonthsWithData();
+      if (monthsWithData.length === 0) throw new Error('ยังไม่มีข้อมูลยอดขายในชีท');
+
+      const defMonth = monthsWithData[monthsWithData.length - 1];
+      populateMonthSelect(defMonth);
+      populatePeriodSelect(defMonth, PERIODS[PERIODS.length - 1]);
+      renderAll();
+
+      const sub = document.getElementById('subline');
+      sub.innerHTML = `<a href="${SHEET_EDIT_URL}" target="_blank" rel="noopener">เปิดชีทต้นฉบับ</a> · โหลดข้อมูลเมื่อ ${new Date().toLocaleTimeString('th-TH')}`;
+
+      stateMsg.style.display = 'none';
+      content.style.display = 'block';
+      forceChartResize();
+    } catch (err) {
+      stateMsg.textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + (err && err.message ? err.message : String(err));
+      stateMsg.classList.add('err');
+      content.style.display = 'none';
+    }
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
