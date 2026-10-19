@@ -230,6 +230,20 @@
   }
   .heat-cell:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
 
+  /* ---------- Pro Productivity / Working Day ---------- */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .wd-cards { grid-template-columns: repeat(6, 1fr); }
+  .wd-cards .card { border-top: 3px solid var(--wd-c, var(--accent)); }
+  .wd-cards .value small { font-size: 12px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+  .wd-warn { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; font-size: 12px; border-radius: 10px; padding: 10px 14px; margin-bottom: 4px; line-height: 1.5; }
+  .wd-mini h3 { display: flex; justify-content: space-between; align-items: baseline; }
+  .wd-mini h3 span { font-size: 11px; color: var(--muted); font-weight: 600; }
+  #wdTable td.na { color: var(--muted); }
+  #wdTable td .tot { display: block; font-size: 10px; color: var(--muted); font-weight: 500; }
+  @media (max-width: 1100px) { .wd-cards { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .wd-cards { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body>
@@ -254,6 +268,7 @@
   <button class="page-btn" data-page="pro">Globish Pro Performance</button>
   <button class="page-btn" data-page="kids">Globish Kids Performance</button>
   <button class="page-btn" data-page="slots">Consult Slot Monitoring</button>
+  <button class="page-btn" data-page="wd">Pro Productivity / Working Day</button>
   <button class="logout-btn" id="logoutBtn">ออกจากระบบ</button>
 </div>
 
@@ -779,6 +794,57 @@
         <button class="modal-close" id="slotModalCloseBtn">✕</button>
       </div>
       <div id="slotModalBody"></div>
+    </div>
+  </div>
+</div>
+
+<div id="page-wd" class="page">
+  <div class="header">
+    <div>
+      <h1>Globish Pro — Productivity per Working Day</h1>
+      <div class="sub">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · วันทำงาน = วันที่ MP (Manpower) &gt; 0 <span id="wdSubline"></span></div>
+    </div>
+    <div class="controls">
+      <div><label for="wdMonthSel">เดือน</label><select id="wdMonthSel"></select></div>
+      <div><label for="wdPeriodSel">Snapshot</label><select id="wdPeriodSel"></select></div>
+    </div>
+  </div>
+
+  <div id="wdStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
+
+  <div id="wdContent" style="display:none;">
+    <div id="wdWarn" class="wd-warn" style="display:none;"></div>
+
+    <div class="section-title"><span class="n">1</span> ต่อวันทำงาน — <span id="wdCardsTitle"></span>
+      <span class="section-hint">เทียบเดือนก่อนหน้า ณ snapshot เดียวกัน</span>
+    </div>
+    <div class="cards wd-cards" id="wdCards"></div>
+
+    <div class="section-title" style="margin-top:24px;"><span class="n">2</span> Funnel ต่อวันทำงาน
+      <span class="section-hint">ขีดดำ = ค่าต่อวันทำงานของเดือนก่อนหน้า (snapshot เดียวกัน)</span>
+    </div>
+    <div class="chart-card">
+      <div class="funnel-legend"><span class="tick"></span> เดือนก่อนหน้า · ตัวเลขด้านขวา = % เทียบขั้นก่อนหน้า</div>
+      <div id="wdFunnel" class="funnel"></div>
+    </div>
+
+    <div class="section-title" style="margin-top:24px;"><span class="n">3</span> Trend รายเดือน — ต่อวันทำงาน
+      <span class="section-hint" id="wdTrendHint"></span>
+    </div>
+    <div class="grid-3" id="wdTrendGrid"></div>
+
+    <div class="section-title" style="margin-top:24px;"><span class="n">4</span> ตารางสรุปรายเดือน
+      <span class="section-hint">ค่าต่อวันทำงาน (ยอดสะสม ÷ วันทำงาน)</span>
+    </div>
+    <div class="chart-card" style="overflow-x:auto;">
+      <table class="detail-table" id="wdTable"></table>
+    </div>
+
+    <div class="footnote">
+      ข้อมูลยอด Lead / Book / Consult Done / Close Call / Won มาจากชีท "B2C Pro - Tracking Performance" (ลูกค้าใหม่จาก ERP, ยอดสะสมตาม snapshot) ·
+      วันทำงานมาจากชีท "Manpower" คอลัมน์ F (MP): นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
+      ค่าต่อวันทำงาน = ยอดสะสม ณ snapshot ÷ จำนวนวันทำงานในช่วงเดียวกัน ·
+      เดือนที่ยังไม่ได้กรอก MP (ทุกวัน MP = 0 หรือว่าง) จะแสดงเป็น "—"
     </div>
   </div>
 </div>
@@ -2666,6 +2732,274 @@
   }
   const slotsApp = createSlotsApp({ fetchCsv: fetchSlotsCsv });
 
+  // ---------- Pro Productivity per Working Day ----------
+  // Working days come from the "Manpower" tab: one row per date (col D,
+  // dd/mm/yyyy) with the number of sales on shift in col F (MP). A day counts
+  // as a working day when MP > 0 — day-offs / holidays are entered as 0, and
+  // months nobody has filled in yet are all 0 (or blank), so they yield no
+  // working days and show "—" rather than a divide-by-zero.
+  const MP_SHEET_NAME = 'Manpower';
+  const MP_SHEET_GID = '1281772097';
+  async function fetchManpowerCsv() {
+    const exportUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${MP_SHEET_GID}&cb=${Date.now()}`;
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(MP_SHEET_NAME)}&range=A1:G2000&cb=${Date.now()}`;
+    let resp;
+    try {
+      resp = await fetch(exportUrl, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('export HTTP ' + resp.status);
+    } catch (e0) {
+      await new Promise(res => setTimeout(res, 800));
+      resp = await fetch(gvizUrl, { cache: 'no-store' });
+    }
+    if (!resp.ok) throw new Error(`ดึงข้อมูล Manpower ไม่สำเร็จ (HTTP ${resp.status})`);
+    return resp.text();
+  }
+
+  // Returns { 'MM/YYYY': { [day]: mp } }
+  function parseManpowerCSV(text) {
+    const out = {};
+    const DATE_RE = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    parseCSV(text).forEach(row => {
+      for (let c = 0; c < Math.min(row.length, 6); c++) {
+        const m = DATE_RE.exec((row[c] || '').trim());
+        if (!m) continue;
+        const day = Number(m[1]), mm = m[2].padStart(2, '0'), yyyy = m[3];
+        const mp = parseNumber(row[c + 2]); // MP sits two columns right of the date (D -> F)
+        const key = mm + '/' + yyyy;
+        (out[key] = out[key] || {})[day] = typeof mp === 'number' ? mp : 0;
+        break;
+      }
+    });
+    return out;
+  }
+
+  const WD_METRICS = [
+    { key: 'lead', label: 'Lead', color: '#4f46e5', light: '#c7d2fe' },
+    { key: 'book', label: 'Book Consult', color: '#06b6d4', light: '#a5f3fc' },
+    { key: 'consultDone', label: 'Consult Done', color: '#0ea5e9', light: '#bae6fd' },
+    { key: 'closeCall', label: 'Close Call', color: '#f59e0b', light: '#fde68a' },
+    { key: 'won', label: 'Won', color: '#16a34a', light: '#bbf7d0' }
+  ];
+
+  function createWorkingDayApp() {
+    let MP = null;
+    let charts = {};
+    const monthSel = document.getElementById('wdMonthSel');
+    const periodSel = document.getElementById('wdPeriodSel');
+    const fmt1 = n => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const fmt2 = n => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function model() { return proApp.getModel(); }
+    function daysInMonth(month) { const [mm, yyyy] = month.split('/').map(Number); return new Date(yyyy, mm, 0).getDate(); }
+    function periodEndDay(period, month) { return Math.min(Number(period.split('-')[1]), daysInMonth(month)); }
+
+    function workingDays(month, period) {
+      const days = MP && MP[month];
+      if (!days) return null;
+      const end = periodEndDay(period, month);
+      let n = 0;
+      for (let d = 1; d <= end; d++) if ((days[d] || 0) > 0) n++;
+      return n > 0 ? n : null;
+    }
+    function avgMp(month, period) {
+      const days = MP && MP[month];
+      if (!days) return null;
+      const end = periodEndDay(period, month);
+      let sum = 0, n = 0;
+      for (let d = 1; d <= end; d++) if ((days[d] || 0) > 0) { sum += days[d]; n++; }
+      return n ? sum / n : null;
+    }
+    function total(key, month, period) { return getValue(model().table2[key], period, month); }
+    function perWd(key, month, period) {
+      const t = total(key, month, period), wd = workingDays(month, period);
+      return t == null || wd == null ? null : t / wd;
+    }
+    // Periods that actually have funnel data for this month (Lead filled in).
+    function periodsFor(month) { return PERIODS.filter(p => total('lead', month, p) != null); }
+    function monthsWithFunnel() { return model().months.filter(m => periodsFor(m).length > 0); }
+    function prevMonth(month) { const ms = model().months, i = ms.indexOf(month); return i > 0 ? ms[i - 1] : null; }
+    // Months to show in trends/table: from the first month that has any MP data.
+    function trendMonths() {
+      const ms = monthsWithFunnel();
+      const firstMp = ms.findIndex(m => MP[m] && Object.values(MP[m]).some(v => v > 0));
+      return firstMp < 0 ? [] : ms.slice(firstMp);
+    }
+
+    function populateMonths() {
+      const ms = monthsWithFunnel();
+      monthSel.innerHTML = ms.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
+      // Default: latest month with working days; else latest month.
+      const withWd = ms.filter(m => periodsFor(m).some(p => workingDays(m, p) != null));
+      monthSel.value = withWd.length ? withWd[withWd.length - 1] : ms[ms.length - 1];
+    }
+    function populatePeriods() {
+      const ps = periodsFor(monthSel.value);
+      const keep = periodSel.value;
+      periodSel.innerHTML = ps.map(p => `<option value="${p}">ถึงวันที่ ${p.split('-')[1]}</option>`).join('');
+      periodSel.value = ps.includes(keep) ? keep : ps[ps.length - 1];
+    }
+
+    function deltaHtml(cur, prev) {
+      if (cur == null || prev == null || prev === 0) return '<span class="delta flat">ไม่มีข้อมูลเทียบ</span>';
+      const pct = (cur - prev) / Math.abs(prev) * 100;
+      const cls = pct > 0.05 ? 'up' : pct < -0.05 ? 'down' : 'flat';
+      const arrow = cls === 'up' ? '▲' : cls === 'down' ? '▼' : '▬';
+      return `<span class="delta ${cls}">${arrow} ${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%</span> <span style="color:var(--muted)">(${fmt1(prev)})</span>`;
+    }
+
+    function renderWarn(month, period) {
+      const el = document.getElementById('wdWarn');
+      if (workingDays(month, period) == null) {
+        el.innerHTML = `<b>ยังไม่มีข้อมูลวันทำงานของ ${monthLabel(month)}</b> — ในชีท Manpower คอลัมน์ MP ของเดือนนี้ยังเป็น 0/ว่างทั้งหมด จึงคำนวณค่าต่อวันทำงานไม่ได้ · กรอก MP ในชีทแล้วกดรีเฟรชหน้านี้`;
+        el.style.display = 'block';
+      } else el.style.display = 'none';
+    }
+
+    function renderCards(month, period) {
+      const pm = prevMonth(month);
+      const wd = workingDays(month, period), pwd = pm ? workingDays(pm, period) : null;
+      const mp = avgMp(month, period);
+      let html = `
+        <div class="card" style="--wd-c:#64748b">
+          <div class="label">Working Days</div>
+          <div class="value">${wd == null ? '—' : wd}<small>วัน</small></div>
+          <div class="sub2">วันที่ 1–${periodEndDay(period, month)} ที่ MP &gt; 0</div>
+          <div class="sub2">MP เฉลี่ย ${mp == null ? '—' : fmt1(mp)} คน/วัน · เดือนก่อน ${pwd == null ? '—' : pwd} วัน</div>
+        </div>`;
+      WD_METRICS.forEach(mt => {
+        const v = perWd(mt.key, month, period);
+        const pv = pm ? perWd(mt.key, pm, period) : null;
+        html += `
+        <div class="card" style="--wd-c:${mt.color}">
+          <div class="label">${mt.label} <span style="font-weight:500">/ WD</span></div>
+          <div class="value" style="color:${mt.color}">${fmt1(v)}</div>
+          <div class="sub2">รวม ${fmtNum(total(mt.key, month, period))} ÷ ${wd == null ? '—' : wd} วัน</div>
+          <div class="sub2">${deltaHtml(v, pv)}</div>
+        </div>`;
+      });
+      document.getElementById('wdCards').innerHTML = html;
+      document.getElementById('wdCardsTitle').textContent = `${monthLabel(month)}, ถึงวันที่ ${period.split('-')[1]}`;
+    }
+
+    function renderFunnel(month, period) {
+      const pm = prevMonth(month);
+      const vals = WD_METRICS.map(mt => perWd(mt.key, month, period));
+      const prevs = WD_METRICS.map(mt => pm ? perWd(mt.key, pm, period) : null);
+      const max = Math.max(...vals.filter(v => v != null), ...prevs.filter(v => v != null), 0);
+      let html = '';
+      WD_METRICS.forEach((mt, i) => {
+        const v = vals[i], p = prevs[i];
+        const w = v != null && max ? Math.max(2, v / max * 100) : 0;
+        const conv = i > 0 && v != null && vals[i - 1] ? (v / vals[i - 1] * 100) : null;
+        const tick = p != null && max ? `<div class="funnel-bench" style="left:${p / max * 100}%" title="เดือนก่อนหน้า ${fmt1(p)}"></div>` : '';
+        html += `
+          <div class="funnel-item">
+            <div class="funnel-row">
+              <div class="funnel-label">${mt.label}</div>
+              <div class="funnel-bar-track">
+                <div class="funnel-bar-fill" style="width:${w}%;background:${mt.color}">${v != null ? fmt1(v) : ''}</div>
+                ${tick}
+              </div>
+              <div class="funnel-conv" title="% เทียบกับขั้นก่อนหน้า">${conv != null ? `<b>${conv.toFixed(1)}%</b>` : (i === 0 ? '' : '—')}</div>
+            </div>
+          </div>`;
+      });
+      if (vals.every(v => v == null)) html = '<div class="state-msg" style="padding:30px">ยังไม่มีวันทำงานสำหรับเดือนนี้</div>';
+      document.getElementById('wdFunnel').innerHTML = html;
+    }
+
+    function renderTrends(month, period) {
+      Object.values(charts).forEach(c => c.destroy()); charts = {};
+      const ms = trendMonths();
+      const labels = ms.map(monthLabel);
+      const focus = ms.indexOf(month);
+      document.getElementById('wdTrendHint').textContent = `ทุกเดือนใช้ snapshot ถึงวันที่ ${period.split('-')[1]} เหมือนกัน · แท่งสีเข้ม = เดือนที่เลือก`;
+      const series = [{ key: '__wd', label: 'Working Days', color: '#64748b', light: '#cbd5e1' }, ...WD_METRICS];
+      const grid = document.getElementById('wdTrendGrid');
+      grid.innerHTML = series.map((s, i) => {
+        const cur = s.key === '__wd' ? workingDays(month, period) : perWd(s.key, month, period);
+        return `<div class="chart-card wd-mini"><h3>${s.key === '__wd' ? 'Working Days' : s.label + ' / WD'} <span>${s.key === '__wd' ? (cur == null ? '—' : cur + ' วัน') : fmt1(cur)}</span></h3><div class="chart-wrap short"><canvas id="wdChart${i}"></canvas></div></div>`;
+      }).join('');
+      series.forEach((s, i) => {
+        const data = ms.map(m => s.key === '__wd' ? workingDays(m, period) : perWd(s.key, m, period));
+        charts[i] = new Chart(document.getElementById('wdChart' + i), {
+          type: 'bar',
+          data: { labels, datasets: [{ data, backgroundColor: makeGradientBars(labels.length, focus, s.light, s.color), borderRadius: 5, maxBarThickness: 36 }] },
+          options: {
+            responsive: true, maintainAspectRatio: false, animation: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: (c) => c.raw == null ? 'ไม่มีข้อมูล MP' : (s.key === '__wd' ? c.raw + ' วัน' : fmt2(c.raw) + ' ต่อวันทำงาน') } }
+            },
+            scales: { y: { beginAtZero: true, grid: { color: '#f0f1f6' }, ticks: { maxTicksLimit: 5 } }, x: { grid: { display: false } } },
+            onClick: (evt, els) => { if (els && els.length) { jump(ms[els[0].index]); } },
+            onHover: (evt, els) => { if (evt.native && evt.native.target) evt.native.target.style.cursor = els.length ? 'pointer' : 'default'; }
+          }
+        });
+      });
+    }
+
+    function renderTable(month, period) {
+      const ms = trendMonths().slice().reverse();
+      let html = `<thead><tr><th>เดือน</th><th>Working Days</th>${WD_METRICS.map(mt => `<th>${mt.label}/WD</th>`).join('')}</tr></thead><tbody>`;
+      ms.forEach(m => {
+        const wd = workingDays(m, period);
+        html += `<tr class="${m === month ? 'current' : ''}"><td class="month-link" data-m="${m}">${monthLabel(m)}</td><td class="${wd == null ? 'na' : ''}">${wd == null ? 'ยังไม่มี MP' : wd}</td>`;
+        WD_METRICS.forEach(mt => {
+          const v = perWd(mt.key, m, period), t = total(mt.key, m, period);
+          html += `<td class="${v == null ? 'na' : ''}">${fmt2(v)}${t != null ? `<span class="tot">รวม ${fmtNum(t)}</span>` : ''}</td>`;
+        });
+        html += '</tr>';
+      });
+      html += '</tbody>';
+      const tbl = document.getElementById('wdTable');
+      tbl.innerHTML = html;
+      tbl.querySelectorAll('.month-link').forEach(el => el.addEventListener('click', () => jump(el.dataset.m)));
+    }
+
+    function jump(m) {
+      if (!m || !periodsFor(m).length) return;
+      monthSel.value = m; populatePeriods(); render();
+    }
+
+    function render() {
+      const month = monthSel.value, period = periodSel.value;
+      if (!month || !period) return;
+      renderWarn(month, period);
+      renderCards(month, period);
+      renderFunnel(month, period);
+      renderTrends(month, period);
+      renderTable(month, period);
+    }
+
+    monthSel.addEventListener('change', () => { populatePeriods(); render(); });
+    periodSel.addEventListener('change', render);
+
+    async function load() {
+      const msg = document.getElementById('wdStateMsg');
+      const content = document.getElementById('wdContent');
+      try {
+        if (!model()) throw new Error('โหลดข้อมูล Globish Pro ไม่สำเร็จ');
+        MP = parseManpowerCSV(await fetchManpowerCsv());
+        if (!Object.keys(MP).length) throw new Error('ไม่พบข้อมูลในชีท Manpower');
+        if (!monthsWithFunnel().length) throw new Error('ไม่พบข้อมูล Lead/Book/Won ของ Globish Pro');
+        populateMonths(); populatePeriods();
+        msg.style.display = 'none'; content.style.display = 'block';
+        render();
+        document.getElementById('wdSubline').innerHTML = `· <a href="${SHEET_EDIT_URL}#gid=${MP_SHEET_GID}" target="_blank" rel="noopener">เปิดชีท Manpower</a>`;
+      } catch (e) {
+        msg.textContent = 'โหลดหน้า Productivity per Working Day ไม่สำเร็จ: ' + e.message;
+        msg.classList.add('err'); msg.style.display = 'block'; content.style.display = 'none';
+      }
+    }
+    // Charts built while this page is hidden get a 0x0 canvas, so rebuild them
+    // once the page is actually visible (after layout) instead of resizing.
+    function forceChartResize() { requestAnimationFrame(() => { if (monthSel.value && periodSel.value) render(); }); }
+    window.addEventListener('resize', () => { requestAnimationFrame(() => Object.values(charts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } })); });
+    return { load, forceChartResize };
+  }
+  const wdApp = createWorkingDayApp();
+
   // ---------- Master Overview (Pro + Kids combined) ----------
   // Mirrors the per-brand availablePeriodsFor() guard inside createBrandApp
   // (see js_brand.py) — a period counts as available for Master Overview only
@@ -2842,11 +3176,12 @@
       document.getElementById('page-' + btn.dataset.page).classList.add('active');
       if (btn.dataset.page === 'pro') proApp.forceChartResize();
       if (btn.dataset.page === 'kids') kidsApp.forceChartResize();
+      if (btn.dataset.page === 'wd') wdApp.forceChartResize();
     });
   });
 
   function bootApp() {
-    Promise.all([proApp.load().then(() => kidsApp.load()), slotsApp.load()]).then(() => renderMasterOverview());
+    Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => renderMasterOverview());
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
