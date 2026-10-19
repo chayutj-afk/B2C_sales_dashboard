@@ -235,6 +235,7 @@
   .wd-cards { grid-template-columns: repeat(6, 1fr); }
   .wd-cards .card { border-top: 3px solid var(--wd-c, var(--accent)); }
   .wd-cards .value small { font-size: 12px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+  #wdSubline a { color: var(--accent); text-decoration: none; }
   .wd-warn { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; font-size: 12px; border-radius: 10px; padding: 10px 14px; margin-bottom: 4px; line-height: 1.5; }
   .wd-mini h3 { display: flex; justify-content: space-between; align-items: baseline; }
   .wd-mini h3 span { font-size: 11px; color: var(--muted); font-weight: 600; }
@@ -268,7 +269,6 @@
   <button class="page-btn" data-page="pro">Globish Pro Performance</button>
   <button class="page-btn" data-page="kids">Globish Kids Performance</button>
   <button class="page-btn" data-page="slots">Consult Slot Monitoring</button>
-  <button class="page-btn" data-page="wd">Pro Productivity / Working Day</button>
   <button class="logout-btn" id="logoutBtn">ออกจากระบบ</button>
 </div>
 
@@ -328,6 +328,7 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="overview" id="tabBtnOverview-pro">Overview</button>
       <button class="tab-btn" data-tab="leadtype" id="tabBtnLeadType-pro">Lead Pool Breakdown</button>
+      <button class="tab-btn" data-tab="wd" id="tabBtnWd-pro">Productivity / Working Day</button>
       <button class="tab-btn" data-tab="forecast" id="tabBtnForecast-pro">Forecast</button>
     </div>
 
@@ -466,6 +467,47 @@
       <div class="footnote">
         <b>Hot Lead (HL)</b> และ <b>Cold Lead (CL)</b> เป็นการแบ่งย่อยของ Lead ใหม่ตามความพร้อม/ความสนใจของลูกค้า ณ ตอนที่เข้ามา (ข้อมูลจากส่วน “Globish Pro New Lead Analysis” ในชีทต้นทาง) · HL + CL ในแต่ละ snapshot ควรรวมได้เท่ากับ Lead รวมในแท็บภาพรวม · บางช่วงอาจไม่มีค่า (แสดง —) เนื่องจากชีทต้นทางยังไม่ได้บันทึกหรือคำนวณไม่ได้ (#N/A)
       </div>
+    </div>
+
+    <div id="panel-wd-pro" class="tab-panel">
+    <div class="section-title">Productivity per Working Day <span class="section-hint">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · วันทำงาน = วันที่ MP (Manpower) &gt; 0 · ใช้เดือน/snapshot จากตัวเลือกด้านบน <span id="wdSubline"></span></span></div>
+    <div id="wdStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
+
+    <div id="wdContent" style="display:none;">
+      <div id="wdWarn" class="wd-warn" style="display:none;"></div>
+
+      <div class="section-title"><span class="n">1</span> ต่อวันทำงาน — <span id="wdCardsTitle"></span>
+        <span class="section-hint">เทียบเดือนก่อนหน้า ณ snapshot เดียวกัน</span>
+      </div>
+      <div class="cards wd-cards" id="wdCards"></div>
+
+      <div class="section-title" style="margin-top:24px;"><span class="n">2</span> Funnel ต่อวันทำงาน
+        <span class="section-hint">ขีดดำ = ค่าต่อวันทำงานของเดือนก่อนหน้า (snapshot เดียวกัน)</span>
+      </div>
+      <div class="chart-card">
+        <div class="funnel-legend"><span class="tick"></span> เดือนก่อนหน้า · ตัวเลขด้านขวา = % เทียบขั้นก่อนหน้า</div>
+        <div id="wdFunnel" class="funnel"></div>
+      </div>
+
+      <div class="section-title" style="margin-top:24px;"><span class="n">3</span> Trend รายเดือน — ต่อวันทำงาน
+        <span class="section-hint" id="wdTrendHint"></span>
+      </div>
+      <div class="grid-3" id="wdTrendGrid"></div>
+
+      <div class="section-title" style="margin-top:24px;"><span class="n">4</span> ตารางสรุปรายเดือน
+        <span class="section-hint">ค่าต่อวันทำงาน (ยอดสะสม ÷ วันทำงาน)</span>
+      </div>
+      <div class="chart-card" style="overflow-x:auto;">
+        <table class="detail-table" id="wdTable"></table>
+      </div>
+
+      <div class="footnote">
+        ข้อมูลยอด Lead / Book / Consult Done / Close Call / Won มาจากชีท "B2C Pro - Tracking Performance" (ลูกค้าใหม่จาก ERP, ยอดสะสมตาม snapshot) ·
+        วันทำงานมาจากชีท "Manpower" คอลัมน์ F (MP): นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
+        ค่าต่อวันทำงาน = ยอดสะสม ณ snapshot ÷ จำนวนวันทำงานในช่วงเดียวกัน ·
+        เดือนที่ยังไม่ได้กรอก MP (ทุกวัน MP = 0 หรือว่าง) จะแสดงเป็น "—"
+      </div>
+    </div>
     </div>
 
     <div id="panel-forecast-pro" class="tab-panel">
@@ -798,56 +840,6 @@
   </div>
 </div>
 
-<div id="page-wd" class="page">
-  <div class="header">
-    <div>
-      <h1>Globish Pro — Productivity per Working Day</h1>
-      <div class="sub">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · วันทำงาน = วันที่ MP (Manpower) &gt; 0 <span id="wdSubline"></span></div>
-    </div>
-    <div class="controls">
-      <div><label for="wdMonthSel">เดือน</label><select id="wdMonthSel"></select></div>
-      <div><label for="wdPeriodSel">Snapshot</label><select id="wdPeriodSel"></select></div>
-    </div>
-  </div>
-
-  <div id="wdStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
-
-  <div id="wdContent" style="display:none;">
-    <div id="wdWarn" class="wd-warn" style="display:none;"></div>
-
-    <div class="section-title"><span class="n">1</span> ต่อวันทำงาน — <span id="wdCardsTitle"></span>
-      <span class="section-hint">เทียบเดือนก่อนหน้า ณ snapshot เดียวกัน</span>
-    </div>
-    <div class="cards wd-cards" id="wdCards"></div>
-
-    <div class="section-title" style="margin-top:24px;"><span class="n">2</span> Funnel ต่อวันทำงาน
-      <span class="section-hint">ขีดดำ = ค่าต่อวันทำงานของเดือนก่อนหน้า (snapshot เดียวกัน)</span>
-    </div>
-    <div class="chart-card">
-      <div class="funnel-legend"><span class="tick"></span> เดือนก่อนหน้า · ตัวเลขด้านขวา = % เทียบขั้นก่อนหน้า</div>
-      <div id="wdFunnel" class="funnel"></div>
-    </div>
-
-    <div class="section-title" style="margin-top:24px;"><span class="n">3</span> Trend รายเดือน — ต่อวันทำงาน
-      <span class="section-hint" id="wdTrendHint"></span>
-    </div>
-    <div class="grid-3" id="wdTrendGrid"></div>
-
-    <div class="section-title" style="margin-top:24px;"><span class="n">4</span> ตารางสรุปรายเดือน
-      <span class="section-hint">ค่าต่อวันทำงาน (ยอดสะสม ÷ วันทำงาน)</span>
-    </div>
-    <div class="chart-card" style="overflow-x:auto;">
-      <table class="detail-table" id="wdTable"></table>
-    </div>
-
-    <div class="footnote">
-      ข้อมูลยอด Lead / Book / Consult Done / Close Call / Won มาจากชีท "B2C Pro - Tracking Performance" (ลูกค้าใหม่จาก ERP, ยอดสะสมตาม snapshot) ·
-      วันทำงานมาจากชีท "Manpower" คอลัมน์ F (MP): นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
-      ค่าต่อวันทำงาน = ยอดสะสม ณ snapshot ÷ จำนวนวันทำงานในช่วงเดียวกัน ·
-      เดือนที่ยังไม่ได้กรอก MP (ทุกวัน MP = 0 หรือว่าง) จะแสดงเป็น "—"
-    </div>
-  </div>
-</div>
 
   <div class="modal-overlay" id="monthModalOverlay">
     <div class="modal-panel" id="monthModalPanel">
@@ -2784,8 +2776,12 @@
   function createWorkingDayApp() {
     let MP = null;
     let charts = {};
-    const monthSel = document.getElementById('wdMonthSel');
-    const periodSel = document.getElementById('wdPeriodSel');
+    // Lives as a tab inside Globish Pro Performance, so it follows that page's
+    // own month / snapshot selectors instead of having its own.
+    const monthSel = document.getElementById('monthSel-pro');
+    const periodSel = document.getElementById('periodSel-pro');
+    const panel = document.getElementById('panel-wd-pro');
+    let loaded = false;
     const fmt1 = n => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     const fmt2 = n => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -2823,20 +2819,6 @@
       const ms = monthsWithFunnel();
       const firstMp = ms.findIndex(m => MP[m] && Object.values(MP[m]).some(v => v > 0));
       return firstMp < 0 ? [] : ms.slice(firstMp);
-    }
-
-    function populateMonths() {
-      const ms = monthsWithFunnel();
-      monthSel.innerHTML = ms.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
-      // Default: latest month with working days; else latest month.
-      const withWd = ms.filter(m => periodsFor(m).some(p => workingDays(m, p) != null));
-      monthSel.value = withWd.length ? withWd[withWd.length - 1] : ms[ms.length - 1];
-    }
-    function populatePeriods() {
-      const ps = periodsFor(monthSel.value);
-      const keep = periodSel.value;
-      periodSel.innerHTML = ps.map(p => `<option value="${p}">ถึงวันที่ ${p.split('-')[1]}</option>`).join('');
-      periodSel.value = ps.includes(keep) ? keep : ps[ps.length - 1];
     }
 
     function deltaHtml(cur, prev) {
@@ -2957,12 +2939,17 @@
       tbl.querySelectorAll('.month-link').forEach(el => el.addEventListener('click', () => jump(el.dataset.m)));
     }
 
+    // Clicking a month in the trend/table switches the Pro page's month (its
+    // own change handler repopulates the snapshot list and re-renders), then
+    // this tab re-renders from the updated selectors.
     function jump(m) {
-      if (!m || !periodsFor(m).length) return;
-      monthSel.value = m; populatePeriods(); render();
+      if (!m || ![...monthSel.options].some(o => o.value === m)) return;
+      monthSel.value = m;
+      monthSel.dispatchEvent(new Event('change'));
     }
 
     function render() {
+      if (!loaded) return;
       const month = monthSel.value, period = periodSel.value;
       if (!month || !period) return;
       renderWarn(month, period);
@@ -2972,8 +2959,19 @@
       renderTable(month, period);
     }
 
-    monthSel.addEventListener('change', () => { populatePeriods(); render(); });
+    // Registered after createBrandApp's own listeners, so the Pro page has
+    // already repopulated its snapshot list when these run.
+    monthSel.addEventListener('change', render);
     periodSel.addEventListener('change', render);
+    // Pro's reload button re-fetches the Pro sheet; re-fetch Manpower too and
+    // re-render once the new Pro model has landed.
+    document.getElementById('reloadBtn-pro').addEventListener('click', () => {
+      const before = model();
+      let tries = 0;
+      const t = setInterval(() => {
+        if (model() !== before || ++tries > 60) { clearInterval(t); load(); }
+      }, 250);
+    });
 
     async function load() {
       const msg = document.getElementById('wdStateMsg');
@@ -2983,7 +2981,7 @@
         MP = parseManpowerCSV(await fetchManpowerCsv());
         if (!Object.keys(MP).length) throw new Error('ไม่พบข้อมูลในชีท Manpower');
         if (!monthsWithFunnel().length) throw new Error('ไม่พบข้อมูล Lead/Book/Won ของ Globish Pro');
-        populateMonths(); populatePeriods();
+        loaded = true;
         msg.style.display = 'none'; content.style.display = 'block';
         render();
         document.getElementById('wdSubline').innerHTML = `· <a href="${SHEET_EDIT_URL}#gid=${MP_SHEET_GID}" target="_blank" rel="noopener">เปิดชีท Manpower</a>`;
@@ -2994,7 +2992,8 @@
     }
     // Charts built while this page is hidden get a 0x0 canvas, so rebuild them
     // once the page is actually visible (after layout) instead of resizing.
-    function forceChartResize() { requestAnimationFrame(() => { if (monthSel.value && periodSel.value) render(); }); }
+    function forceChartResize() { requestAnimationFrame(() => { if (panel.classList.contains('active')) render(); }); }
+    document.getElementById('tabBtnWd-pro').addEventListener('click', forceChartResize);
     window.addEventListener('resize', () => { requestAnimationFrame(() => Object.values(charts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } })); });
     return { load, forceChartResize };
   }
@@ -3176,7 +3175,6 @@
       document.getElementById('page-' + btn.dataset.page).classList.add('active');
       if (btn.dataset.page === 'pro') proApp.forceChartResize();
       if (btn.dataset.page === 'kids') kidsApp.forceChartResize();
-      if (btn.dataset.page === 'wd') wdApp.forceChartResize();
     });
   });
 
