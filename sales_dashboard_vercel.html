@@ -235,6 +235,11 @@
   .wd-cards { grid-template-columns: repeat(6, 1fr); }
   .wd-cards .card { border-top: 3px solid var(--wd-c, var(--accent)); }
   .wd-cards .value small { font-size: 12px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+  .update-banner { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 2000; display: none;
+    align-items: center; gap: 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", Roboto, sans-serif; background: #1c2033; color: #fff; font-size: 13px; font-weight: 600;
+    padding: 10px 12px 10px 16px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.25); max-width: calc(100% - 32px); }
+  .update-banner.show { display: flex; }
+  .update-banner button { border: none; background: var(--accent); color: #fff; font-weight: 700; font-size: 12px; padding: 7px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
   .wd-click { cursor: pointer; }
   .wd-click:hover .funnel-bar-track { box-shadow: 0 0 0 2px var(--accent-light); }
   .wd-cards .card.wd-click:hover { border-color: var(--wd-c); }
@@ -259,6 +264,10 @@
 </style>
 </head>
 <body>
+<div class="update-banner" id="updateBanner" role="status">
+  <span>มี Dashboard เวอร์ชันใหม่แล้ว</span>
+  <button type="button" id="updateBannerBtn">รีเฟรชหน้า</button>
+</div>
 
 <div id="loginScreen" class="login-wrap">
   <div class="login-card">
@@ -3402,6 +3411,36 @@
       if (btn.dataset.page === 'kids') kidsApp.forceChartResize();
     });
   });
+
+  // ---------- new-version banner ----------
+  // Tabs left open for hours keep running the old page (the "รีเฟรชข้อมูล"
+  // button only re-fetches the sheet). Fingerprint the deployed HTML once at
+  // boot, re-check every few minutes / when the tab regains focus / on data
+  // reload, and offer a page refresh when it has changed.
+  (function watchForNewVersion() {
+    const url = location.pathname + '?v=' ;
+    let baseline = null, shown = false;
+    async function fingerprint() {
+      const t = await fetch(url + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.text() : null);
+      if (!t) return null;
+      let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0;
+      return t.length + ':' + h;
+    }
+    async function check() {
+      if (shown) return;
+      try {
+        const fp = await fingerprint();
+        if (!fp) return;
+        if (baseline == null) { baseline = fp; return; }
+        if (fp !== baseline) { shown = true; document.getElementById('updateBanner').classList.add('show'); }
+      } catch (e) { /* offline etc. — try again later */ }
+    }
+    document.getElementById('updateBannerBtn').addEventListener('click', () => location.reload());
+    check();
+    setInterval(check, 3 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+    document.querySelectorAll('.reload-btn[id^="reloadBtn"]').forEach(b => b.addEventListener('click', check));
+  })();
 
   function bootApp() {
     Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => renderMasterOverview());
