@@ -240,6 +240,7 @@
     padding: 10px 12px 10px 16px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.25); max-width: calc(100% - 32px); }
   .update-banner.show { display: flex; }
   .update-banner button { border: none; background: var(--accent); color: #fff; font-weight: 700; font-size: 12px; padding: 7px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+  .partial-note { grid-column: 1 / -1; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; font-size: 12px; border-radius: 10px; padding: 9px 14px; line-height: 1.5; }
   .wd-click { cursor: pointer; }
   .wd-click:hover .funnel-bar-track { box-shadow: 0 0 0 2px var(--accent-light); }
   .wd-cards .card.wd-click:hover { border-color: var(--wd-c); }
@@ -526,6 +527,7 @@
         ข้อมูลยอด Lead / Book / Consult Done / Close Call / Won มาจากชีท "B2C Pro - Tracking Performance" (ลูกค้าใหม่จาก ERP, ยอดสะสมตาม snapshot) ·
         วันทำงานมาจากชีท "Manpower" คอลัมน์ F (MP): นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
         ค่าต่อวันทำงาน = ยอดสะสม ณ snapshot ÷ จำนวนวันทำงานในช่วงเดียวกัน ·
+        ชีทอัปเดตข้อมูลถึงเมื่อวาน (today−1) ดังนั้น snapshot ที่ยังไม่ครบจะนับวันทำงานถึงเมื่อวานเท่านั้น (เช่น วันที่ 27 → snapshot 1-31 นับวันที่ 1-26) ·
         เดือนที่ยังไม่ได้กรอก MP (ทุกวัน MP = 0 หรือว่าง) จะแสดงเป็น "—"
       </div>
     </div>
@@ -591,7 +593,7 @@
       </div>
 
       <div class="footnote">
-        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ snapshot เดียวกับที่เลือกอยู่ ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
+        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ วันที่เดียวกับที่ข้อมูลเดือนที่เลือกมีถึง (snapshot ที่ยังไม่ครบจะใช้วันที่ข้อมูลล่าสุด = เมื่อวาน และประมาณยอดของเดือนก่อน ๆ ณ วันนั้นแบบเส้นตรงระหว่าง snapshot) ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
       </div>
     </div>
 
@@ -799,7 +801,7 @@
       </div>
 
       <div class="footnote">
-        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ snapshot เดียวกับที่เลือกอยู่ ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
+        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ วันที่เดียวกับที่ข้อมูลเดือนที่เลือกมีถึง (snapshot ที่ยังไม่ครบจะใช้วันที่ข้อมูลล่าสุด = เมื่อวาน และประมาณยอดของเดือนก่อน ๆ ณ วันนั้นแบบเส้นตรงระหว่าง snapshot) ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
       </div>
     </div>
 
@@ -1086,6 +1088,79 @@
     return typeof v === 'object' ? v.value : v;
   }
 
+  // ---------- data freshness (sheet is updated with data up to today-1) ----------
+  // Each snapshot row "1-N" is cumulative, but the row for the snapshot that is
+  // still in progress already holds partial data: e.g. on 27 Oct the "1-31" row
+  // contains days 1-26 only. Anything that divides by days, compares against
+  // other months "at the same snapshot", or projects to month-end must use the
+  // day the data actually runs to, not the nominal snapshot end.
+  const DATA_LAG_DAYS = 1;
+  function bkkToday() {
+    const s = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    const [y, m, d] = s.split('-').map(Number);
+    return { y, m, d };
+  }
+  function daysInMonthOf(month) { const [mm, yyyy] = month.split('/').map(Number); return new Date(yyyy, mm, 0).getDate(); }
+  function periodNominalEnd(period, month) { return Math.min(Number(period.split('-')[1]), daysInMonthOf(month)); }
+  // Last day of `month` that the sheet has data for.
+  function dataThroughDay(month) {
+    const [mm, yyyy] = month.split('/').map(Number);
+    const t = bkkToday();
+    const a = yyyy * 12 + mm, b = t.y * 12 + t.m;
+    const dim = daysInMonthOf(month);
+    if (a > b) return 0;
+    if (a === b) return Math.max(0, t.d - DATA_LAG_DAYS);
+    if (a === b - 1 && t.d - DATA_LAG_DAYS < 1) return Math.max(0, dim + (t.d - DATA_LAG_DAYS));
+    return dim;
+  }
+  // Day the snapshot's numbers really run to (<= nominal end).
+  function effectiveDay(period, month) { return Math.min(periodNominalEnd(period, month), dataThroughDay(month)); }
+  function isPartialSnapshot(period, month) { return effectiveDay(period, month) < periodNominalEnd(period, month); }
+  function isMonthComplete(month) { return dataThroughDay(month) >= daysInMonthOf(month); }
+  // Cumulative value of an additive block (revenue / counts — NOT rates) at a
+  // given day of `month`, linearly interpolated between snapshot points
+  // (day 0 = 0). Exact at snapshot days; null beyond the last known point.
+  function valueAtDay(block, month, day) {
+    if (!block || day == null || day <= 0) return null;
+    const pts = [{ d: 0, v: 0 }];
+    PERIODS.forEach(p => {
+      const v = getValue(block, p, month);
+      if (v == null) return;
+      const d = effectiveDay(p, month);
+      if (d <= 0) return;
+      const last = pts[pts.length - 1];
+      if (d === last.d) last.v = v; else if (d > last.d) pts.push({ d, v });
+    });
+    for (let i = 1; i < pts.length; i++) {
+      if (day <= pts[i].d) {
+        const a = pts[i - 1], b = pts[i];
+        return a.v + (b.v - a.v) * (day - a.d) / (b.d - a.d);
+      }
+    }
+    return null;
+  }
+  // Value of month `m` comparable with `refMonth` at `period`: if refMonth's
+  // snapshot is partial (data only to day D), other months are taken at day D
+  // too instead of at the full snapshot. Additive blocks only.
+  function sameDayValue(block, m, period, refMonth) {
+    if (m === refMonth || !refMonth || !isPartialSnapshot(period, refMonth)) return getValue(block, period, m);
+    return valueAtDay(block, m, Math.min(effectiveDay(period, refMonth), daysInMonthOf(m)));
+  }
+  // Chart x-label for month m at `period`; marks a month whose own snapshot is partial.
+  function snapLabel(m, period) {
+    return isPartialSnapshot(period, m) ? `${monthLabel(m)} (ถึง ${effectiveDay(period, m)})` : monthLabel(m);
+  }
+  function periodOptionText(period, month) {
+    const end = period.split('-')[1];
+    return isPartialSnapshot(period, month) ? `ถึงวันที่ ${end} (ข้อมูลถึง ${effectiveDay(period, month)})` : `ถึงวันที่ ${end}`;
+  }
+  // Short banner text when the selected snapshot is still in progress.
+  function partialNoteHtml(period, month) {
+    if (!isPartialSnapshot(period, month)) return '';
+    const d = effectiveDay(period, month);
+    return `<div class="partial-note">ℹ️ ${monthLabel(month)} snapshot ${period} ยังไม่ครบ — ข้อมูลจริงถึงวันที่ <b>${d}</b> (ชีทอัปเดตถึงเมื่อวาน) · การเทียบกับเดือนอื่นและการคาดการณ์ใช้ยอด ณ วันที่ ${d} เท่ากัน</div>`;
+  }
+
   // ---------- formatting ----------
   function fmtBaht(n) { if (n == null) return '—'; const s = n < 0 ? '-' : ''; return s + '฿' + Math.round(Math.abs(n)).toLocaleString('en-US'); }
   function fmtNum(n) { if (n == null) return '—'; return Math.round(n).toLocaleString('en-US'); }
@@ -1127,22 +1202,27 @@
     return monthsList.slice(0, idx).filter(m => getValue(block, '1-31', m) != null);
   }
 
-  function computeForecastOf(monthsList, block, month, period) {
+  // Forecast = current cumulative ÷ (avg share of month-end total that past
+  // months had reached by the SAME DAY). The day is the day the data actually
+  // runs to (effectiveDay), so an in-progress snapshot is compared at the right
+  // point — and a "1-31" row that only holds days 1-26 is not mistaken for a
+  // completed month. strictZero mirrors the old module behaviour (a 0 so far,
+  // or a 0 history point, gives no basis to project).
+  function forecastCore(monthsList, block, month, period, strictZero) {
     const hist = historicalCompleteMonthsOf(monthsList, block, month);
     const currentVal = getValue(block, period, month);
-    const actualFinal = getValue(block, '1-31', month);
-    if (currentVal == null) return { status: 'no-current', hist, actualFinal };
-    if (period === '1-31') return { status: 'complete', currentVal, hist, actualFinal };
+    const actualFinal = isMonthComplete(month) ? getValue(block, '1-31', month) : null;
+    const day = effectiveDay(period, month);
+    const dim = daysInMonthOf(month);
+    if (currentVal == null) return { status: 'no-current', hist, actualFinal, day };
+    if (day >= dim) return { status: 'complete', currentVal, hist, actualFinal, day };
     const fracs = [];
     hist.forEach(m => {
       const tot = getValue(block, '1-31', m);
-      const val = getValue(block, period, m);
-      if (tot && val) fracs.push(val / tot);
+      const val = valueAtDay(block, m, Math.min(day, daysInMonthOf(m)));
+      if (tot && val != null && (!strictZero || val)) fracs.push(val / tot);
     });
-    // A zero so far (e.g. Kids with no sales yet on 1-5) gives no basis to
-    // project the month, so treat it like missing history instead of
-    // forecasting 0.
-    if (fracs.length === 0 || !currentVal) return { status: 'no-history', currentVal, hist, actualFinal };
+    if (fracs.length === 0 || (strictZero && !currentVal)) return { status: 'no-history', currentVal, hist, actualFinal, day };
     const avgFrac = average(fracs);
     const minFrac = Math.min(...fracs);
     const maxFrac = Math.max(...fracs);
@@ -1151,8 +1231,12 @@
       forecastAvg: currentVal / avgFrac,
       forecastHigh: currentVal / minFrac,
       forecastLow: currentVal / maxFrac,
-      histCount: fracs.length, hist, actualFinal
+      histCount: fracs.length, hist, actualFinal, day,
+      partial: isPartialSnapshot(period, month)
     };
+  }
+  function computeForecastOf(monthsList, block, month, period) {
+    return forecastCore(monthsList, block, month, period, true);
   }
 
   const FUNNEL_STAGES = [
@@ -1294,7 +1378,7 @@
       periodSel.innerHTML = '';
       avail.forEach(p => {
         const opt = document.createElement('option');
-        opt.value = p; opt.textContent = 'ถึงวันที่ ' + p.split('-')[1];
+        opt.value = p; opt.textContent = periodOptionText(p, month);
         periodSel.appendChild(opt);
       });
       periodSel.value = avail.includes(defaultPeriod) ? defaultPeriod : avail[avail.length - 1];
@@ -1324,7 +1408,7 @@
       const prevPeriod = idx > 0 ? avail[idx - 1] : null;
       const prevPeriodVal = prevPeriod ? getValue(parsed.table1.total, prevPeriod, month) : null;
       const pMonth = prevMonthOf(month);
-      const momVal = pMonth ? getValue(parsed.table1.total, period, pMonth) : null;
+      const momVal = pMonth ? sameDayValue(parsed.table1.total, pMonth, period, month) : null;
 
       const newPct = total ? (newRev / total) * 100 : null;
       const retPct = total ? (retRev / total) * 100 : null;
@@ -1334,7 +1418,7 @@
           <div class="label">Total Revenue (WH) — ${monthLabel(month)}, ถึงวันที่ ${period.split('-')[1]}</div>
           <div class="value">${fmtBaht(total)}</div>
           <div class="sub2">เทียบ snapshot ก่อนหน้าในเดือนนี้: ${deltaBadge(total, prevPeriodVal, false)}</div>
-          <div class="sub2">เทียบเดือนก่อนหน้า (snapshot เดียวกัน): ${deltaBadge(total, momVal, false)}</div>
+          <div class="sub2">เทียบเดือนก่อนหน้า (${isPartialSnapshot(period, month) ? 'ณ วันที่ ' + effectiveDay(period, month) + ' เท่ากัน' : 'snapshot เดียวกัน'}): ${deltaBadge(total, momVal, false)}</div>
         </div>
         <div class="card" data-key="newRevenue" style="cursor:pointer;">
           <div class="label">New Revenue (ERP)</div>
@@ -1353,15 +1437,15 @@
         </div>
       `;
       const cardsEl = $('cards');
-      cardsEl.innerHTML = cardsHtml;
+      cardsEl.innerHTML = partialNoteHtml(period, month) + cardsHtml;
       cardsEl.querySelectorAll('.card[data-key]').forEach(el => {
         el.addEventListener('click', () => openMetricDetail(el.dataset.key));
       });
     }
 
     function renderRevTrend(month, period) {
-      const labels = monthsWithData.map(monthLabel);
-      const data = monthsWithData.map(m => getValue(parsed.table1.total, period, m));
+      const labels = monthsWithData.map(m => snapLabel(m, period));
+      const data = monthsWithData.map(m => sameDayValue(parsed.table1.total, m, period, month));
       const focusIdx = monthsWithData.indexOf(month);
       destroyChart('revTrend');
       const ctx = $('chartRevTrend');
@@ -1428,7 +1512,7 @@
         row.addEventListener('click', () => openMetricDetail('rep' + row.dataset.rep));
       });
 
-      const labels = monthsWithData.map(monthLabel);
+      const labels = monthsWithData.map(m => snapLabel(m, period));
       destroyChart('repTrend');
       charts.repTrend = new Chart($('chartRepTrend'), {
         type: 'line',
@@ -1436,7 +1520,7 @@
           labels,
           datasets: REPS.map(r => ({
             label: r,
-            data: monthsWithData.map(m => getValue(parsed.table1.reps[r], period, m)),
+            data: monthsWithData.map(m => sameDayValue(parsed.table1.reps[r], m, period, month)),
             borderColor: REP_COLORS[r], backgroundColor: REP_COLORS[r],
             tension: 0.3, spanGaps: true, pointRadius: 3
           }))
@@ -1462,15 +1546,15 @@
         options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtBaht(c.raw)}` } } } }
       });
 
-      const labels = monthsWithData.map(monthLabel);
+      const labels = monthsWithData.map(m => snapLabel(m, period));
       destroyChart('newRetStack');
       charts.newRetStack = new Chart($('chartNewRetStack'), {
         type: 'bar',
         data: {
           labels,
           datasets: [
-            { label: 'New (ERP)', data: monthsWithData.map(m => getValue(parsed.table2.revenue, period, m)), backgroundColor: '#3b82f6', stack: 's', borderRadius: 4 },
-            { label: 'Retention & Other', data: monthsWithData.map(m => getValue(parsed.table3.total, period, m)), backgroundColor: '#a855f7', stack: 's', borderRadius: 4 }
+            { label: 'New (ERP)', data: monthsWithData.map(m => sameDayValue(parsed.table2.revenue, m, period, month)), backgroundColor: '#3b82f6', stack: 's', borderRadius: 4 },
+            { label: 'Retention & Other', data: monthsWithData.map(m => sameDayValue(parsed.table3.total, m, period, month)), backgroundColor: '#a855f7', stack: 's', borderRadius: 4 }
           ]
         },
         options: {
@@ -1489,14 +1573,14 @@
     function computeBenchmark(block, month, period) {
       const vals = monthsWithData
         .filter(m => m !== month)
-        .map(m => getValue(block, period, m))
+        .map(m => sameDayValue(block, m, period, month))
         .filter(v => v != null);
       if (!vals.length) return null;
       return { avg: average(vals), min: Math.min(...vals), max: Math.max(...vals), n: vals.length };
     }
 
     function funnelLegendHtml(period) {
-      return `<div class="funnel-legend"><span class="tick"></span> เส้นเข้ม = เกณฑ์เฉลี่ยของเดือนก่อนหน้า ณ snapshot ถึงวันที่ ${period.split('-')[1]} เดียวกัน</div>`;
+      return `<div class="funnel-legend"><span class="tick"></span> เส้นเข้ม = เกณฑ์เฉลี่ยของเดือนก่อนหน้า ณ ${isPartialSnapshot(period, monthSel.value) ? 'วันที่ ' + effectiveDay(period, monthSel.value) + ' เท่ากัน (snapshot นี้ยังไม่ครบ)' : 'snapshot ถึงวันที่ ' + period.split('-')[1] + ' เดียวกัน'}</div>`;
     }
 
     function funnelRowsHtml(month, period) {
@@ -1553,15 +1637,15 @@
       });
       $('funnelChips').innerHTML = funnelChipsHtml(month, period);
 
-      const labels = monthsWithData.map(monthLabel);
+      const labels = monthsWithData.map(m => snapLabel(m, period));
       destroyChart('leadWonTrend');
       charts.leadWonTrend = new Chart($('chartLeadWonTrend'), {
         type: 'bar',
         data: {
           labels,
           datasets: [
-            { type: 'bar', label: 'Lead', data: monthsWithData.map(m => getValue(parsed.table2.lead, period, m)), backgroundColor: '#cbd5e1', borderRadius: 4, yAxisID: 'y' },
-            { type: 'line', label: 'Won', data: monthsWithData.map(m => getValue(parsed.table2.won, period, m)), borderColor: '#f472b6', backgroundColor: '#f472b6', yAxisID: 'y1', tension: 0.3, spanGaps: true }
+            { type: 'bar', label: 'Lead', data: monthsWithData.map(m => sameDayValue(parsed.table2.lead, m, period, month)), backgroundColor: '#cbd5e1', borderRadius: 4, yAxisID: 'y' },
+            { type: 'line', label: 'Won', data: monthsWithData.map(m => sameDayValue(parsed.table2.won, m, period, month)), borderColor: '#f472b6', backgroundColor: '#f472b6', yAxisID: 'y1', tension: 0.3, spanGaps: true }
           ]
         },
         options: {
@@ -1579,7 +1663,7 @@
     }
 
     function renderRelative(month, period) {
-      const labels = monthsWithData.map(monthLabel);
+      const labels = monthsWithData.map(m => snapLabel(m, period));
       destroyChart('cvr');
       charts.cvr = new Chart($('chartCVR'), {
         type: 'line',
@@ -1668,7 +1752,7 @@
         options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${fmtNum(c.raw)}` } } } }
       });
 
-      const labels = monthsWithData.map(monthLabel);
+      const labels = monthsWithData.map(m => snapLabel(m, period));
 
       destroyChart('ltLeadTrend');
       charts.ltLeadTrend = new Chart($('chartLtLeadTrend'), {
@@ -1676,8 +1760,8 @@
         data: {
           labels,
           datasets: [
-            { label: 'Hot Lead', data: monthsWithData.map(m => getValue(t4.hlLead, period, m)), borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.3, spanGaps: true, pointRadius: 3 },
-            { label: 'Cold Lead', data: monthsWithData.map(m => getValue(t4.clLead, period, m)), borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3, spanGaps: true, pointRadius: 3 }
+            { label: 'Hot Lead', data: monthsWithData.map(m => sameDayValue(t4.hlLead, m, period, month)), borderColor: '#f97316', backgroundColor: '#f97316', tension: 0.3, spanGaps: true, pointRadius: 3 },
+            { label: 'Cold Lead', data: monthsWithData.map(m => sameDayValue(t4.clLead, m, period, month)), borderColor: '#0ea5e9', backgroundColor: '#0ea5e9', tension: 0.3, spanGaps: true, pointRadius: 3 }
           ]
         },
         options: {
@@ -1767,8 +1851,8 @@
         data: {
           labels,
           datasets: [
-            { label: 'Revenue (Hot)', data: monthsWithData.map(m => getValue(t4.hlRevenue, period, m)), backgroundColor: '#f97316', borderRadius: 4 },
-            { label: 'Revenue (Cold)', data: monthsWithData.map(m => getValue(t4.clRevenue, period, m)), backgroundColor: '#0ea5e9', borderRadius: 4 }
+            { label: 'Revenue (Hot)', data: monthsWithData.map(m => sameDayValue(t4.hlRevenue, m, period, month)), backgroundColor: '#f97316', borderRadius: 4 },
+            { label: 'Revenue (Cold)', data: monthsWithData.map(m => sameDayValue(t4.clRevenue, m, period, month)), backgroundColor: '#0ea5e9', borderRadius: 4 }
           ]
         },
         options: {
@@ -1808,28 +1892,7 @@
     }
 
     function computeForecast(block, month, period) {
-      const hist = historicalCompleteMonths(block, month);
-      const currentVal = getValue(block, period, month);
-      const actualFinal = getValue(block, '1-31', month);
-      if (currentVal == null) return { status: 'no-current', hist, actualFinal };
-      if (period === '1-31') return { status: 'complete', currentVal, hist, actualFinal };
-      const fracs = [];
-      hist.forEach(m => {
-        const tot = getValue(block, '1-31', m);
-        const val = getValue(block, period, m);
-        if (tot && val != null) fracs.push(val / tot);
-      });
-      if (fracs.length === 0) return { status: 'no-history', currentVal, hist, actualFinal };
-      const avgFrac = average(fracs);
-      const minFrac = Math.min(...fracs);
-      const maxFrac = Math.max(...fracs);
-      return {
-        status: 'ok', currentVal, avgFrac, minFrac, maxFrac,
-        forecastAvg: currentVal / avgFrac,
-        forecastHigh: currentVal / minFrac,
-        forecastLow: currentVal / maxFrac,
-        histCount: fracs.length, hist, actualFinal
-      };
+      return forecastCore(parsed.months, block, month, period, false);
     }
 
     function fcCardHtml(title, fc, color, fmt) {
@@ -1859,7 +1922,7 @@
       const fcNew = computeForecast(parsed.table2.revenue, month, period);
       const fcRet = computeForecast(parsed.table3.total, month, period);
       const fcWon = computeForecast(parsed.table2.won, month, period);
-      $('fcSubtitle').textContent = `อิงข้อมูล ${monthLabel(month)} ณ snapshot ถึงวันที่ ${period.split('-')[1]}`;
+      $('fcSubtitle').textContent = `อิงข้อมูล ${monthLabel(month)} ณ snapshot ถึงวันที่ ${period.split('-')[1]}` + (isPartialSnapshot(period, month) ? ` (ข้อมูลจริงถึงวันที่ ${effectiveDay(period, month)})` : '');
       $('fcCards').innerHTML =
         fcCardHtml('Total Revenue (WH)', fcTotal, 'var(--text)') +
         fcCardHtml('New Revenue (ERP)', fcNew, 'var(--new)') +
@@ -1900,61 +1963,62 @@
         }
       });
       const note = $('fcRevNote');
-      if (fc.status === 'ok') note.textContent = `คาดการณ์จากสัดส่วนสะสมเฉลี่ย ${fc.histCount} เดือนก่อนหน้า ณ snapshot เดียวกัน (${(fc.avgFrac * 100).toFixed(1)}% ของยอดเดือนมักจะสะสมมาถึงจุดนี้แล้ว)`;
+      if (fc.status === 'ok') note.textContent = `คาดการณ์จากสัดส่วนสะสมเฉลี่ย ${fc.histCount} เดือนก่อนหน้า ณ วันที่ ${fc.day} ของเดือนเท่ากัน (${(fc.avgFrac * 100).toFixed(1)}% ของยอดเดือนมักจะสะสมมาถึงจุดนี้แล้ว)`;
       else if (fc.status === 'complete') note.textContent = 'เดือนที่เลือกมีข้อมูลครบทั้งเดือนแล้ว แท่งสุดท้ายจึงเป็นยอดจริง ไม่ใช่การพยากรณ์';
       else note.textContent = 'ยังไม่มีข้อมูลเดือนก่อนหน้าที่ปิดเดือนเพียงพอสำหรับคำนวณพยากรณ์';
     }
 
     function renderForecastPacing(month, period) {
+      // x = day of month, so the current month's latest point sits at the day
+      // its data actually runs to (e.g. 26), not at the nominal snapshot end.
       const block = parsed.table1.total;
       const hist = historicalCompleteMonths(block, month);
-      const labels = PERIODS.map(p => 'ถึง ' + p.split('-')[1]);
+      const DAYS = [5, 10, 15, 20, 25, 31];
       const histDatasets = hist.map(m => {
         const tot = getValue(block, '1-31', m);
         return {
           label: monthLabel(m),
-          data: PERIODS.map(p => { const v = getValue(block, p, m); return (v != null && tot) ? (v / tot * 100) : null; }),
+          data: PERIODS.map((p, i) => { const v = getValue(block, p, m); return (v != null && tot) ? { x: DAYS[i], y: v / tot * 100 } : null; }).filter(Boolean),
           borderColor: 'rgba(148,163,184,0.55)', backgroundColor: 'rgba(148,163,184,0.55)',
-          borderWidth: 1.5, pointRadius: 0, tension: 0.3, spanGaps: true
+          borderWidth: 1.5, pointRadius: 0, tension: 0.3
         };
       });
-      const avgData = PERIODS.map(p => {
+      const avgData = PERIODS.map((p, i) => {
         const fracs = hist.map(m => { const tot = getValue(block, '1-31', m); const v = getValue(block, p, m); return (tot && v != null) ? v / tot * 100 : null; }).filter(x => x != null);
-        return fracs.length ? average(fracs) : null;
-      });
+        return fracs.length ? { x: DAYS[i], y: average(fracs) } : null;
+      }).filter(Boolean);
       const fc = computeForecast(block, month, period);
       const denom = fc.status === 'ok' ? fc.forecastAvg : (fc.status === 'complete' ? fc.currentVal : null);
       const curIdx = PERIODS.indexOf(period);
-      const currentData = PERIODS.map((p, i) => {
-        if (i > curIdx || !denom) return null;
+      const dim = daysInMonthOf(month);
+      const currentData = !denom ? [] : PERIODS.map((p, i) => {
+        if (i > curIdx) return null;
         const v = getValue(block, p, month);
-        return v != null ? (v / denom * 100) : null;
-      });
-      const projData = PERIODS.map((p, i) => {
-        if (!denom) return null;
-        if (i === curIdx) return currentData[curIdx];
-        if (i === PERIODS.length - 1) return 100;
-        return null;
-      });
+        if (v == null) return null;
+        const d = effectiveDay(p, month);
+        return { x: d >= dim ? 31 : d, y: v / denom * 100 };
+      }).filter(Boolean);
+      const lastCur = currentData[currentData.length - 1];
+      const projData = denom && lastCur ? [lastCur, { x: 31, y: 100 }] : [];
       destroyChart('fcPacing');
       charts.fcPacing = new Chart($('chartFcPacing'), {
         type: 'line',
         data: {
-          labels,
           datasets: [
             ...histDatasets,
-            { label: 'ค่าเฉลี่ยรูปแบบเดิม', data: avgData, borderColor: '#4f46e5', backgroundColor: '#4f46e5', borderWidth: 2.5, pointRadius: 0, tension: 0.3, spanGaps: true },
-            { label: monthLabel(month) + ' (จริง)', data: currentData, borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 3, pointRadius: 3, tension: 0.3, spanGaps: false },
-            { label: 'คาดการณ์ต่อ', data: projData, borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 2, borderDash: [6, 4], pointRadius: (ctx) => ctx.dataIndex === PERIODS.length - 1 ? 4 : 0, tension: 0, spanGaps: true }
+            { label: 'ค่าเฉลี่ยรูปแบบเดิม', data: avgData, borderColor: '#4f46e5', backgroundColor: '#4f46e5', borderWidth: 2.5, pointRadius: 0, tension: 0.3 },
+            { label: monthLabel(month) + ' (จริง)', data: currentData, borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 3, pointRadius: 3, tension: 0.3 },
+            { label: 'คาดการณ์ต่อ', data: projData, borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 2, borderDash: [6, 4], pointRadius: (ctx) => ctx.dataIndex === 1 ? 4 : 0, tension: 0 }
           ]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: {
             legend: { display: true, position: 'bottom', labels: { boxWidth: 8, font: { size: 9 }, filter: (item) => !item.text.startsWith('ถึง') } },
-            tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw != null ? c.raw.toFixed(1) + '%' : '—'}` } }
+            tooltip: { callbacks: { title: (items) => items.length ? `วันที่ ${items[0].raw.x}` : '', label: (c) => `${c.dataset.label}: ${c.raw != null ? c.raw.y.toFixed(1) + '%' : '—'}` } }
           },
-          scales: { y: { ticks: { callback: (v) => v + '%' }, grid: { color: '#f0f1f6' }, suggestedMax: 105 }, x: { grid: { display: false } } }
+          scales: { y: { ticks: { callback: (v) => v + '%' }, grid: { color: '#f0f1f6' }, suggestedMax: 105 },
+                    x: { type: 'linear', min: 0, max: 31, afterBuildTicks: (axis) => { axis.ticks = [1, 5, 10, 15, 20, 25, 31].map(v => ({ value: v })); }, ticks: { callback: (v) => 'วันที่ ' + v }, grid: { display: false } } }
         }
       });
     }
@@ -2117,12 +2181,23 @@
       const have = monthLatest.map((v, i) => ({ v, i })).filter(o => o.v != null);
       let momHtml = '';
       if (have.length >= 2) {
-        const last = have[have.length - 1], prev = have[have.length - 2];
+        const last = have[have.length - 1], prev = Object.assign({}, have[have.length - 2]);
+        // Latest month still in progress → compare additive metrics with the
+        // previous month at the same day, not with its full month.
+        const RATE_KEYS = ['cvrAll', 'cvrInIn', 'bks', 'revPerLead', 'hlCvrAll', 'clCvrAll', 'hlBks', 'clBks'];
+        const lastMo = monthsWithData[last.i], lastPs = periodsWithValue(m.block, lastMo);
+        const lastP = lastPs[lastPs.length - 1];
+        let sameDayNote = '';
+        if (lastP && isPartialSnapshot(lastP, lastMo) && !RATE_KEYS.includes(key)) {
+          const d = effectiveDay(lastP, lastMo);
+          const pv = valueAtDay(m.block, monthsWithData[prev.i], Math.min(d, daysInMonthOf(monthsWithData[prev.i])));
+          if (pv != null) { prev.v = pv; sameDayNote = ` (ณ วันที่ ${d} เท่ากัน)`; }
+        }
         const diff = last.v - prev.v;
         const pct = prev.v !== 0 ? (diff / Math.abs(prev.v)) * 100 : null;
         const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
         const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
-        momHtml = `<div class="fc-note">${monthLabel(monthsWithData[last.i])} เทียบ ${monthLabel(monthsWithData[prev.i])}:
+        momHtml = `<div class="fc-note">${monthLabel(monthsWithData[last.i])} เทียบ ${monthLabel(monthsWithData[prev.i])}${sameDayNote}:
           <span class="delta ${cls}">${arrow} ${m.fmt(Math.abs(diff))}${pct != null ? ` (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)` : ''}</span></div>`;
       }
 
@@ -2131,7 +2206,8 @@
       const bodyRows = PERIODS.map(p => {
         const cells = monthsWithData.map(mo => {
           const v = getValue(m.block, p, mo);
-          return `<td>${v == null ? '—' : m.fmt(v)}</td>`;
+          const part = v != null && isPartialSnapshot(p, mo) ? ` <span style="color:var(--muted);font-size:10px">(ถึง ${effectiveDay(p, mo)})</span>` : '';
+          return `<td>${v == null ? '—' : m.fmt(v)}${part}</td>`;
         }).join('');
         return `<tr><td>ถึงวันที่ ${p.split('-')[1]}</td>${cells}</tr>`;
       }).join('');
@@ -2856,7 +2932,9 @@
 
     function model() { return proApp.getModel(); }
     function daysInMonth(month) { const [mm, yyyy] = month.split('/').map(Number); return new Date(yyyy, mm, 0).getDate(); }
-    function periodEndDay(period, month) { return Math.min(Number(period.split('-')[1]), daysInMonth(month)); }
+    // Count working days only up to the day the data runs to (today-1 for the
+    // in-progress snapshot), otherwise per-WD values are understated.
+    function periodEndDay(period, month) { return effectiveDay(period, month); }
 
     function workingDays(month, period) {
       const days = MP && MP[month];
@@ -2914,7 +2992,7 @@
         <div class="card" style="--wd-c:#64748b">
           <div class="label">Working Days</div>
           <div class="value">${wd == null ? '—' : wd}<small>วัน</small></div>
-          <div class="sub2">วันที่ 1–${periodEndDay(period, month)} ที่ MP &gt; 0</div>
+          <div class="sub2">วันที่ 1–${periodEndDay(period, month)} ที่ MP &gt; 0${isPartialSnapshot(period, month) ? ' (ข้อมูลถึงเมื่อวาน)' : ''}</div>
           <div class="sub2">MP เฉลี่ย ${mp == null ? '—' : fmt1(mp)} คน/วัน · เดือนก่อน ${pwd == null ? '—' : pwd} วัน</div>
         </div>`;
       WD_METRICS.forEach(mt => {
@@ -2929,7 +3007,7 @@
         </div>`;
       });
       const cEl = document.getElementById('wdCards');
-      cEl.innerHTML = html;
+      cEl.innerHTML = partialNoteHtml(period, month) + html;
       cEl.querySelectorAll('.wd-click').forEach(el => el.addEventListener('click', () => openTrend(el.dataset.metric)));
       document.getElementById('wdCardsTitle').textContent = `${monthLabel(month)}, ถึงวันที่ ${period.split('-')[1]}`;
     }
@@ -3054,6 +3132,7 @@
         const stopAt = m === selM ? PERIODS.indexOf(selP) : PERIODS.length - 1;
         ps.filter(p => PERIODS.indexOf(p) <= stopAt).forEach(p => {
           const cum = total(key, m, p), wd = wdCount(m, p), end = periodEndDay(p, m);
+          if (end <= prevEnd) return; // in-progress snapshot that has no new day of data yet
           let value = null, dTotal = null, dWd = null;
           if (mode === 'cum') {
             dTotal = cum; dWd = wd;
@@ -3276,7 +3355,7 @@
     masterPeriodSel.innerHTML = '';
     avail.forEach(p => {
       const opt = document.createElement('option');
-      opt.value = p; opt.textContent = 'ถึงวันที่ ' + p.split('-')[1];
+      opt.value = p; opt.textContent = periodOptionText(p, month);
       masterPeriodSel.appendChild(opt);
     });
     masterPeriodSel.value = avail[avail.length - 1];
@@ -3328,7 +3407,7 @@
     const newK = getValue(k.table2.revenue, period, month) || 0;
     const retP = getValue(p.table3.total, period, month) || 0;
     const retK = getValue(k.table3.total, period, month) || 0;
-    document.getElementById('masterCards').innerHTML = `
+    document.getElementById('masterCards').innerHTML = partialNoteHtml(period, month) + `
       <div class="card">
         <div class="label">Total Revenue (WH) — ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}</div>
         <div class="value">${fmtBaht(totalP + totalK)}</div>
