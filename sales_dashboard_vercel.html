@@ -285,6 +285,61 @@
   .moved-note { background: var(--accent-light); border: 1px dashed #c7d2fe; border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #3730a3; }
   .moved-note a { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; }
   @media (max-width: 700px) { .reps-toolbar { gap: 8px; } }
+  /* ---- Sales Performance v2 (clearer visuals) ---- */
+  .wrap { --viz-hot: #eb6834; --viz-cold: #2a78d6; --viz-accent: #4f46e5; --viz-accent-soft: rgba(79,70,229,0.22); }
+  .reps-filterbar { display: flex; gap: 14px 18px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; }
+  .reps-filterbar label { font-size: 12px; color: var(--muted); margin-right: 6px; }
+  .reps-scope { margin-left: auto; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .reps-chart-controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .seg.seg-wrap { flex-wrap: wrap; }
+  .reps-rank-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin: 2px 0 6px; }
+  .reps-rank-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .reps-rank-legend i { display: inline-block; width: 12px; height: 10px; border-radius: 3px; }
+  .reps-details { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+  .reps-details summary { cursor: pointer; font-size: 12px; font-weight: 700; color: var(--accent); padding: 4px 0; }
+  .reps-details[open] summary { margin-bottom: 8px; }
+  .reps-kpis { grid-template-columns: repeat(6, 1fr); }
+  .card.kpi .value { font-size: 22px; }
+  .card.kpi .sub2 b { color: var(--text); }
+  .kpi-click { cursor: pointer; }
+  .card.kpi-click:hover, .card.kpi-fc:hover { border-color: var(--accent); }
+  .card.kpi-fc { cursor: pointer; background: linear-gradient(0deg, var(--accent-light), var(--card) 70%); }
+  .kpi-vs { color: var(--muted); font-size: 11px; }
+  .h3-sub { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 6px; }
+  .rf { display: flex; flex-direction: column; }
+  .rf-row { display: grid; grid-template-columns: 92px 1fr 92px; gap: 10px; align-items: center; padding: 3px 0; border-radius: 8px; }
+  .rf-row:hover { background: #f8f9fd; }
+  .rf-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .rf-track { position: relative; height: 22px; background: #f1f2f8; border-radius: 4px; }
+  .rf-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; }
+  .rf-val { position: absolute; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; }
+  .rf-wd { font-size: 11px; color: var(--muted); text-align: right; line-height: 1.25; }
+  .rf-wd b { font-size: 13px; color: var(--text); }
+  .rf-wd span { display: block; font-size: 10px; }
+  .rf-conv { font-size: 10px; color: var(--muted); padding-left: 102px; line-height: 1.2; }
+  .rf-conv b { color: var(--text); }
+  .pool-mini { margin-top: 8px; }
+  .pool-mini .sw, .reps-chip i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; vertical-align: 0; }
+  .reps-chip.active i { background: #fff !important; }
+  @media (max-width: 1100px) { .reps-kpis { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px) { .reps-kpis { grid-template-columns: repeat(2, 1fr); } .reps-scope { margin-left: 0; } .rf-row { grid-template-columns: 74px 1fr 70px; } .rf-conv { padding-left: 84px; } }
+  /* ---- open pipeline ---- */
+  .pipe-row { display: grid; grid-template-columns: 110px 1fr 80px; gap: 10px; align-items: center; margin: 8px 0; }
+  .pipe-name { font-size: 12px; font-weight: 700; }
+  .pipe-tot { font-size: 11px; color: var(--muted); text-align: right; }
+  .pipe-tot b { font-size: 14px; color: var(--text); }
+  .pipe-seg { display: flex; gap: 2px; height: 28px; border-radius: 4px; overflow: hidden; }
+  .pipe-seg.thin { height: 8px; border-radius: 999px; }
+  .pipe-seg.empty { display: block; height: auto; font-size: 12px; color: var(--muted); }
+  .pipe-blk { display: flex; align-items: center; padding: 0 8px; font-size: 12px; font-weight: 700; min-width: 0; border-radius: 4px; }
+  .pipe-blk span { white-space: nowrap; }
+  .card.pipe-tile .label .sw, .pipe-mini .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .pipe-minis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  .pipe-mini { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; }
+  .pipe-mini .label { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .pipe-mini .value { font-size: 20px; font-weight: 800; margin-top: 2px; }
+  .pipe-mini .value .delta { font-size: 11px; }
+  @media (max-width: 600px) { .pipe-minis { grid-template-columns: repeat(2, 1fr); } .pipe-row { grid-template-columns: 80px 1fr 56px; } }
 </style>
 </head>
 <body>
@@ -339,15 +394,25 @@
     <div class="section-title"><span class="n">1</span> ยอดขายจริง (Real Data) — Globish Pro + Globish Kids รวมกัน <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
     <div class="cards" id="masterCards"></div>
 
-    <div class="section-title"><span class="n">2</span> Total Revenue Forecast — แยก Globish Pro / Globish Kids</div>
+    <div class="section-title"><span class="n">2</span> Pipeline ที่ยังค้าง (ยังไม่ Won / ยังไม่ Lost) <span class="section-hint" id="masterPipeHint"></span></div>
+    <div class="cards" id="masterPipeCards"></div>
+    <div class="chart-card">
+      <h3>ลูกค้าที่ Booked แล้วและยังเปิดอยู่ — ตอนนี้อยู่ขั้นไหน</h3>
+      <div id="masterPipeBars"></div>
+      <div class="chart-wrap short" id="masterPipeTrendWrap" style="display:none;margin-top:10px;"><canvas id="chartMasterPipeTrend"></canvas></div>
+      <div class="fc-note" id="masterPipeNote"></div>
+    </div>
+
+    <div class="section-title"><span class="n">3</span> Total Revenue Forecast — แยก Globish Pro / Globish Kids <span class="section-hint">Top-down: คาดการณ์ยอดรวม WH ทั้งก้อนโดยตรง (ตัวเลขหลัก)</span></div>
     <div class="cards" id="masterTotalFcCards" style="grid-template-columns:repeat(3,1fr);"></div>
     <div class="chart-card">
       <div class="chart-wrap tall"><canvas id="chartMasterTotalFc"></canvas></div>
       <div class="fc-note" id="masterTotalFcNote"></div>
     </div>
 
-    <div class="section-title"><span class="n">3</span> คาดการณ์สิ้นเดือน (New / Retention) — Globish Pro + Globish Kids รวมกัน</div>
+    <div class="section-title"><span class="n">4</span> คาดการณ์สิ้นเดือนแยกตามประเภทลูกค้า (New / Retention) — Globish Pro + Globish Kids รวมกัน <span class="section-hint">Bottom-up: คาดการณ์แต่ละก้อนแยกแล้วบวกกัน</span></div>
     <div class="cards" id="masterFcCards"></div>
+    <div class="fc-note" id="masterFcLogicNote" style="margin-top:10px;line-height:1.6;"></div>
 
     <div class="footnote">
       ตัวเลขในหน้านี้เป็นผลรวมของ Globish Pro Performance และ Globish Kids Performance · ดูรายละเอียดแยกแบรนด์ได้ที่แท็บด้านบน · การคาดการณ์คำนวณแยกกันในแต่ละแบรนด์แล้วนำมาบวกรวม (รวมถึงช่วงต่ำสุด–สูงสุด) ซึ่งเป็นการประมาณแบบอนุรักษ์นิยม ไม่ได้ปรับความสัมพันธ์ระหว่างสองแบรนด์
@@ -381,7 +446,6 @@
       <button class="tab-btn active" data-tab="overview" id="tabBtnOverview-pro">Overview</button>
       <button class="tab-btn" data-tab="leadtype" id="tabBtnLeadType-pro">Lead Pool Breakdown</button>
       <button class="tab-btn" data-tab="wd" id="tabBtnWd-pro">Productivity / Working Day</button>
-      <button class="tab-btn" data-tab="forecast" id="tabBtnForecast-pro">Forecast</button>
     </div>
 
     <div id="panel-overview-pro" class="tab-panel active">
@@ -522,7 +586,10 @@
     </div>
 
     <div id="panel-wd-pro" class="tab-panel">
-    <div class="section-title">Productivity per Working Day <span class="section-hint">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · วันทำงาน = วันที่มีเซลเข้างานอย่างน้อย 1 คน (Cold / Hot / Retention ตามชีท Manpower) · ใช้เดือน/snapshot จากตัวเลือกด้านบน <span id="wdSubline"></span></span></div>
+    <div class="section-title">Productivity per Working Day <span class="section-hint">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · ใช้เดือน/snapshot จากตัวเลือกด้านบน <span id="wdSubline"></span></span></div>
+    <div class="reps-filterbar" style="margin-top:4px;"><div><label>นับวันทำงานแบบ</label>
+      <div class="seg" id="wdBasisSeg"><button data-v="full" class="active">วันทำงานเต็ม (มีเซลรับ Cold Lead)</button><button data-v="any">ทุกวันที่มีเซลเข้างาน (รวมวันที่รับแค่ Hot Lead)</button></div></div>
+      <div class="reps-scope">ค่าเริ่มต้น = แบบเดียวกับก่อนแยก Manpower และเกณฑ์ Benchmark</div></div>
     <div id="wdStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
 
     <div id="wdContent" style="display:none;">
@@ -556,7 +623,7 @@
 
       <div class="footnote">
         ข้อมูลยอด Lead / Book / Consult Done / Close Call / Won มาจากชีท "B2C Pro - Tracking Performance" (ลูกค้าใหม่จาก ERP, ยอดสะสมตาม snapshot) ·
-        วันทำงานมาจากชีท "Manpower": MP ของแต่ละวัน = คอลัมน์ F ถ้ากรอกไว้ ไม่อย่างนั้นนับจำนวนเซลที่เข้างาน (ช่อง Sales Cold / Hot / Retention เป็นตัวเลข &gt; 0) · นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
+        วันทำงานมาจากชีท "Manpower" (แยก Sales Cold / Hot / Retention): แบบ “วันทำงานเต็ม” (ค่าเริ่มต้น) นับเฉพาะวันที่มีเซลรับ Cold Lead อย่างน้อย 1 คน — วันที่มีแค่เซลรับ Hot Lead (เช่น วันอาทิตย์ตั้งแต่ พ.ย. 69) ไม่นับ; แบบ “ทุกวันที่มีเซลเข้างาน” นับทุกวันที่มีเซลคนใดคนหนึ่งเข้างาน · MP = จำนวนเซลที่เข้างานวันนั้น (ช่องเป็นตัวเลข &gt; 0) · นับตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
         ค่าต่อวันทำงาน = ยอดสะสม ณ snapshot ÷ จำนวนวันทำงานในช่วงเดียวกัน ·
         ชีทอัปเดตข้อมูลถึงเมื่อวาน (today−1) ดังนั้น snapshot ที่ยังไม่ครบจะนับวันทำงานถึงเมื่อวานเท่านั้น (เช่น วันที่ 27 → snapshot 1-31 นับวันที่ 1-26) ·
         เดือนที่ยังไม่ได้กรอก MP (ทุกวัน MP = 0 หรือว่าง) จะแสดงเป็น "—"
@@ -588,38 +655,6 @@
     </div>
     </div>
 
-    <div id="panel-forecast-pro" class="tab-panel">
-      <div class="section-title">คาดการณ์สิ้นเดือน <span class="section-hint" id="fcSubtitle-pro"></span></div>
-      <div class="cards" id="fcCards-pro"></div>
-
-      <div class="moved-note">Total Revenue Forecast (แยก Globish Pro / Kids) ย้ายไปอยู่ที่หน้า <a data-goto="master">Master Overview</a> แล้ว</div>
-
-      <div class="section-title"><span class="n">2</span> รูปแบบการสะสมยอดขายรายวัน (Pacing) เทียบเดือนก่อนหน้า</div>
-      <div class="chart-card">
-        <div class="chart-wrap tall"><canvas id="chartFcPacing-pro"></canvas></div>
-        <div class="fc-note">เส้นเทา = แต่ละเดือนก่อนหน้า (ปิดเดือนแล้ว) · เส้นน้ำเงินหนา = ค่าเฉลี่ยรูปแบบการสะสม · เส้นทึบเข้ม = เดือนนี้ (ข้อมูลจริง) · เส้นประ = ค่าคาดการณ์ต่อจนสิ้นเดือน โดยอิงรูปแบบเฉลี่ย</div>
-      </div>
-
-      <div class="section-title"><span class="n">3</span> New vs Retention &amp; Other — คาดการณ์</div>
-      <div class="chart-card">
-        <div class="chart-wrap tall"><canvas id="chartFcNewRet-pro"></canvas></div>
-        <div class="chart-hint">คลิกที่แท่งเดือนก่อนหน้าเพื่อดูรายละเอียดของเดือนนั้น</div>
-      </div>
-
-      <div class="section-title"><span class="n">4</span> Customer Journey (New) — คาดการณ์ Lead / Won</div>
-      <div class="chart-card">
-        <div class="chip-row" id="fcFunnelChips-pro"></div>
-        <div class="fc-note" id="fcFunnelNote-pro" style="margin-top:10px;"></div>
-      </div>
-
-      <div class="section-title"><span class="n">5</span> Breakdown รายคน — คาดการณ์สิ้นเดือน</div>
-      <div class="moved-note">Forecast Revenue รายคน ย้ายไปอยู่ที่หน้า <a data-goto="reps">Sales Performance (รายคน)</a> แล้ว (เลือกได้ 2 วิธี: ตามรูปแบบ Snapshot / Run-rate ต่อ WD)</div>
-
-      <div class="footnote">
-        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ วันที่เดียวกับที่ข้อมูลเดือนที่เลือกมีถึง (snapshot ที่ยังไม่ครบจะใช้วันที่ข้อมูลล่าสุด = เมื่อวาน และประมาณยอดของเดือนก่อน ๆ ณ วันนั้นแบบเส้นตรงระหว่าง snapshot) ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
-      </div>
-    </div>
-
   </div>
 
   <div id="stateMsg-pro" class="state-msg">กำลังโหลดข้อมูล…</div>
@@ -648,7 +683,6 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="overview" id="tabBtnOverview-kids">Overview</button>
       <button class="tab-btn" data-tab="leadtype" id="tabBtnLeadType-kids">Lead Pool Breakdown</button>
-      <button class="tab-btn" data-tab="forecast" id="tabBtnForecast-kids">Forecast</button>
     </div>
 
     <div id="panel-overview-kids" class="tab-panel active">
@@ -788,38 +822,6 @@
       </div>
     </div>
 
-    <div id="panel-forecast-kids" class="tab-panel">
-      <div class="section-title">คาดการณ์สิ้นเดือน <span class="section-hint" id="fcSubtitle-kids"></span></div>
-      <div class="cards" id="fcCards-kids"></div>
-
-      <div class="moved-note">Total Revenue Forecast (แยก Globish Pro / Kids) ย้ายไปอยู่ที่หน้า <a data-goto="master">Master Overview</a> แล้ว</div>
-
-      <div class="section-title"><span class="n">2</span> รูปแบบการสะสมยอดขายรายวัน (Pacing) เทียบเดือนก่อนหน้า</div>
-      <div class="chart-card">
-        <div class="chart-wrap tall"><canvas id="chartFcPacing-kids"></canvas></div>
-        <div class="fc-note">เส้นเทา = แต่ละเดือนก่อนหน้า (ปิดเดือนแล้ว) · เส้นน้ำเงินหนา = ค่าเฉลี่ยรูปแบบการสะสม · เส้นทึบเข้ม = เดือนนี้ (ข้อมูลจริง) · เส้นประ = ค่าคาดการณ์ต่อจนสิ้นเดือน โดยอิงรูปแบบเฉลี่ย</div>
-      </div>
-
-      <div class="section-title"><span class="n">3</span> New vs Retention &amp; Other — คาดการณ์</div>
-      <div class="chart-card">
-        <div class="chart-wrap tall"><canvas id="chartFcNewRet-kids"></canvas></div>
-        <div class="chart-hint">คลิกที่แท่งเดือนก่อนหน้าเพื่อดูรายละเอียดของเดือนนั้น</div>
-      </div>
-
-      <div class="section-title"><span class="n">4</span> Customer Journey (New) — คาดการณ์ Lead / Won</div>
-      <div class="chart-card">
-        <div class="chip-row" id="fcFunnelChips-kids"></div>
-        <div class="fc-note" id="fcFunnelNote-kids" style="margin-top:10px;"></div>
-      </div>
-
-      <div class="section-title"><span class="n">5</span> Breakdown รายคน — คาดการณ์สิ้นเดือน</div>
-      <div class="moved-note">Forecast Revenue รายคน ย้ายไปอยู่ที่หน้า <a data-goto="reps">Sales Performance (รายคน)</a> แล้ว (เลือกได้ 2 วิธี: ตามรูปแบบ Snapshot / Run-rate ต่อ WD)</div>
-
-      <div class="footnote">
-        <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ วันที่เดียวกับที่ข้อมูลเดือนที่เลือกมีถึง (snapshot ที่ยังไม่ครบจะใช้วันที่ข้อมูลล่าสุด = เมื่อวาน และประมาณยอดของเดือนก่อน ๆ ณ วันนั้นแบบเส้นตรงระหว่าง snapshot) ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
-      </div>
-    </div>
-
   </div>
 
   <div id="stateMsg-kids" class="state-msg">กำลังโหลดข้อมูล…</div>
@@ -849,58 +851,97 @@
   </div>
 
   <div id="repsContent" style="display:none;">
-    <div class="reps-toolbar">
+    <div class="reps-filterbar">
       <div><label>Lead pool</label>
         <div class="seg" id="repsPoolSeg"><button data-v="All" class="active">ทั้งหมด</button><button data-v="Hot">Hot Lead</button><button data-v="Cold">Cold Lead</button></div>
       </div>
       <div><label>วิธีคาดการณ์ Revenue</label>
         <div class="seg" id="repsFcSeg"><button data-v="snap" class="active">ตามรูปแบบ Snapshot</button><button data-v="wd">Run-rate ต่อ WD</button></div>
       </div>
+      <div class="reps-scope" id="repsScope"></div>
     </div>
     <div id="repsNote"></div>
 
-    <div class="section-title"><span class="n">1</span> ภาพรวมทีม <span class="section-hint" id="repsTableHint"></span></div>
+    <!-- 1. who is ahead on a metric -->
+    <div class="section-title"><span class="n">1</span> เทียบทั้งทีม <span class="section-hint">เลือก metric แล้วดูอันดับ · คลิกแท่งเพื่อเลือกเซล</span></div>
     <div class="chart-card">
-      <div class="reps-table-wrap"><table class="detail-table reps-table" id="repsTable"></table></div>
-      <div class="chart-hint">คลิกชื่อเซลเพื่อดูรายละเอียดด้านล่าง · ตัวเลขใหญ่ = ยอดรวม (Total) · ตัวเลขเล็ก = ต่อวันทำงาน (Per WD)</div>
+      <div class="reps-chart-controls">
+        <div class="seg seg-wrap" id="repsRankMetricSeg"></div>
+        <div class="seg" id="repsRankModeSeg"><button data-v="total" class="active">Total</button><button data-v="wd">Per WD</button></div>
+      </div>
+      <div class="reps-rank-legend" id="repsRankLegend"></div>
+      <div class="chart-wrap" id="repsRankWrap"><canvas id="chartRepsRank"></canvas></div>
+      <details class="reps-details">
+        <summary>ดูตารางตัวเลขทั้งหมด (ทุก metric · Total และ Per WD)</summary>
+        <div class="reps-table-wrap"><table class="detail-table reps-table" id="repsTable"></table></div>
+      </details>
     </div>
 
-    <div class="section-title"><span class="n">2</span> รายละเอียดรายคน <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
+    <!-- 2. one rep -->
+    <div class="section-title"><span class="n">2</span> <span id="repsDetailTitle">รายละเอียดรายคน</span> <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
     <div class="rep-chip-row" id="repsChips" style="margin-bottom:12px;"></div>
-    <div class="cards reps-cards" id="repsCards"></div>
+    <div class="cards reps-kpis" id="repsCards"></div>
 
     <div class="grid-2">
       <div class="chart-card">
-        <h3 id="repsPoolTitle">Hot Lead vs Cold Lead</h3>
-        <div class="reps-table-wrap"><table class="detail-table" id="repsPoolTable"></table></div>
+        <h3>Funnel <span class="h3-sub" id="repsFunnelSub"></span></h3>
+        <div id="repsFunnel"></div>
       </div>
       <div class="chart-card">
-        <h3 id="repsFcTitle">Forecast Revenue</h3>
-        <div id="repsFcBox"></div>
+        <h3>Hot Lead vs Cold Lead <span class="h3-sub">ต่อวันทำงาน (Per WD)</span></h3>
+        <div class="reps-rank-legend"><span><i style="background:var(--viz-hot)"></i>Hot Lead</span><span><i style="background:var(--viz-cold)"></i>Cold Lead</span></div>
+        <div class="chart-wrap" style="height:230px;"><canvas id="chartRepsPool"></canvas></div>
+        <table class="detail-table pool-mini" id="repsPoolTable"></table>
       </div>
     </div>
 
-    <div class="section-title"><span class="n">3</span> แนวโน้มรายเดือน ณ snapshot เดียวกัน <span class="section-hint" id="repsTrendHint"></span></div>
+    <!-- 3. open pipeline -->
+    <div class="section-title"><span class="n">3</span> Pipeline ที่ยังค้าง (ยังไม่ Won / ยังไม่ Lost) <span class="section-hint" id="repsPipeHint"></span></div>
+    <div class="grid-1-2">
+      <div class="chart-card">
+        <h3>ทั้งทีม — ค้างอยู่ขั้นไหน <span class="h3-sub">คลิกแท่งเพื่อเลือกเซล</span></h3>
+        <div class="reps-rank-legend" id="repsPipeLegend"></div>
+        <div class="chart-wrap" id="repsPipeWrap"><canvas id="chartRepsPipe"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3 id="repsPipeRepTitle">ค้างอยู่ใน pipeline</h3>
+        <div id="repsPipeRep"></div>
+      </div>
+    </div>
+
+    <!-- 3. trend -->
+    <div class="section-title"><span class="n">4</span> แนวโน้มรายเดือน <span class="section-hint" id="repsTrendHint"></span></div>
     <div class="chart-card">
-      <div class="reps-toolbar" style="margin-bottom:8px;">
-        <div class="seg" id="repsTrendMetricSeg"></div>
+      <div class="reps-chart-controls">
+        <div class="seg seg-wrap" id="repsTrendMetricSeg"></div>
         <div class="seg" id="repsTrendModeSeg"><button data-v="total" class="active">Total</button><button data-v="wd">Per WD</button></div>
       </div>
+      <div class="reps-rank-legend" id="repsTrendLegend"></div>
       <div class="chart-wrap tall"><canvas id="chartRepsTrend"></canvas></div>
     </div>
 
-    <div class="section-title"><span class="n">4</span> Forecast Revenue รายคน — คาดการณ์สิ้นเดือน <span class="section-hint" id="repsFcHint"></span></div>
-    <div class="chart-card">
-      <div class="fc-note warn" id="repsFcNote" style="margin-bottom:10px;"></div>
-      <div class="chart-wrap tall"><canvas id="chartRepsFc"></canvas></div>
+    <!-- 4. forecast -->
+    <div class="section-title"><span class="n">5</span> Forecast Revenue สิ้นเดือน <span class="section-hint" id="repsFcHint"></span></div>
+    <div class="grid-1-2">
+      <div class="chart-card">
+        <h3 id="repsFcTitle">Forecast</h3>
+        <div id="repsFcBox"></div>
+      </div>
+      <div class="chart-card">
+        <h3>ทั้งทีม <span class="h3-sub">ยอดถึงตอนนี้ + ส่วนที่คาดว่าจะเพิ่ม</span></h3>
+        <div class="reps-rank-legend"><span><i style="background:var(--viz-accent)"></i>ยอดถึงตอนนี้</span><span><i style="background:var(--viz-accent-soft)"></i>ส่วนที่คาดว่าจะเพิ่มถึงสิ้นเดือน</span></div>
+        <div class="fc-note warn" id="repsFcNote" style="margin-bottom:8px;display:none;"></div>
+        <div class="chart-wrap" id="repsFcWrap"><canvas id="chartRepsFc"></canvas></div>
+      </div>
     </div>
 
     <div class="footnote">
-      <b>ที่มาของตัวเลข:</b> Lead / Booked / Consult Done / Close Call / Won / Revenue (ERP) มาจากแท็บ Rep Snapshot ซึ่งคำนวณจาก ERP (Transformed) ด้วยนิยามเดียวกับยอดรวมของแบรนด์ แยกตาม lead_owner และแช่แข็งทุก snapshot ที่ปิดแล้ว · ผลรวมทุกคนในโหมด “ทั้งหมด” = ยอดรวมแบรนด์ในหน้า Performance ·
+      <b>ที่มาของตัวเลข:</b> Lead / Booked / Consult Done / Close Call / Won / Revenue (ERP) มาจากแท็บ Rep Snapshot (คำนวณจาก ERP ด้วยนิยามเดียวกับยอดรวมของแบรนด์ แยกตาม lead_owner และแช่แข็งทุก snapshot ที่ปิดแล้ว) · ผลรวมทุกคนในโหมด “ทั้งหมด” = ยอดรวมแบรนด์ในหน้า Performance ·
       Revenue (WH) = ยอดขายจริงรายคนจาก Whitehouse (ไม่แยก Hot/Cold) ·
-      <b>Per WD</b> = ยอด ÷ จำนวนวันที่เซลคนนั้นเข้างานตามชีท Manpower ถึงวันที่ข้อมูลมีถึง — โหมด Hot ใช้วันที่รับ Hot Lead, โหมด Cold ใช้วันที่รับ Cold Lead, โหมดทั้งหมดใช้วันที่รับ lead ประเภทใดก็ได้ (รวม Retention) ·
+      <b>Per WD</b> = ยอด ÷ จำนวนวันที่เซลคนนั้นเข้างานตามชีท Manpower ถึงวันที่ข้อมูลมีถึง (Hot ใช้วันที่รับ Hot Lead, Cold ใช้วันที่รับ Cold Lead, ทั้งหมดใช้วันที่รับ lead ประเภทใดก็ได้ รวม Retention) ·
+      <b>ค่าเฉลี่ยทีม</b> = ค่าเฉลี่ยของเซลหลัก (มีวันทำงานในชีท Manpower หรืออยู่ในรายชื่อ WH; โหมด Per WD ใช้เฉพาะคนที่มีวันทำงาน) ·
       CVR All = Won ÷ Lead · CVR In-In = Won ประเภท In ÷ Lead · BKS = Revenue (ERP) ÷ Won ·
-      <b>Forecast:</b> “ตามรูปแบบ Snapshot” = ยอดสะสม ÷ สัดส่วนเฉลี่ยที่เดือนก่อน ๆ สะสมถึงวันเดียวกัน (วิธีเดียวกับหน้า Forecast เดิม) · “Run-rate ต่อ WD” = ยอดต่อ WD ที่ผ่านมา × จำนวน WD ทั้งเดือนตาม Manpower · ใช้ Revenue (WH) ถ้ามี ไม่อย่างนั้นใช้ Revenue (ERP)
+      <b>Pipeline ที่ยังค้าง</b> = สถานะปัจจุบันใน ERP (เก็บวันละครั้ง): ยังเป็น Lead = pipeline Lead/Open ที่ยังไม่ book · ผ่าน Booked = มี opportunity ที่ยังไม่ Won/Lost · ผ่าน Consult Done / Close Call = opportunity ที่ยังเปิดและทำขั้นนั้นแล้ว · กรอง deal type New และ lead type ตรงแบรนด์ · <b>Forecast:</b> “ตามรูปแบบ Snapshot” = ยอดสะสม ÷ สัดส่วนเฉลี่ยที่เดือนก่อน ๆ สะสมถึงวันเดียวกัน · “Run-rate ต่อ WD” = ยอดต่อ WD ที่ผ่านมา × จำนวน WD ทั้งเดือนตาม Manpower · ใช้ Revenue (WH) ถ้ามี ไม่อย่างนั้นใช้ Revenue (ERP)
     </div>
   </div>
 
@@ -2358,7 +2399,7 @@
       renderFunnel(month, period);
       renderRelative(month, period);
       renderLeadType(month, period);
-      renderForecast(month, period);
+      if ($('fcCards')) renderForecast(month, period); // Forecast tab removed (moved to Master / Sales Performance)
     }
 
     // Charts created while their panel/window wasn't at final size render blank or
@@ -3081,10 +3122,22 @@
 
   // Returns { 'MM/YYYY': { [day]: mp } } — mp = column F when filled, otherwise
   // the number of sales working any lead type that day (see mpOfDay()).
-  function parseManpowerCSV(text) {
+  // basis 'full' (default): a day counts as a working day only when at least
+  // one sales works Cold Lead (a normal full sales day). Days staffed for Hot
+  // Lead only (e.g. Sundays from Nov 2026) get mp = 0 so they don't dilute the
+  // team's per-WD numbers — this matches how the page counted days before the
+  // Manpower split and the benchmarks (Lead 45 …) were set on. basis 'any':
+  // every day with at least one sales on any lead type counts.
+  function parseManpowerCSV(text, basis) {
     const full = parseManpowerFull(text);
     const out = {};
-    Object.keys(full).forEach(k => { out[k] = {}; Object.keys(full[k]).forEach(d => { out[k][d] = mpOfDay(full[k][d]); }); });
+    Object.keys(full).forEach(k => {
+      out[k] = {};
+      Object.keys(full[k]).forEach(d => {
+        const rec = full[k][d];
+        out[k][d] = basis !== 'any' && !(rec.colF > 0) && rec.Cold.size === 0 ? 0 : mpOfDay(rec);
+      });
+    });
     return out;
   }
 
@@ -3121,7 +3174,12 @@
   };
 
   function createWorkingDayApp() {
-    let MP = null;
+    let MP = null, MP_TEXT = null, wdBasis = 'full';
+    document.querySelectorAll('#wdBasisSeg button').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('#wdBasisSeg button').forEach(x => x.classList.toggle('active', x === b));
+      wdBasis = b.dataset.v;
+      if (MP_TEXT) { MP = parseManpowerCSV(MP_TEXT, wdBasis); render(); }
+    }));
     let charts = {};
     // Lives as a tab inside Globish Pro Performance, so it follows that page's
     // own month / snapshot selectors instead of having its own.
@@ -3493,7 +3551,8 @@
       const content = document.getElementById('wdContent');
       try {
         if (!model()) throw new Error('โหลดข้อมูล Globish Pro ไม่สำเร็จ');
-        MP = parseManpowerCSV(await fetchManpowerCsv());
+        MP_TEXT = await fetchManpowerCsv();
+        MP = parseManpowerCSV(MP_TEXT, wdBasis);
         if (!Object.keys(MP).length) throw new Error('ไม่พบข้อมูลในชีท Manpower');
         if (!monthsWithFunnel().length) throw new Error('ไม่พบข้อมูล Lead/Book/Won ของ Globish Pro');
         loaded = true;
@@ -3644,12 +3703,36 @@
       { title: 'Retention & Other (Est.)', color: 'var(--retention)', blockP: p.table3.total, blockK: k.table3.total, fmt: fmtBaht }
     ];
     let html = '';
+    const parts = [];
     combos.forEach(c => {
       const fcP = computeForecastOf(p.months, c.blockP, month, period);
       const fcK = computeForecastOf(k.months, c.blockK, month, period);
+      parts.push({ fcP, fcK, st: combineStatus(fcP, fcK) });
       html += masterFcCardHtml(c.title, fcP, fcK, c.color, c.fmt);
     });
+    // Total (bottom-up) = forecast New + forecast Retention — a different
+    // logic from section 2, which projects the WH Total directly.
+    const okAll = parts.every(x => x.st !== 'partial');
+    const ptOf = x => (pointOf(x.fcP) || 0) + (pointOf(x.fcK) || 0);
+    const sumPt = okAll ? parts.reduce((a, x) => a + ptOf(x), 0) : null;
+    const sumLo = parts.reduce((a, x) => a + (lowOf(x.fcP) || 0) + (lowOf(x.fcK) || 0), 0);
+    const sumHi = parts.reduce((a, x) => a + (highOf(x.fcP) || 0) + (highOf(x.fcK) || 0), 0);
+    const fcTP = computeForecastOf(p.months, p.table1.total, month, period);
+    const fcTK = computeForecastOf(k.months, k.table1.total, month, period);
+    const topDown = combineStatus(fcTP, fcTK) === 'partial' ? null : (pointOf(fcTP) || 0) + (pointOf(fcTK) || 0);
+    const isFc = parts.some(x => x.st === 'ok');
+    let diffTxt = '';
+    if (sumPt != null && topDown != null && isFc) {
+      const d = sumPt - topDown;
+      diffTxt = ` · ต่างจากส่วน 3 (${fmtBaht(topDown)}) ${d >= 0 ? '+' : '−'}${fmtBaht(Math.abs(d))} (${topDown ? (d / topDown * 100 >= 0 ? '+' : '') + (d / topDown * 100).toFixed(1) : '0'}%)`;
+    }
+    html = `<div class="card"><div class="label">Total (New + Retention)${isFc ? ' <span class="fc-badge">คาดการณ์</span>' : ''}</div><div class="value">${sumPt == null ? '—' : fmtBaht(sumPt)}</div>
+      <div class="fc-note">${sumPt == null ? 'ข้อมูลยังไม่พอสำหรับคาดการณ์' : (isFc ? `ช่วง ${fmtBaht(sumLo)} – ${fmtBaht(sumHi)} · New ${fmtBaht(ptOf(parts[0]))} + Retention ${fmtBaht(ptOf(parts[1]))}${diffTxt}` : 'ปิดเดือนแล้ว — ยอดจริง')}</div></div>` + html;
     document.getElementById('masterFcCards').innerHTML = html;
+    document.getElementById('masterFcLogicNote').innerHTML = `<b>ส่วน 3 กับส่วน 4 คาดการณ์คนละ logic:</b>
+      <b>ส่วน 3 (Top-down)</b> คาดการณ์ Total Revenue (WH) ทั้งก้อนโดยตรง จากรูปแบบการสะสมยอดรวมของเดือนก่อน ๆ — ใช้เป็นตัวเลขคาดการณ์รวมหลัก ·
+      <b>ส่วน 4 (Bottom-up)</b> คาดการณ์ New Revenue (ERP) และ Retention &amp; Other แยกกัน แต่ละก้อนใช้รูปแบบการสะสมของตัวเอง (ลูกค้าใหม่กับลูกค้าเดิมจ่ายเงินคนละจังหวะในเดือน) แล้วนำมาบวกเป็น Total (New + Retention) — ใช้ดูว่ายอดจะมาจากลูกค้าใหม่หรือลูกค้าเดิมเท่าไร ·
+      ทั้งสองแบบใช้สูตรเดียวกัน (ยอดสะสม ÷ สัดส่วนเฉลี่ยที่เดือนก่อน ๆ สะสมถึงวันเดียวกัน คำนวณแยก Pro / Kids แล้วรวม) ตัวเลขรวมจึงต่างกันได้เล็กน้อย · ถ้าต่างกันมาก แปลว่าสัดส่วน New / Retention เดือนนี้ไม่เหมือนเดือนก่อน ๆ`;
   }
 
   function renderMasterOverview() {
@@ -3787,10 +3870,162 @@
       : 'เดือนที่เลือกปิดข้อมูลครบแล้ว หรือยังไม่มีเดือนก่อนหน้าพอสำหรับคาดการณ์';
   }
 
+
+  // ----- Master: open pipeline (Pro + Kids) -----
+  let masterPipeChart = null;
+  function renderMasterPipeline() {
+    const cards = document.getElementById('masterPipeCards');
+    if (!cards) return;
+    const note = document.getElementById('masterPipeNote');
+    const dates = pipeDates();
+    if (!PIPE_DATA || !dates.length) {
+      cards.innerHTML = `<div class="state-msg" style="grid-column:1/-1">${PIPE_DATA === null && PIPE_PROMISE ? 'กำลังโหลดข้อมูล pipeline…' : 'ยังไม่มีข้อมูล pipeline (แท็บ Rep Pipeline)'}</div>`;
+      document.getElementById('masterPipeBars').innerHTML = '';
+      return;
+    }
+    const d = dates[dates.length - 1], dPrev = dates.length > 1 ? dates[dates.length - 2] : null;
+    const P = pipeSum('Pro', d, 'All') || pipeZero(), K = pipeSum('Kids', d, 'All') || pipeZero();
+    const T = pipeZero(); PIPE_KEYS.forEach(k => { T[k] = P[k] + K[k]; });
+    let TP = null;
+    if (dPrev) { const a = pipeSum('Pro', dPrev, 'All') || pipeZero(), b = pipeSum('Kids', dPrev, 'All') || pipeZero(); TP = pipeZero(); PIPE_KEYS.forEach(k => { TP[k] = a[k] + b[k]; }); }
+    const dlt = k => {
+      if (!TP) return '';
+      const x = T[k] - TP[k], cls = x > 0 ? 'up' : x < 0 ? 'down' : 'flat';
+      return `<span class="delta ${cls}">${x > 0 ? '▲' : x < 0 ? '▼' : '▬'} ${fmtNum(Math.abs(x))}</span> <span class="kpi-vs">vs ${pipeDateLabel(dPrev)}</span>`;
+    };
+    const tile = (k, label, color, extra) => `<div class="card pipe-tile"><div class="label"><i class="sw" style="background:${color}"></i>${label}</div><div class="value">${fmtNum(T[k])}</div>
+      <div class="sub2">Pro ${fmtNum(P[k])} · Kids ${fmtNum(K[k])}</div>${extra ? `<div class="sub2">${extra}</div>` : ''}${TP ? `<div class="sub2">${dlt(k)}</div>` : ''}</div>`;
+    cards.innerHTML =
+      tile('open_lead', 'ยังเป็น Lead (ยังไม่ Book)', PIPE_RAMP.lead, 'รวม lead ที่ยังไม่ได้แจกให้เซล') +
+      tile('open_booked', 'ผ่าน Booked แล้ว', PIPE_RAMP.book, `ค้างเกิน 30 วัน <b>${fmtNum(T.aged30)}</b> (${T.open_booked ? Math.round(T.aged30 / T.open_booked * 100) : 0}%)`) +
+      tile('open_cd', 'ผ่าน Consult Done แล้ว', PIPE_RAMP.cd, `${T.open_booked ? Math.round(T.open_cd / T.open_booked * 100) : 0}% ของที่ Booked ค้าง`) +
+      tile('open_cc', 'ผ่าน Close Call แล้ว', PIPE_RAMP.cc, `${T.open_booked ? Math.round(T.open_cc / T.open_booked * 100) : 0}% ของที่ Booked ค้าง`);
+    document.getElementById('masterPipeHint').textContent = `ข้อมูล ณ ${pipeDateLabel(d)} · ไม่ขึ้นกับเดือน/snapshot ที่เลือก`;
+    const row = (name, v) => `<div class="pipe-row"><div class="pipe-name">${name}</div>${pipeSegBarHtml(v)}<div class="pipe-tot"><b>${fmtNum(v.open_booked)}</b> ค้าง</div></div>`;
+    const statusRow = (name, v) => `<tr><td>${name}</td>${PIPE_STATUS.map(s => `<td>${fmtNum(v[s[0]])}</td>`).join('')}<td><b>${fmtNum(v.open_booked)}</b></td></tr>`;
+    document.getElementById('masterPipeBars').innerHTML =
+      `<div class="reps-rank-legend">${pipeLegendHtml(false)}</div>` + row('Globish Pro', P) + row('Globish Kids', K) +
+      `<details class="reps-details"><summary>สถานะ opportunity ใน ERP (Booking / Consulting / Closing / Follow Up / Rebooking)</summary>
+        <div class="reps-table-wrap"><table class="detail-table"><thead><tr><th></th>${PIPE_STATUS.map(s => `<th>${s[1]}</th>`).join('')}<th>รวม</th></tr></thead><tbody>${statusRow('Globish Pro', P)}${statusRow('Globish Kids', K)}${statusRow('รวม', T)}</tbody></table></div></details>`;
+    // trend (needs >= 2 days of history)
+    const wrap = document.getElementById('masterPipeTrendWrap');
+    if (masterPipeChart) { masterPipeChart.destroy(); masterPipeChart = null; }
+    if (dates.length < 2) {
+      wrap.style.display = 'none';
+      note.textContent = `เริ่มเก็บประวัติ pipeline วันที่ ${pipeDateLabel(dates[0])} — กราฟแนวโน้มรายวันจะแสดงเมื่อมีข้อมูลตั้งแต่ 2 วันขึ้นไป`;
+      return;
+    }
+    wrap.style.display = '';
+    const ds = dates.slice(-60);
+    const series = [['open_booked', 'ผ่าน Booked แล้ว', PIPE_RAMP.book], ['open_cd', 'ผ่าน Consult Done แล้ว', PIPE_RAMP.cd], ['open_cc', 'ผ่าน Close Call แล้ว', PIPE_RAMP.cc]];
+    const val = (dd, k) => ((pipeSum('Pro', dd, 'All') || pipeZero())[k] + (pipeSum('Kids', dd, 'All') || pipeZero())[k]);
+    masterPipeChart = new Chart(document.getElementById('chartMasterPipeTrend'), {
+      type: 'line',
+      data: { labels: ds.map(pipeDateLabel), datasets: series.map(s => ({ label: s[1], data: ds.map(dd => val(dd, s[0])), borderColor: s[2], backgroundColor: s[2], borderWidth: 2, pointRadius: 3, tension: 0.25 })) },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
+        scales: { y: { beginAtZero: true, grid: { color: '#eef0f5' } }, x: { grid: { display: false } } } }
+    });
+    note.textContent = 'แนวโน้มจำนวนลูกค้าที่ยังค้างใน pipeline (Pro + Kids) รายวัน';
+  }
+
   function renderMasterAll() {
     renderMasterCards();
+    renderMasterPipeline();
     renderMasterTotalFc();
     renderMasterForecast();
+  }
+
+  // ---------- Open pipeline (not Won / not Lost), per rep — from "Rep Pipeline" ----------
+  // One set of rows per as_of_date (engine keeps history), brand × rep × pool.
+  // open_* = cumulative "past stage" counts; ex_* = exclusive split of open
+  // bookings (book only / consult done / close call done); st_* = ERP
+  // opportunity status; aged30 = open bookings older than 30 days.
+  const PIPE_SHEET_GID = '752388785';
+  const PIPE_SHEET_NAME = 'Rep Pipeline';
+  const PIPE_KEYS = ['open_lead', 'open_booked', 'open_cd', 'open_cc', 'ex_book', 'ex_cd', 'ex_cc',
+    'st_booking', 'st_consulting', 'st_closing', 'st_followup', 'st_rebooking', 'st_other', 'aged30'];
+  // ordinal ramp (one hue, light -> dark = earlier -> later stage); validated --ordinal
+  const PIPE_RAMP = { lead: '#a5b0f8', book: '#7b80ef', cd: '#5145e0', cc: '#2e2a7a' };
+  const PIPE_SEGS = [
+    { key: 'ex_cc', label: 'Close Call แล้ว', color: PIPE_RAMP.cc, text: '#fff' },
+    { key: 'ex_cd', label: 'Consult Done แล้ว (ยังไม่ Close Call)', color: PIPE_RAMP.cd, text: '#fff' },
+    { key: 'ex_book', label: 'Booked (ยังไม่ Consult)', color: PIPE_RAMP.book, text: '#fff' }
+  ];
+  const PIPE_STATUS = [['st_booking', 'Booking'], ['st_consulting', 'Consulting'], ['st_closing', 'Closing'], ['st_followup', 'Follow Up'], ['st_rebooking', 'Rebooking'], ['st_other', 'อื่น ๆ']];
+  let PIPE_DATA = null, PIPE_PROMISE = null;
+  async function fetchPipeCsv() {
+    const exportUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${PIPE_SHEET_GID}&cb=${Date.now()}`;
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PIPE_SHEET_NAME)}&cb=${Date.now()}`;
+    let resp;
+    try {
+      resp = await fetch(exportUrl, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('export HTTP ' + resp.status);
+    } catch (e0) {
+      await new Promise(res => setTimeout(res, 800));
+      resp = await fetch(gvizUrl, { cache: 'no-store' });
+    }
+    if (!resp.ok) throw new Error(`ดึงข้อมูล Rep Pipeline ไม่สำเร็จ (HTTP ${resp.status})`);
+    return resp.text();
+  }
+  function parsePipeCSV(text) {
+    const rows = parseCSV(text);
+    const head = (rows[0] || []).map(h => (h || '').trim().toLowerCase());
+    const ix = k => head.indexOf(k);
+    if (ix('as_of_date') < 0 || ix('open_booked') < 0) throw new Error('แท็บ Rep Pipeline โครงสร้างไม่ตรง');
+    const out = {};
+    rows.slice(1).forEach(r => {
+      const date = (r[ix('as_of_date')] || '').trim(), brand = (r[ix('brand')] || '').trim();
+      const rep = (r[ix('rep')] || '').trim(), pool = (r[ix('pool')] || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !brand || !rep) return;
+      const B = out[brand] = out[brand] || { dates: new Set(), data: {} };
+      B.dates.add(date);
+      const v = {};
+      PIPE_KEYS.forEach(k => { const n = parseNumber(r[ix(k)]); v[k] = typeof n === 'number' ? n : 0; });
+      ((B.data[date] = B.data[date] || {})[rep] = B.data[date][rep] || {})[pool] = v;
+    });
+    Object.values(out).forEach(B => { B.dates = [...B.dates].sort(); });
+    return out;
+  }
+  function loadPipeData(force) {
+    if (!PIPE_PROMISE || force) {
+      PIPE_PROMISE = fetchPipeCsv().then(parsePipeCSV).then(d => { PIPE_DATA = d; return d; }).catch(e => { PIPE_DATA = null; PIPE_PROMISE = null; throw e; });
+    }
+    return PIPE_PROMISE;
+  }
+  function pipeZero() { const z = {}; PIPE_KEYS.forEach(k => { z[k] = 0; }); return z; }
+  // sum over reps (filter fn optional) for one brand/date/pool
+  function pipeSum(brand, date, pool, repFilter) {
+    const s = pipeZero();
+    const B = PIPE_DATA && PIPE_DATA[brand];
+    const cell = B && B.data[date];
+    if (!cell) return null;
+    Object.keys(cell).forEach(rep => { if (repFilter && !repFilter(rep)) return; const v = cell[rep][pool]; if (v) PIPE_KEYS.forEach(k => { s[k] += v[k]; }); });
+    return s;
+  }
+  function pipeDates() {
+    if (!PIPE_DATA) return [];
+    return [...new Set(Object.values(PIPE_DATA).flatMap(B => B.dates))].sort();
+  }
+  function pipeDateLabel(d) {
+    if (!d) return '—';
+    const [y, m, dd] = d.split('-');
+    return `${Number(dd)} ${MONTH_LABEL[m]} ${y.slice(2)}`;
+  }
+  // a tall segmented bar (HTML): blocks sized by share of total, count printed where it fits
+  function pipeSegBarHtml(v, opts) {
+    const total = PIPE_SEGS.reduce((a, s) => a + (v[s.key] || 0), 0);
+    if (!total) return `<div class="pipe-seg empty">ไม่มีลูกค้าที่ Booked แล้วค้างอยู่</div>`;
+    return `<div class="pipe-seg${opts && opts.thin ? ' thin' : ''}">` + PIPE_SEGS.map(s => {
+      const n = v[s.key] || 0; if (!n) return '';
+      const pct = n / total * 100;
+      return `<div class="pipe-blk" style="flex:${n} 1 0;background:${s.color};color:${s.text}" title="${s.label}: ${fmtNum(n)} (${pct.toFixed(0)}%)">${opts && opts.thin ? '' : `<span>${pct >= 9 ? fmtNum(n) : ''}</span>`}</div>`;
+    }).join('') + '</div>';
+  }
+  function pipeLegendHtml(withLead) {
+    // same order as the bars (most advanced stage first, at the baseline)
+    const items = PIPE_SEGS.map(s => ({ color: s.color, label: s.label })).concat(withLead ? [{ color: PIPE_RAMP.lead, label: 'ยังเป็น Lead (ยังไม่ Book)' }] : []);
+    return items.map(it => `<span><i style="background:${it.color}"></i>${it.label}</span>`).join('');
   }
 
   // ---------- Sales Performance (per rep, snapshot style) ----------
@@ -3852,72 +4087,126 @@
   }
 
   const REP_METRICS = [
-    { key: 'lead', label: '#Lead', kind: 'count', wd: true, color: '#4f46e5' },
-    { key: 'book', label: '#Booked', kind: 'count', wd: true, color: '#06b6d4' },
-    { key: 'cd', label: '#Consult Done', kind: 'count', wd: true, color: '#0ea5e9' },
-    { key: 'cc', label: '#Close Call', kind: 'count', wd: true, color: '#f59e0b' },
-    { key: 'won', label: '#Won', kind: 'count', wd: true, color: '#16a34a' },
-    { key: 'cvrAll', label: 'CVR All', kind: 'percent', color: '#4f46e5' },
-    { key: 'cvrInIn', label: 'CVR In-In', kind: 'percent', color: '#f59e0b' },
-    { key: 'bks', label: 'BKS', kind: 'currency', color: '#0891b2' },
-    { key: 'revenue', label: 'Revenue (ERP)', kind: 'currency', wd: true, color: '#be185d' }
+    { key: 'lead', label: '#Lead', short: 'Lead', kind: 'count', wd: true },
+    { key: 'book', label: '#Booked', short: 'Booked', kind: 'count', wd: true },
+    { key: 'cd', label: '#Consult Done', short: 'Consult Done', kind: 'count', wd: true },
+    { key: 'cc', label: '#Close Call', short: 'Close Call', kind: 'count', wd: true },
+    { key: 'won', label: '#Won', short: 'Won', kind: 'count', wd: true },
+    { key: 'cvrAll', label: 'CVR All', short: 'CVR All', kind: 'percent' },
+    { key: 'cvrInIn', label: 'CVR In-In', short: 'CVR In-In', kind: 'percent' },
+    { key: 'bks', label: 'BKS', short: 'BKS', kind: 'currency' },
+    { key: 'revenue', label: 'Revenue (ERP)', short: 'Revenue ERP', kind: 'currency', wd: true }
   ];
+  const WH_METRIC = { key: 'whRevenue', label: 'Revenue (WH)', short: 'Revenue WH', kind: 'currency', wd: true };
   const RATE_DEF = {
     cvrAll: v => v.lead ? v.won / v.lead * 100 : null,
     cvrInIn: v => v.lead ? v.inin / v.lead * 100 : null,
     bks: v => v.won ? v.revenue / v.won : null
   };
+  const FUNNEL_KEYS = ['lead', 'book', 'cd', 'cc', 'won'];
   const POOL_LABEL = { All: 'ทั้งหมด', Hot: 'Hot Lead', Cold: 'Cold Lead' };
-  const POOL_COLOR = { All: '#4f46e5', Hot: '#f97316', Cold: '#0ea5e9' };
-  const EXTRA_COLORS = ['#8b5cf6', '#14b8a6', '#ef4444', '#84cc16', '#d946ef', '#0f766e', '#a16207', '#64748b'];
+  const VIZ = { hot: '#eb6834', cold: '#2a78d6', accent: '#4f46e5', accentSoft: 'rgba(79,70,229,0.22)', gray: '#cfd3de', avg: '#52514e', grid: '#eef0f5', text: '#1c2033', muted: '#6b7185' };
+  const EXTRA_COLORS = ['#6250d6', '#1baf7a', '#e34948', '#008300', '#e87ba4', '#eda100'];
   const fmtKind = (kind) => kind === 'percent' ? fmtPct : kind === 'currency' ? fmtBaht : fmtNum;
   const fmt1 = n => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const fmtCompact = n => n == null ? '—' : Math.abs(n) >= 1e6 ? '฿' + (n / 1e6).toFixed(2) + 'M' : Math.abs(n) >= 1e3 ? '฿' + Math.round(n / 1e3) + 'K' : fmtBaht(n);
+  const axisTick = (kind) => v => kind === 'percent' ? v + '%' : kind === 'currency' ? (Math.abs(v) >= 1e6 ? (v / 1e6) + 'M' : Math.abs(v) >= 1e3 ? (v / 1e3) + 'K' : v) : v;
+
+  // value label at the tip of each horizontal bar (text tokens, never series color)
+  const tipLabelPlugin = {
+    id: 'tipLabel',
+    afterDatasetsDraw(chart, args, opts) {
+      if (!opts || !opts.format) return;
+      const { ctx } = chart;
+      const dsi = opts.datasetIndex != null ? opts.datasetIndex : chart.data.datasets.length - 1;
+      chart.data.datasets.forEach((ds, i) => {
+        if (opts.onlyLast && i !== dsi) return;
+        const meta = chart.getDatasetMeta(i);
+        if (meta.hidden) return;
+        meta.data.forEach((bar, j) => {
+          const txt = opts.format(j, i);
+          if (txt == null || txt === '') return;
+          ctx.save();
+          ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", sans-serif';
+          ctx.fillStyle = VIZ.text; ctx.textBaseline = 'middle';
+          ctx.fillText(txt, bar.x + 6, bar.y);
+          ctx.restore();
+        });
+      });
+    }
+  };
+  // solid hairline reference (team average) on a horizontal bar chart
+  const avgLinePlugin = {
+    id: 'avgLine',
+    afterDatasetsDraw(chart, args, opts) {
+      if (!opts || opts.value == null) return;
+      const { ctx, chartArea, scales } = chart;
+      const x = scales.x.getPixelForValue(opts.value);
+      if (x < chartArea.left || x > chartArea.right) return;
+      ctx.save();
+      ctx.strokeStyle = VIZ.avg; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x, chartArea.top - 4); ctx.lineTo(x, chartArea.bottom); ctx.stroke();
+      ctx.font = '600 10px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", sans-serif';
+      const t = opts.label; const w = ctx.measureText(t).width;
+      const tx = Math.min(Math.max(x - w / 2, chartArea.left), chartArea.right - w);
+      ctx.fillStyle = VIZ.avg; ctx.textBaseline = 'bottom';
+      ctx.fillText(t, tx, chartArea.top - 6);
+      ctx.restore();
+    }
+  };
 
   function createRepsApp() {
     let RS = null, MPF = null;
-    let brand = 'Pro', pool = 'All', fcMethod = 'snap', trendKey = 'lead', trendMode = 'total', selRep = null;
+    let brand = 'Pro', pool = 'All', fcMethod = 'snap', selRep = null;
+    let rankKey = 'revenue', rankMode = 'total', trendKey = 'lead', trendMode = 'total';
     let charts = {};
     const monthSel = document.getElementById('repsMonthSel');
     const periodSel = document.getElementById('repsPeriodSel');
     const brandApp = () => brand === 'Pro' ? proApp : kidsApp;
+    const brandName = () => brand === 'Pro' ? 'Globish Pro' : 'Globish Kids';
     const B = () => RS && RS[brand];
     const months = () => (B() ? B().months : []);
     const zero = () => ({ lead: 0, book: 0, cd: 0, cc: 0, won: 0, inin: 0, revenue: 0 });
+    const M = key => key === 'whRevenue' ? WH_METRIC : REP_METRICS.find(x => x.key === key);
     function destroy(k) { if (charts[k]) { charts[k].destroy(); delete charts[k]; } }
     function colorOf(rep) {
-      if (REP_COLORS[rep]) return REP_COLORS[rep];
-      const all = [...(B() ? B().reps : [])].sort();
+      if (REP_COLORS[rep] && rep !== 'Others') return REP_COLORS[rep];
+      const all = [...(B() ? B().reps : [])].filter(r => !REP_COLORS[r]).sort();
       return EXTRA_COLORS[Math.max(0, all.indexOf(rep)) % EXTRA_COLORS.length];
     }
 
-    // raw counts for (rep, pool) at month/period — null = snapshot not reached
+    // ----- data access -----
     function baseAt(rep, pl, month, period) {
       const b = B();
       if (!b || !b.keys[month + '|' + period]) return null;
       const rec = (b.data[month + '|' + period] || {})[rep];
       return (rec && rec[pl]) || zero();
     }
-    function teamAt(pl, month, period) {
+    function sumOf(reps, pl, month, period) {
       const b = B();
       if (!b || !b.keys[month + '|' + period]) return null;
-      const s = zero();
-      Object.values(b.data[month + '|' + period] || {}).forEach(rec => { const v = rec[pl]; if (v) REP_BASE.forEach(m => { s[m] += v[m]; }); });
+      const s = zero(), cell = b.data[month + '|' + period] || {};
+      reps.forEach(r => { const v = cell[r] && cell[r][pl]; if (v) REP_BASE.forEach(m => { s[m] += v[m]; }); });
       return s;
     }
+    function teamAt(pl, month, period) {
+      const b = B();
+      return sumOf(Object.keys((b && b.data[month + '|' + period]) || {}), pl, month, period);
+    }
     function metricOf(v, key) { if (!v) return null; return RATE_DEF[key] ? RATE_DEF[key](v) : v[key]; }
-    function valueAt(rep, pl, key, month, period) { return metricOf(rep === '__team' ? teamAt(pl, month, period) : baseAt(rep, pl, month, period), key); }
     function block(rep, pl, key) {
-      return { dataRows: PERIODS.map(p => { const values = {}; months().forEach(m => { values[m] = valueAt(rep, pl, key, m, p); }); return { period: p, values }; }) };
+      return { dataRows: PERIODS.map(p => { const values = {}; months().forEach(m => { values[m] = metricOf(baseAt(rep, pl, m, p), key); }); return { period: p, values }; }) };
     }
     function whBlock(rep) {
       const md = brandApp().getModel();
       return md && md.table1 && md.table1.reps ? md.table1.reps[rep] || null : null;
     }
+    function blockFor(rep, key) { return key === 'whRevenue' ? (pool === 'All' ? whBlock(rep) : null) : block(rep, pool, key); }
 
     // ----- working days (Manpower) -----
     function wd(rep, month, endDay, pl) {
       const days = MPF && MPF[month];
-      if (!days || !rep || rep === '__team') return null;
+      if (!days || !rep) return null;
       const r = rep.toLowerCase();
       let n = 0;
       for (let d = 1; d <= endDay; d++) {
@@ -3930,9 +4219,32 @@
     }
     function wdAt(rep, pl, month, period) { return wd(rep, month, effectiveDay(period, month), pl); }
     function perWd(v, w) { return v == null || !w ? null : v / w; }
+    // value of a metric for a rep, Total or Per WD
+    function valueFor(rep, key, mode, month, period, pl) {
+      pl = pl || pool;
+      const blk = key === 'whRevenue' ? (pl === 'All' ? whBlock(rep) : null) : null;
+      const v = key === 'whRevenue' ? (blk ? getValue(blk, period, month) : null) : metricOf(baseAt(rep, pl, month, period), key);
+      if (mode !== 'wd' || !M(key).wd) return v;
+      return perWd(v, wdAt(rep, pl, month, period));
+    }
+
+    // ----- rep lists -----
+    function periodsFor(month) { const b = B(); return b ? PERIODS.filter(p => b.keys[month + '|' + p]) : []; }
+    function repsIn(month, period) {
+      const cell = (B() && B().data[month + '|' + period]) || {};
+      return Object.keys(cell).filter(r => REP_BASE.some(m => (cell[r].All || {})[m] || (cell[r][pool] || {})[m]))
+        .sort((a, b) => ((cell[b][pool] || {}).revenue || 0) - ((cell[a][pool] || {}).revenue || 0) || ((cell[b].All || {}).lead || 0) - ((cell[a].All || {}).lead || 0));
+    }
+    // "core" reps = on the Manpower roster (have working days) or in the WH roster
+    function isCore(rep, month, period) { return wdAt(rep, 'All', month, period) != null || !!whBlock(rep); }
+    function coreReps(month, period) { return repsIn(month, period).filter(r => isCore(r, month, period)); }
+    function teamAvg(key, mode, month, period) {
+      const vals = coreReps(month, period).filter(r => mode !== 'wd' || wdAt(r, 'All', month, period) != null)
+        .map(r => valueFor(r, key, mode, month, period)).filter(v => v != null);
+      return vals.length ? average(vals) : null;
+    }
 
     // ----- selectors -----
-    function periodsFor(month) { const b = B(); return b ? PERIODS.filter(p => b.keys[month + '|' + p]) : []; }
     function populateMonths(keepMonth) {
       const ms = months().filter(m => periodsFor(m).length);
       monthSel.innerHTML = ms.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
@@ -3943,11 +4255,6 @@
       periodSel.innerHTML = ps.map(p => `<option value="${p}">${periodOptionText(p, m)}</option>`).join('');
       periodSel.value = keepPeriod && ps.includes(keepPeriod) ? keepPeriod : ps[ps.length - 1];
     }
-    function repsIn(month, period) {
-      const cell = (B() && B().data[month + '|' + period]) || {};
-      return Object.keys(cell).filter(r => REP_BASE.some(m => (cell[r].All || {})[m] || (cell[r][pool] || {})[m]))
-        .sort((a, b) => ((cell[b][pool] || {}).revenue || 0) - ((cell[a][pool] || {}).revenue || 0) || ((cell[b].All || {}).lead || 0) - ((cell[a].All || {}).lead || 0));
-    }
 
     // ----- forecast (two methods) -----
     function revBlockFor(rep) {
@@ -3956,7 +4263,7 @@
     }
     function forecastOf(rep, month, period, method) {
       const { block: blk, src } = revBlockFor(rep);
-      const ms = brandApp().getMonthsWithData ? (src === 'WH' ? brandApp().getModel().months : months()) : months();
+      const ms = src === 'WH' ? brandApp().getModel().months : months();
       if (method === 'snap') return Object.assign(computeForecastOf(ms, blk, month, period), { src, method });
       const cur = getValue(blk, period, month);
       const day = effectiveDay(period, month), dim = daysInMonthOf(month);
@@ -3966,12 +4273,7 @@
       if (!w0 || !w1) return { status: 'no-wd', currentVal: cur, src, method };
       return { status: 'ok', currentVal: cur, forecastAvg: cur / w0 * w1, wdSoFar: w0, wdMonth: w1, src, method };
     }
-    function fcText(fc) {
-      if (fc.status === 'ok' && fc.method === 'snap') return `${fmtBaht(fc.forecastAvg)} <span class="fc-badge">คาดการณ์</span>`;
-      if (fc.status === 'ok') return `${fmtBaht(fc.forecastAvg)} <span class="fc-badge">คาดการณ์</span>`;
-      if (fc.status === 'complete') return `${fmtBaht(fc.currentVal)} <span style="font-size:11px;color:var(--muted)">(ยอดจริงทั้งเดือน)</span>`;
-      return '—';
-    }
+    function fcPoint(fc) { return fc.status === 'ok' ? fc.forecastAvg : fc.status === 'complete' ? fc.currentVal : null; }
     function fcDetail(fc) {
       if (fc.status === 'ok' && fc.method === 'snap') return `ช่วง ${fmtBaht(fc.forecastLow)} – ${fmtBaht(fc.forecastHigh)} · อิง ${fc.histCount} เดือนก่อนหน้า (ณ วันที่ ${fc.day} มักได้ ${(fc.avgFrac * 100).toFixed(1)}% ของยอดทั้งเดือน)`;
       if (fc.status === 'ok') return `${fmtBaht(fc.currentVal)} ÷ ${fc.wdSoFar} WD × ${fc.wdMonth} WD ทั้งเดือน (${fmtBaht(fc.currentVal / fc.wdSoFar)}/WD)`;
@@ -3981,217 +4283,424 @@
       return 'ยังไม่มีข้อมูล';
     }
 
-    // ----- render -----
+    // ----- shared chart options -----
+    const baseScales = (kind) => ({
+      x: { beginAtZero: true, ticks: { callback: axisTick(kind), color: VIZ.muted, font: { size: 10 } }, grid: { color: VIZ.grid }, border: { display: false } },
+      y: { grid: { display: false }, ticks: { color: VIZ.text, font: { size: 12, weight: '600' } }, border: { color: VIZ.grid } }
+    });
+    function fmtVal(key, mode) {
+      const m = M(key);
+      if (mode === 'wd' && m.wd) return m.kind === 'currency' ? (v => fmtBaht(v)) : fmt1;
+      return fmtKind(m.kind);
+    }
+    function legendHtml(items) { return items.map(it => `<span><i style="background:${it.color};${it.line ? 'height:2px;border-radius:1px;' : ''}"></i>${it.label}</span>`).join(''); }
+
+    // ===== 1. rank chart =====
+    function renderRank(month, period) {
+      const m = M(rankKey);
+      const mode = rankMode === 'wd' && m.wd ? 'wd' : 'total';
+      const reps = repsIn(month, period);
+      const core = reps.filter(r => isCore(r, month, period));
+      const rest = reps.filter(r => !core.includes(r));
+      let rows = core.map(r => ({ rep: r, v: valueFor(r, rankKey, mode, month, period) }));
+      // fold the tail (lead owners outside the sales roster) into one bar — Total of additive metrics only
+      if (rest.length && mode === 'total' && rankKey !== 'whRevenue' && !RATE_DEF[rankKey]) {
+        const s = sumOf(rest, pool, month, period);
+        if (metricOf(s, rankKey)) rows.push({ rep: `อื่น ๆ (${rest.length} คน)`, v: metricOf(s, rankKey), other: true, members: rest });
+      }
+      rows = rows.filter(x => x.v != null).sort((a, b) => b.v - a.v);
+      const f = fmtVal(rankKey, mode);
+      const avg = teamAvg(rankKey, mode, month, period);
+      destroy('rank');
+      const wrap = document.getElementById('repsRankWrap');
+      wrap.style.height = Math.max(160, rows.length * 38 + 50) + 'px';
+      charts.rank = new Chart(document.getElementById('chartRepsRank'), {
+        type: 'bar',
+        data: { labels: rows.map(x => x.rep), datasets: [{ data: rows.map(x => x.v), backgroundColor: rows.map(x => x.rep === selRep ? colorOf(x.rep) : x.other ? '#e5e7ef' : VIZ.gray), borderRadius: 4, borderSkipped: 'start', maxBarThickness: 22, categoryPercentage: 0.8, barPercentage: 0.9 }] },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 70, top: 22 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => `${m.label}${mode === 'wd' ? ' ต่อ WD' : ''}: ${f(c.raw)}`, afterLabel: c => rows[c.dataIndex].other ? rows[c.dataIndex].members.join(', ') : (mode === 'wd' ? `WD ${wdAt(rows[c.dataIndex].rep, pool, month, period) || '—'} วัน` : '') } },
+            tipLabel: { format: j => f(rows[j].v) },
+            avgLine: avg == null ? {} : { value: avg, label: `เฉลี่ยทีม ${f(avg)}` }
+          },
+          scales: baseScales(mode === 'wd' && m.kind === 'count' ? 'count' : m.kind),
+          onClick: (e, els) => { if (els && els.length && !rows[els[0].index].other) { selRep = rows[els[0].index].rep; renderSelection(); } },
+          onHover: (e, els) => { if (e.native && e.native.target) e.native.target.style.cursor = els.length && !rows[els[0].index].other ? 'pointer' : 'default'; }
+        },
+        plugins: [tipLabelPlugin, avgLinePlugin]
+      });
+      document.getElementById('repsRankLegend').innerHTML = legendHtml([
+        { color: selRep ? colorOf(selRep) : VIZ.accent, label: selRep ? `${selRep} (ที่เลือก)` : 'เซลที่เลือก' },
+        { color: VIZ.gray, label: 'เซลคนอื่น' },
+        { color: VIZ.avg, label: 'ค่าเฉลี่ยทีม', line: true }
+      ]);
+      document.querySelectorAll('#repsRankModeSeg button').forEach(b => { b.disabled = !m.wd; });
+    }
+
+    // ===== table view (inside <details>) =====
     function cellHtml(v, w, kind) {
       const f = fmtKind(kind);
       return `${v == null ? '—' : f(v)}${w !== undefined ? `<span class="tot">${w == null ? '— /WD' : (kind === 'currency' ? fmtBaht(w) : fmt1(w)) + ' /WD'}</span>` : ''}`;
     }
     function renderTable(month, period) {
       const reps = repsIn(month, period);
-      if (!selRep || !reps.includes(selRep)) selRep = reps[0] || null;
       const showWH = pool === 'All';
       const head = `<tr><th>เซล</th><th>WD</th>${REP_METRICS.map(m => `<th>${m.label}</th>`).join('')}${showWH ? '<th>Revenue (WH)</th>' : ''}<th>Forecast Revenue</th></tr>`;
       const rowHtml = (rep, isTeam) => {
         const w = isTeam ? null : wdAt(rep, pool, month, period);
         const v = isTeam ? teamAt(pool, month, period) : baseAt(rep, pool, month, period);
-        const cells = REP_METRICS.map(m => `<td>${cellHtml(metricOf(v, m.key), m.wd ? (isTeam ? undefined : perWd(metricOf(v, m.key), w)) : undefined, m.kind)}</td>`).join('');
+        const cells = REP_METRICS.map(m => `<td>${cellHtml(metricOf(v, m.key), m.wd && !isTeam ? perWd(metricOf(v, m.key), w) : undefined, m.kind)}</td>`).join('');
         let whCell = '';
         if (showWH) {
           if (isTeam) whCell = `<td>${fmtBaht(getValue(brandApp().getModel().table1.total, period, month))}</td>`;
           else { const wb = whBlock(rep); const wv = wb ? getValue(wb, period, month) : null; whCell = `<td>${cellHtml(wb ? wv : null, wb ? perWd(wv, w) : undefined, 'currency')}</td>`; }
         }
         const fc = isTeam ? null : forecastOf(rep, month, period, fcMethod);
-        const fcCell = isTeam ? '<td></td>' : `<td title="${fc ? fcDetail(fc).replace(/"/g, '') : ''}">${fc ? fcText(fc) : '—'}${fc && fc.src === 'ERP' && fc.status !== 'no-current' ? '<span class="tot">จาก ERP</span>' : ''}</td>`;
+        const fcCell = isTeam ? '<td></td>' : `<td>${fc && fcPoint(fc) != null ? fmtBaht(fcPoint(fc)) : '—'}${fc && fc.src === 'ERP' && fcPoint(fc) != null ? '<span class="tot">จาก ERP</span>' : ''}</td>`;
         const name = isTeam ? '<b>รวมทีม</b>' : `<span class="rep-dot" style="background:${colorOf(rep)}"></span>${rep}`;
         return `<tr class="${isTeam ? 'team-row' : 'rep-row'}${rep === selRep ? ' current' : ''}" data-rep="${isTeam ? '' : rep}"><td>${name}</td><td>${isTeam ? '' : (w == null ? '—' : w)}</td>${cells}${whCell}${fcCell}</tr>`;
       };
       const tbl = document.getElementById('repsTable');
       tbl.innerHTML = `<thead>${head}</thead><tbody>${reps.map(r => rowHtml(r, false)).join('')}${rowHtml('__team', true)}</tbody>`;
-      tbl.querySelectorAll('tr.rep-row').forEach(tr => tr.addEventListener('click', () => { selRep = tr.dataset.rep; renderDetail(); highlightRow(); }));
-      document.getElementById('repsTableHint').textContent = `${brand === 'Pro' ? 'Globish Pro' : 'Globish Kids'} · ${POOL_LABEL[pool]} · ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}${isPartialSnapshot(period, month) ? ' (ข้อมูลถึงวันที่ ' + effectiveDay(period, month) + ')' : ''}`;
+      tbl.querySelectorAll('tr.rep-row').forEach(tr => tr.addEventListener('click', () => { selRep = tr.dataset.rep; renderSelection(); }));
     }
-    function highlightRow() {
-      document.querySelectorAll('#repsTable tr.rep-row').forEach(tr => tr.classList.toggle('current', tr.dataset.rep === selRep));
-      document.querySelectorAll('#repsChips .rep-chip').forEach(ch => ch.classList.toggle('active', ch.dataset.rep === selRep));
-    }
+
+    // ===== 2. one rep =====
     function renderChips(month, period) {
-      const reps = repsIn(month, period);
+      const reps = coreReps(month, period);
       const el = document.getElementById('repsChips');
-      el.innerHTML = reps.map(r => `<button class="rep-chip reps-chip" data-rep="${r}" style="--c:${colorOf(r)}">${r}</button>`).join('');
-      el.querySelectorAll('.rep-chip').forEach(ch => ch.addEventListener('click', () => { selRep = ch.dataset.rep; renderDetail(); highlightRow(); }));
+      el.innerHTML = reps.map(r => `<button class="rep-chip reps-chip${r === selRep ? ' active' : ''}" data-rep="${r}" style="--c:${colorOf(r)}"><i style="background:${colorOf(r)}"></i>${r}</button>`).join('');
+      el.querySelectorAll('.rep-chip').forEach(ch => ch.addEventListener('click', () => { selRep = ch.dataset.rep; renderSelection(); }));
     }
     function prevMonthOf(m) { const ms = months(), i = ms.indexOf(m); return i > 0 ? ms[i - 1] : null; }
-    function deltaVsPrev(blk, key, kind, month, period) {
+    function deltaHtml(blk, isRate, kind, month, period) {
       const pm = prevMonthOf(month);
-      if (!pm) return '';
+      if (!pm || !blk) return '';
       const cur = getValue(blk, period, month);
-      const prev = RATE_DEF[key] ? getValue(blk, period, pm) : sameDayValue(blk, pm, period, month);
+      const prev = isRate ? getValue(blk, period, pm) : sameDayValue(blk, pm, period, month);
       if (cur == null || prev == null) return '';
       const diff = cur - prev, cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat', arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
-      const pct = prev ? ` (${diff >= 0 ? '+' : ''}${(diff / Math.abs(prev) * 100).toFixed(1)}%)` : '';
-      const val = kind === 'percent' ? Math.abs(diff).toFixed(2) + 'pp' : fmtKind(kind)(Math.abs(diff));
-      return `<span class="delta ${cls}">${arrow} ${val}${kind === 'percent' ? '' : pct}</span> <span style="color:var(--muted)">vs ${monthLabel(pm)}</span>`;
+      const val = kind === 'percent' ? Math.abs(diff).toFixed(2) + 'pp' : (prev ? `${diff >= 0 ? '+' : '−'}${Math.abs(diff / prev * 100).toFixed(0)}%` : fmtKind(kind)(Math.abs(diff)));
+      return `<span class="delta ${cls}">${arrow} ${val}</span> <span class="kpi-vs">vs ${monthLabel(pm)}${!isRate && isPartialSnapshot(period, month) ? ' วันเดียวกัน' : ''}</span>`;
     }
     function openRepMetric(key) {
+      const m = M(key);
       const isWH = key === 'whRevenue';
-      const m = isWH ? { label: 'Revenue (WH)', kind: 'currency', color: '#4f46e5' } : REP_METRICS.find(x => x.key === key);
-      const blk = isWH ? whBlock(selRep) : block(selRep, pool, key);
       openSnapshotModal({
-        title: `${selRep} — ${m.label}${isWH ? '' : ' · ' + POOL_LABEL[pool]} (${brand === 'Pro' ? 'Globish Pro' : 'Globish Kids'})`,
-        block: blk, months: isWH ? brandApp().getModel().months.filter(mo => months().includes(mo)) : months(), fmt: fmtKind(m.kind), color: m.color, kind: m.kind,
+        title: `${selRep} — ${m.label}${isWH ? '' : ' · ' + POOL_LABEL[pool]} (${brandName()})`,
+        block: isWH ? whBlock(selRep) : block(selRep, pool, key),
+        months: isWH ? brandApp().getModel().months.filter(mo => months().includes(mo)) : months(),
+        fmt: fmtKind(m.kind), color: colorOf(selRep), kind: m.kind,
         onJump: (mo) => { monthSel.value = mo; populatePeriods(PERIODS[PERIODS.length - 1]); renderAll(); }
       });
     }
-    function renderDetail() {
-      const month = monthSel.value, period = periodSel.value;
+    function renderKpis(month, period) {
       const cards = document.getElementById('repsCards');
-      if (!selRep) { cards.innerHTML = '<div class="state-msg">ไม่มีข้อมูลเซลในช่วงนี้</div>'; return; }
       const w = wdAt(selRep, pool, month, period);
-      let html = `<div class="card"><div class="label">วันทำงาน (WD) — ${POOL_LABEL[pool]}</div><div class="value">${w == null ? '—' : w}</div><div class="sub2">ถึงวันที่ ${effectiveDay(period, month)} ตามชีท Manpower</div></div>`;
-      REP_METRICS.forEach(m => {
-        const blk = block(selRep, pool, m.key);
-        const v = getValue(blk, period, month);
-        html += `<div class="card rep-card" data-key="${m.key}" style="cursor:pointer;"><div class="label">${m.label}</div><div class="value">${v == null ? '—' : fmtKind(m.kind)(v)}</div>
-          ${m.wd ? `<div class="sub2">ต่อ WD: <b>${m.kind === 'currency' ? (perWd(v, w) == null ? '—' : fmtBaht(perWd(v, w))) : fmt1(perWd(v, w))}</b></div>` : ''}
-          <div class="sub2">${deltaVsPrev(blk, m.key, m.kind, month, period)}</div></div>`;
-      });
-      const wb = pool === 'All' ? whBlock(selRep) : null;
-      if (wb) {
-        const v = getValue(wb, period, month);
-        html += `<div class="card rep-card" data-key="whRevenue" style="cursor:pointer;"><div class="label">Revenue (WH)</div><div class="value">${fmtBaht(v)}</div><div class="sub2">ต่อ WD: <b>${perWd(v, w) == null ? '—' : fmtBaht(perWd(v, w))}</b></div><div class="sub2">${deltaVsPrev(wb, 'whRevenue', 'currency', month, period)}</div></div>`;
-      }
+      const revKey = pool === 'All' && whBlock(selRep) ? 'whRevenue' : 'revenue';
+      const fc = forecastOf(selRep, month, period, fcMethod);
+      const tile = (key, label, value, sub, delta, extraCls) => `<div class="card kpi${key ? ' kpi-click' : ''}${extraCls || ''}" ${key ? `data-key="${key}"` : ''}><div class="label">${label}</div><div class="value">${value}</div>${sub ? `<div class="sub2">${sub}</div>` : ''}${delta ? `<div class="sub2">${delta}</div>` : ''}</div>`;
+      const rv = valueFor(selRep, revKey, 'total', month, period);
+      const lead = valueFor(selRep, 'lead', 'total', month, period);
+      const won = valueFor(selRep, 'won', 'total', month, period);
+      const cvr = valueFor(selRep, 'cvrAll', 'total', month, period);
+      const bks = valueFor(selRep, 'bks', 'total', month, period);
+      const avgCvr = teamAvg('cvrAll', 'total', month, period), avgBks = teamAvg('bks', 'total', month, period), avgLeadWd = teamAvg('lead', 'wd', month, period);
+      let html = '';
+      html += tile(revKey, revKey === 'whRevenue' ? 'Revenue (WH)' : `Revenue (ERP · ${POOL_LABEL[pool]})`, fmtBaht(rv), `ต่อ WD ${perWd(rv, w) == null ? '—' : fmtBaht(perWd(rv, w))}`, deltaHtml(blockFor(selRep, revKey), false, 'currency', month, period));
+      html += tile(null, `Forecast สิ้นเดือน <span class="fc-badge">${fcMethod === 'snap' ? 'Snapshot' : 'Run-rate'}</span>`, fcPoint(fc) == null ? '—' : fmtBaht(fcPoint(fc)), fc.status === 'ok' ? `ยอดถึงตอนนี้ ${fmtCompact(fc.currentVal)}` : fcDetail(fc), '', ' kpi-fc');
+      html += tile('won', '#Won', fmtNum(won), `ต่อ WD ${fmt1(perWd(won, w))}`, deltaHtml(block(selRep, pool, 'won'), false, 'count', month, period));
+      html += tile('cvrAll', 'CVR All', fmtPct(cvr), `เฉลี่ยทีม ${fmtPct(avgCvr)}`, deltaHtml(block(selRep, pool, 'cvrAll'), true, 'percent', month, period));
+      html += tile('bks', 'BKS (บาท/ดีล)', fmtBaht(bks), `เฉลี่ยทีม ${fmtBaht(avgBks)}`, deltaHtml(block(selRep, pool, 'bks'), true, 'currency', month, period));
+      html += tile('lead', '#Lead', fmtNum(lead), `ต่อ WD <b>${fmt1(perWd(lead, w))}</b> · เฉลี่ยทีม ${fmt1(avgLeadWd)}`, deltaHtml(block(selRep, pool, 'lead'), false, 'count', month, period));
       cards.innerHTML = partialNoteHtml(period, month) + html;
-      cards.querySelectorAll('.rep-card').forEach(el => el.addEventListener('click', () => openRepMetric(el.dataset.key)));
-      renderPoolTable(month, period);
-      renderFcBox(month, period);
-      renderTrend(month, period);
+      cards.querySelectorAll('.kpi-click').forEach(el => el.addEventListener('click', () => openRepMetric(el.dataset.key)));
+      const fcTile = cards.querySelector('.kpi-fc');
+      if (fcTile) fcTile.addEventListener('click', () => document.getElementById('repsFcTitle').scrollIntoView({ behavior: 'smooth', block: 'center' }));
     }
-    function renderPoolTable(month, period) {
-      document.getElementById('repsPoolTitle').textContent = `${selRep} — Hot Lead vs Cold Lead`;
-      const pools = ['All', 'Hot', 'Cold'];
+    function renderFunnel(month, period) {
+      const w = wdAt(selRep, pool, month, period);
+      const v = baseAt(selRep, pool, month, period) || zero();
+      const top = Math.max(v.lead, 1);
+      const c = colorOf(selRep);
+      document.getElementById('repsFunnelSub').textContent = `${POOL_LABEL[pool]} · WD ${w == null ? '—' : w} วัน`;
+      let html = '<div class="rf">';
+      FUNNEL_KEYS.forEach((k, i) => {
+        const m = M(k), val = v[k], pct = val / top * 100;
+        const conv = i > 0 && v[FUNNEL_KEYS[i - 1]] ? (val / v[FUNNEL_KEYS[i - 1]] * 100).toFixed(0) + '%' : '';
+        const avg = teamAvg(k, 'wd', month, period);
+        html += `${i > 0 ? `<div class="rf-conv">↓ <b>${conv || '—'}</b> จาก${M(FUNNEL_KEYS[i - 1]).short}</div>` : ''}
+          <div class="rf-row kpi-click" data-key="${k}">
+            <div class="rf-label">${m.short}</div>
+            <div class="rf-track"><div class="rf-fill" style="width:${Math.max(pct, val ? 1.5 : 0)}%;background:${c}"></div><span class="rf-val" style="left:calc(${Math.max(pct, 0)}% + 6px)">${fmtNum(val)}</span></div>
+            <div class="rf-wd"><b>${fmt1(perWd(val, w))}</b>/WD<span>ทีม ${fmt1(avg)}</span></div>
+          </div>`;
+      });
+      html += '</div>';
+      const el = document.getElementById('repsFunnel');
+      el.innerHTML = html;
+      el.querySelectorAll('.kpi-click').forEach(r => r.addEventListener('click', () => openRepMetric(r.dataset.key)));
+    }
+    function renderPool(month, period) {
+      const pools = ['Hot', 'Cold'];
       const wds = pools.map(pl => wdAt(selRep, pl, month, period));
-      const vs = pools.map(pl => baseAt(selRep, pl, month, period));
-      let html = `<thead><tr><th>Metric</th>${pools.map(pl => `<th style="color:${POOL_COLOR[pl]}">${POOL_LABEL[pl]}</th>`).join('')}</tr></thead><tbody>`;
-      html += `<tr><td>วันทำงาน (WD)</td>${wds.map(w => `<td>${w == null ? '—' : w}</td>`).join('')}</tr>`;
-      REP_METRICS.forEach(m => {
-        html += `<tr><td>${m.label}</td>${pools.map((pl, i) => { const v = metricOf(vs[i], m.key); return `<td>${cellHtml(v, m.wd ? perWd(v, wds[i]) : undefined, m.kind)}</td>`; }).join('')}</tr>`;
+      const vs = pools.map(pl => baseAt(selRep, pl, month, period) || zero());
+      const data = pools.map((pl, i) => FUNNEL_KEYS.map(k => perWd(vs[i][k], wds[i])));
+      destroy('pool');
+      charts.pool = new Chart(document.getElementById('chartRepsPool'), {
+        type: 'bar',
+        data: {
+          labels: FUNNEL_KEYS.map(k => M(k).short),
+          datasets: pools.map((pl, i) => ({ label: POOL_LABEL[pl], data: data[i], backgroundColor: pl === 'Hot' ? VIZ.hot : VIZ.cold, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 14, categoryPercentage: 0.78, barPercentage: 0.92 }))
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 40 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => `${c.dataset.label}: ${fmt1(c.raw)} /WD (รวม ${fmtNum(vs[c.datasetIndex][FUNNEL_KEYS[c.dataIndex]])} · WD ${wds[c.datasetIndex] || '—'})` } },
+            tipLabel: { format: (j, i) => data[i][j] == null ? '' : fmt1(data[i][j]) }
+          },
+          scales: baseScales('count')
+        },
+        plugins: [tipLabelPlugin]
       });
-      html += '</tbody>';
-      const t = document.getElementById('repsPoolTable');
-      t.innerHTML = html;
-      t.classList.add('pool-table');
+      const rows = [
+        ['วันทำงาน (WD)', i => wds[i] == null ? '—' : wds[i] + ' วัน'],
+        ['CVR All', i => fmtPct(metricOf(vs[i], 'cvrAll'))],
+        ['CVR In-In', i => fmtPct(metricOf(vs[i], 'cvrInIn'))],
+        ['BKS', i => fmtBaht(metricOf(vs[i], 'bks'))],
+        ['Revenue (ERP)', i => fmtBaht(vs[i].revenue)]
+      ];
+      document.getElementById('repsPoolTable').innerHTML = `<thead><tr><th></th><th><i class="sw" style="background:${VIZ.hot}"></i>Hot Lead</th><th><i class="sw" style="background:${VIZ.cold}"></i>Cold Lead</th></tr></thead><tbody>` +
+        rows.map(r => `<tr><td>${r[0]}</td><td>${r[1](0)}</td><td>${r[1](1)}</td></tr>`).join('') + '</tbody>';
     }
-    function renderFcBox(month, period) {
-      document.getElementById('repsFcTitle').textContent = `${selRep} — Forecast Revenue สิ้นเดือน`;
-      const a = forecastOf(selRep, month, period, 'snap'), b = forecastOf(selRep, month, period, 'wd');
-      const box = (fc, title, on) => `<div class="fc-method${on ? ' on' : ''}"><div class="label">${title}${on ? ' <span class="fc-badge">ที่เลือก</span>' : ''}</div><div class="value">${fcText(fc)}</div><div class="fc-note">${fcDetail(fc)}</div></div>`;
-      const src = a.src === 'WH' ? 'Revenue (WH)' : 'Revenue (ERP' + (pool !== 'All' ? ' · ' + POOL_LABEL[pool] : '') + ')';
-      document.getElementById('repsFcBox').innerHTML = `<div class="fc-note" style="margin:0 0 8px;">ฐานที่ใช้: <b>${src}</b> · ยอด ณ ตอนนี้ ${fmtBaht(getValue(revBlockFor(selRep).block, period, month))}</div>` +
-        box(a, 'ตามรูปแบบ Snapshot', fcMethod === 'snap') + box(b, 'Run-rate ต่อ WD', fcMethod === 'wd');
+
+    // ===== pipeline still open (not Won / Lost) =====
+    function renderPipe(month, period) {
+      const box = document.getElementById('repsPipeRep');
+      const dates = PIPE_DATA && PIPE_DATA[brand] ? PIPE_DATA[brand].dates : [];
+      destroy('pipe');
+      if (!dates.length) {
+        document.getElementById('repsPipeHint').textContent = 'ยังไม่มีข้อมูล pipeline (แท็บ Rep Pipeline)';
+        box.innerHTML = ''; document.getElementById('repsPipeWrap').style.height = '60px';
+        return;
+      }
+      const d = dates[dates.length - 1];
+      const cell = PIPE_DATA[brand].data[d] || {};
+      const get = rep => (cell[rep] && cell[rep][pool]) || pipeZero();
+      const core = coreReps(month, period).filter(r => cell[r]);
+      Object.keys(cell).forEach(r => { if (!core.includes(r) && (wdAt(r, 'All', month, period) != null || whBlock(r))) core.push(r); });
+      const rest = Object.keys(cell).filter(r => !core.includes(r));
+      const rows = core.map(r => ({ rep: r, v: get(r) }));
+      if (rest.length) {
+        const s = pipeZero(); rest.forEach(r => PIPE_KEYS.forEach(k => { s[k] += get(r)[k]; }));
+        if (s.open_lead || s.open_booked) rows.push({ rep: `อื่น ๆ (${rest.length})`, v: s, other: true, members: rest });
+      }
+      rows.sort((a, b) => (b.v.open_booked - a.v.open_booked) || (b.v.open_lead - a.v.open_lead));
+      const segs = PIPE_SEGS.concat([{ key: 'open_lead', label: 'ยังเป็น Lead (ยังไม่ Book)', color: PIPE_RAMP.lead }]);
+      document.getElementById('repsPipeWrap').style.height = Math.max(160, rows.length * 36 + 40) + 'px';
+      charts.pipe = new Chart(document.getElementById('chartRepsPipe'), {
+        type: 'bar',
+        data: {
+          labels: rows.map(x => x.rep),
+          datasets: segs.map((s, i) => ({
+            label: s.label, data: rows.map(x => x.v[s.key]),
+            backgroundColor: rows.map(x => (selRep && x.rep !== selRep && !x.other) ? s.color + '99' : s.color),
+            borderColor: '#fff', borderWidth: { right: 2 }, borderSkipped: false,
+            borderRadius: i === segs.length - 1 ? { topRight: 4, bottomRight: 4 } : 0, maxBarThickness: 22
+          }))
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 56 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { footer: items => { const x = rows[items[0].dataIndex]; return [`ผ่าน Booked แล้ว (ค้าง): ${fmtNum(x.v.open_booked)} · ค้างเกิน 30 วัน ${fmtNum(x.v.aged30)}`].concat(x.other ? [x.members.join(', ')] : []); } } },
+            tipLabel: { onlyLast: true, datasetIndex: segs.length - 1, format: j => fmtNum(rows[j].v.open_booked + rows[j].v.open_lead) }
+          },
+          scales: {
+            x: { stacked: true, beginAtZero: true, grid: { color: '#eef0f5' }, ticks: { color: '#6b7185', font: { size: 10 } }, border: { display: false } },
+            y: { stacked: true, grid: { display: false }, ticks: { color: '#1c2033', font: { size: 12, weight: '600' } } }
+          },
+          onClick: (e, els) => { if (els && els.length && !rows[els[0].index].other) { selRep = rows[els[0].index].rep; renderSelection(); } }
+        },
+        plugins: [tipLabelPlugin]
+      });
+      document.getElementById('repsPipeLegend').innerHTML = pipeLegendHtml(true);
+      document.getElementById('repsPipeHint').textContent = `${POOL_LABEL[pool]} · ข้อมูล ณ ${pipeDateLabel(d)} (สถานะปัจจุบัน ไม่ขึ้นกับเดือน/snapshot ที่เลือก)`;
+      // selected rep
+      const v = get(selRep);
+      const prevD = dates.length > 1 ? dates[dates.length - 2] : null;
+      const pv = prevD ? ((PIPE_DATA[brand].data[prevD] || {})[selRep] || {})[pool] : null;
+      const dl = k => { if (!pv) return ''; const x = v[k] - pv[k]; return ` <span class="delta ${x > 0 ? 'up' : x < 0 ? 'down' : 'flat'}">${x > 0 ? '▲' : x < 0 ? '▼' : '▬'}${fmtNum(Math.abs(x))}</span>`; };
+      const mini = (k, label, color) => `<div class="pipe-mini"><div class="label"><i class="sw" style="background:${color}"></i>${label}</div><div class="value">${fmtNum(v[k])}${dl(k)}</div></div>`;
+      document.getElementById('repsPipeRepTitle').innerHTML = `<span class="rep-dot" style="background:${colorOf(selRep)}"></span>${selRep} — ค้างอยู่ใน pipeline`;
+      box.innerHTML = `<div class="pipe-minis">${mini('open_lead', 'ยังเป็น Lead', PIPE_RAMP.lead)}${mini('open_booked', 'ผ่าน Booked', PIPE_RAMP.book)}${mini('open_cd', 'ผ่าน Consult Done', PIPE_RAMP.cd)}${mini('open_cc', 'ผ่าน Close Call', PIPE_RAMP.cc)}</div>
+        ${pipeSegBarHtml(v)}
+        <div class="fc-note" style="margin-top:8px;">ค้างเกิน 30 วัน: <b>${fmtNum(v.aged30)}</b> จาก ${fmtNum(v.open_booked)} ที่ Booked แล้ว${v.open_booked ? ` (${Math.round(v.aged30 / v.open_booked * 100)}%)` : ''}</div>
+        <table class="detail-table pool-mini"><thead><tr><th>สถานะใน ERP</th>${PIPE_STATUS.filter(s => s[0] !== 'st_other' || v.st_other).map(s => `<th>${s[1]}</th>`).join('')}</tr></thead>
+        <tbody><tr><td>จำนวน</td>${PIPE_STATUS.filter(s => s[0] !== 'st_other' || v.st_other).map(s => `<td>${fmtNum(v[s[0]])}</td>`).join('')}</tr></tbody></table>`;
     }
+
+    // ===== 3. trend: selected rep vs team average =====
     function renderTrend(month, period) {
-      const m = REP_METRICS.find(x => x.key === trendKey);
-      const ms = months();
+      const m = M(trendKey);
       const isRate = !!RATE_DEF[trendKey];
-      const datasets = ['All', 'Hot', 'Cold'].map(pl => {
-        const blk = block(selRep, pl, trendKey);
-        return {
-          label: POOL_LABEL[pl], borderColor: POOL_COLOR[pl], backgroundColor: POOL_COLOR[pl], tension: 0.3, spanGaps: true, pointRadius: 3,
-          borderWidth: pl === 'All' ? 3 : 2,
-          data: ms.map(mo => {
-            const v = isRate ? getValue(blk, period, mo) : sameDayValue(blk, mo, period, month);
-            if (trendMode !== 'wd' || isRate || !m.wd) return v;
-            const d = mo === month || !isPartialSnapshot(period, month) ? effectiveDay(period, mo) : Math.min(effectiveDay(period, month), daysInMonthOf(mo));
-            return perWd(v, wd(selRep, mo, d, pl));
-          })
-        };
+      const mode = trendMode === 'wd' && m.wd ? 'wd' : 'total';
+      const ms = months();
+      const dayFor = mo => mo === month || !isPartialSnapshot(period, month) ? effectiveDay(period, mo) : Math.min(effectiveDay(period, month), daysInMonthOf(mo));
+      const repVal = (rep, mo) => {
+        const blk = blockFor(rep, trendKey);
+        if (!blk) return null;
+        const v = isRate ? getValue(blk, period, mo) : sameDayValue(blk, mo, period, month);
+        return mode === 'wd' ? perWd(v, wd(rep, mo, dayFor(mo), pool)) : v;
+      };
+      const mine = ms.map(mo => repVal(selRep, mo));
+      const team = ms.map(mo => {
+        const reps = Object.keys((B().data[mo + '|' + period]) || {}).filter(r => wd(r, mo, dayFor(mo), 'All') != null || (mode !== 'wd' && !!whBlock(r)));
+        const vals = reps.map(r => repVal(r, mo)).filter(v => v != null);
+        return vals.length ? average(vals) : null;
       });
+      const f = fmtVal(trendKey, mode);
       destroy('trend');
-      const f = trendMode === 'wd' && m.wd && !isRate ? (v => m.kind === 'currency' ? fmtBaht(v) : fmt1(v)) : fmtKind(m.kind);
+      const c = colorOf(selRep);
       charts.trend = new Chart(document.getElementById('chartRepsTrend'), {
         type: 'line',
-        data: { labels: ms.map(mo => snapLabel(mo, period)), datasets },
+        data: {
+          labels: ms.map(mo => snapLabel(mo, period)),
+          datasets: [
+            { label: selRep, data: mine, borderColor: c, backgroundColor: c, borderWidth: 2, tension: 0.3, spanGaps: true, pointRadius: 4, pointHoverRadius: 6, pointBorderColor: '#fff', pointBorderWidth: 2 },
+            { label: 'ค่าเฉลี่ยทีม', data: team, borderColor: '#a3a8b8', backgroundColor: '#a3a8b8', borderWidth: 2, tension: 0.3, spanGaps: true, pointRadius: 0, pointHoverRadius: 4 }
+          ]
+        },
         options: {
           responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-          plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw == null ? '—' : f(c.raw)}` } } },
-          scales: { y: { beginAtZero: true, ticks: { callback: v => m.kind === 'percent' ? v + '%' : m.kind === 'currency' ? (v / 1000) + 'k' : v }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } }
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: x => `${x.dataset.label}: ${x.raw == null ? '—' : f(x.raw)}` } } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: axisTick(mode === 'wd' && m.kind === 'count' ? 'count' : m.kind), color: VIZ.muted, font: { size: 10 } }, grid: { color: VIZ.grid }, border: { display: false } },
+            x: { grid: { display: false }, ticks: { color: VIZ.muted, font: { size: 10 } } }
+          }
         }
       });
-      document.getElementById('repsTrendHint').textContent = `${selRep} · ${m.label}${trendMode === 'wd' && m.wd ? ' ต่อ WD' : ''} · ทุกเดือน ณ ${isPartialSnapshot(period, month) ? 'วันที่ ' + effectiveDay(period, month) : 'snapshot ' + period}`;
+      document.getElementById('repsTrendLegend').innerHTML = legendHtml([{ color: c, label: selRep, line: true }, { color: '#a3a8b8', label: 'ค่าเฉลี่ยทีม', line: true }]);
+      document.getElementById('repsTrendHint').textContent = `${selRep} · ${m.label}${mode === 'wd' ? ' ต่อ WD' : ''} · ${POOL_LABEL[pool]} · ทุกเดือน ณ ${isPartialSnapshot(period, month) ? 'วันที่ ' + effectiveDay(period, month) : 'snapshot ' + period}`;
       document.querySelectorAll('#repsTrendModeSeg button').forEach(b => { b.disabled = isRate || !m.wd; });
     }
+
+    // ===== 4. forecast =====
+    function renderFcBox(month, period) {
+      document.getElementById('repsFcTitle').textContent = `${selRep} — เทียบ 2 วิธี`;
+      const a = forecastOf(selRep, month, period, 'snap'), b = forecastOf(selRep, month, period, 'wd');
+      const cur = getValue(revBlockFor(selRep).block, period, month);
+      const box = (fc, title, on) => `<div class="fc-method${on ? ' on' : ''}"><div class="label">${title}${on ? ' <span class="fc-badge">ที่เลือก</span>' : ''}</div><div class="value">${fcPoint(fc) == null ? '—' : fmtBaht(fcPoint(fc))}</div><div class="fc-note">${fcDetail(fc)}</div></div>`;
+      const src = a.src === 'WH' ? 'Revenue (WH)' : 'Revenue (ERP' + (pool !== 'All' ? ' · ' + POOL_LABEL[pool] : '') + ')';
+      document.getElementById('repsFcBox').innerHTML = `<div class="fc-note" style="margin:0 0 10px;">ฐาน: <b>${src}</b> · ยอดถึงตอนนี้ <b>${fmtBaht(cur)}</b></div>` +
+        box(a, 'ตามรูปแบบ Snapshot', fcMethod === 'snap') + box(b, 'Run-rate ต่อ WD', fcMethod === 'wd');
+    }
     function renderFcChart(month, period) {
-      const reps = repsIn(month, period);
+      const reps = coreReps(month, period);
       const fcs = reps.map(r => forecastOf(r, month, period, fcMethod));
-      const cur = fcs.map(fc => fc.currentVal != null ? fc.currentVal : null);
-      const rest = fcs.map(fc => fc.status === 'ok' ? Math.max(0, fc.forecastAvg - fc.currentVal) : null);
+      const order = reps.map((r, i) => i).sort((x, y) => (fcPoint(fcs[y]) || fcs[y].currentVal || 0) - (fcPoint(fcs[x]) || fcs[x].currentVal || 0));
+      const R = order.map(i => reps[i]), F = order.map(i => fcs[i]);
+      const cur = F.map(fc => fc.currentVal != null ? fc.currentVal : null);
+      const rest = F.map(fc => fc.status === 'ok' ? Math.max(0, fc.forecastAvg - fc.currentVal) : null);
       destroy('fc');
+      document.getElementById('repsFcWrap').style.height = Math.max(160, R.length * 38 + 40) + 'px';
       charts.fc = new Chart(document.getElementById('chartRepsFc'), {
         type: 'bar',
         data: {
-          labels: reps,
+          labels: R,
           datasets: [
-            { label: 'ยอดถึงตอนนี้', data: cur, backgroundColor: reps.map(colorOf), borderRadius: 4, maxBarThickness: 26 },
-            { label: 'ส่วนที่คาดว่าจะเพิ่มถึงสิ้นเดือน', data: rest, backgroundColor: reps.map(r => colorOf(r) + '55'), borderRadius: 4, maxBarThickness: 26 }
+            { label: 'ยอดถึงตอนนี้', data: cur, backgroundColor: R.map(r => r === selRep ? colorOf(r) : VIZ.accent), borderRadius: 0, maxBarThickness: 22 },
+            { label: 'ส่วนที่คาดว่าจะเพิ่ม', data: rest, backgroundColor: R.map(r => r === selRep ? colorOf(r) + '59' : VIZ.accentSoft), borderRadius: 4, borderSkipped: 'start', maxBarThickness: 22 }
           ]
         },
         options: {
           indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 70 } },
           plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
-            tooltip: { callbacks: { label: c => { const fc = fcs[c.dataIndex]; return c.datasetIndex === 0 ? `ยอดถึงตอนนี้ (${fc.src}): ${fmtBaht(fc.currentVal)}` : [`คาดการณ์สิ้นเดือน: ${fc.status === 'ok' ? fmtBaht(fc.forecastAvg) : '—'}`, fcDetail(fc).replace(/<[^>]+>/g, '')]; } } }
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => { const fc = F[c.dataIndex]; return c.datasetIndex === 0 ? `ยอดถึงตอนนี้ (${fc.src}): ${fmtBaht(fc.currentVal)}` : `คาดการณ์สิ้นเดือน: ${fcPoint(fc) == null ? '—' : fmtBaht(fcPoint(fc))}`; }, afterBody: items => fcDetail(F[items[0].dataIndex]) } },
+            tipLabel: { onlyLast: true, datasetIndex: 1, format: j => fcPoint(F[j]) == null ? (F[j].currentVal != null ? fmtCompact(F[j].currentVal) : '') : fmtCompact(fcPoint(F[j])) }
           },
-          scales: { x: { stacked: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, y: { stacked: true, grid: { display: false } } },
-          onClick: (e, els) => { if (els && els.length) { selRep = reps[els[0].index]; renderDetail(); highlightRow(); } }
-        }
+          scales: { x: Object.assign(baseScales('currency').x, { stacked: true }), y: Object.assign(baseScales('currency').y, { stacked: true }) },
+          onClick: (e, els) => { if (els && els.length) { selRep = R[els[0].index]; renderSelection(); } }
+        },
+        plugins: [tipLabelPlugin]
       });
-      const wrap = document.getElementById('chartRepsFc').parentElement;
-      wrap.style.height = Math.max(220, reps.length * 34 + 70) + 'px';
       document.getElementById('repsFcHint').textContent = fcMethod === 'snap' ? 'วิธี: ตามรูปแบบ Snapshot' : 'วิธี: Run-rate ต่อ WD (Manpower)';
-      const done = !isPartialSnapshot(period, month) && effectiveDay(period, month) >= daysInMonthOf(month);
-      document.getElementById('repsFcNote').innerHTML = done ? 'เดือนนี้ปิดข้อมูลครบแล้ว ตัวเลขที่แสดงคือยอดจริงทั้งเดือน ไม่ใช่การคาดการณ์' : '';
-      document.getElementById('repsFcNote').style.display = done ? '' : 'none';
+      const done = effectiveDay(period, month) >= daysInMonthOf(month);
+      const note = document.getElementById('repsFcNote');
+      note.textContent = done ? 'เดือนนี้ปิดข้อมูลครบแล้ว ตัวเลขที่แสดงคือยอดจริงทั้งเดือน ไม่ใช่การคาดการณ์' : '';
+      note.style.display = done ? '' : 'none';
     }
+
     function renderNote() {
       const notes = [];
-      const md = brandApp().getModel();
       if (!MPF) notes.push('โหลดชีท Manpower ไม่ได้ จึงคำนวณ Per WD และ Run-rate ไม่ได้');
-      if (!md) notes.push('โหลดข้อมูล WH ของแบรนด์นี้ไม่ได้ จึงไม่มี Revenue (WH)');
+      if (!brandApp().getModel()) notes.push('โหลดข้อมูล WH ของแบรนด์นี้ไม่ได้ จึงไม่มี Revenue (WH)');
       const unnamed = [...(B() ? B().reps : [])].filter(r => /^[a-z0-9._-]+$/.test(r) && r.includes('.'));
-      if (unnamed.length) notes.push(`มี lead_owner ที่ยังไม่ได้ตั้งชื่อในแท็บ Rep_Map ของชีท Snapshot Engine: ${unnamed.join(', ')}`);
+      if (unnamed.length) notes.push(`มี lead_owner ที่ยังไม่ได้ตั้งชื่อในแท็บ Rep_Map ของชีท Snapshot Engine (${unnamed.length} คน) — ในกราฟจะรวมเป็น “อื่น ๆ” ถ้าไม่มีวันทำงานในชีท Manpower`);
       document.getElementById('repsNote').innerHTML = notes.map(n => `<div class="wd-warn" style="margin-bottom:10px;">${n}</div>`).join('');
+    }
+    // re-render everything that depends on the selected rep
+    function renderSelection() {
+      const month = monthSel.value, period = periodSel.value;
+      if (!selRep) return;
+      document.getElementById('repsDetailTitle').innerHTML = `<span class="rep-dot" style="background:${colorOf(selRep)};width:10px;height:10px;"></span>${selRep}`;
+      renderChips(month, period);
+      renderRank(month, period);
+      renderKpis(month, period);
+      renderFunnel(month, period);
+      renderPool(month, period);
+      renderPipe(month, period);
+      renderTrend(month, period);
+      renderFcBox(month, period);
+      renderFcChart(month, period);
+      document.querySelectorAll('#repsTable tr.rep-row').forEach(tr => tr.classList.toggle('current', tr.dataset.rep === selRep));
     }
     function renderAll() {
       if (!B()) {
         document.getElementById('repsContent').style.display = 'none';
         const msg = document.getElementById('repsStateMsg');
         msg.style.display = 'block'; msg.classList.add('err');
-        msg.textContent = `ยังไม่มีข้อมูลรายเซลของ ${brand === 'Pro' ? 'Globish Pro' : 'Globish Kids'} ในแท็บ Rep Snapshot`;
+        msg.textContent = `ยังไม่มีข้อมูลรายเซลของ ${brandName()} ในแท็บ Rep Snapshot`;
         return;
       }
       document.getElementById('repsStateMsg').style.display = 'none';
       document.getElementById('repsContent').style.display = 'block';
       const month = monthSel.value, period = periodSel.value;
+      const core = coreReps(month, period), all = repsIn(month, period);
+      if (!selRep || !all.includes(selRep)) selRep = core[0] || all[0] || null;
+      document.getElementById('repsScope').textContent = `${brandName()} · ${POOL_LABEL[pool]} · ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}${isPartialSnapshot(period, month) ? ' (ข้อมูลถึงวันที่ ' + effectiveDay(period, month) + ')' : ''}`;
+      // revenue WH only exists for the All pool
+      const metricBtns = REP_METRICS.concat(pool === 'All' ? [WH_METRIC] : []);
+      if (rankKey === 'whRevenue' && pool !== 'All') rankKey = 'revenue';
+      document.getElementById('repsRankMetricSeg').innerHTML = metricBtns.map(m => `<button data-v="${m.key}"${m.key === rankKey ? ' class="active"' : ''}>${m.short}</button>`).join('');
+      bindSeg('repsRankMetricSeg', v => { rankKey = v; renderRank(monthSel.value, periodSel.value); });
       renderNote();
       renderTable(month, period);
-      renderChips(month, period);
-      highlightRow();
-      renderDetail();
-      renderFcChart(month, period);
+      if (selRep) renderSelection();
     }
 
-    function seg(id, onPick) {
+    function bindSeg(id, onPick) {
       document.querySelectorAll('#' + id + ' button').forEach(b => b.addEventListener('click', () => {
+        if (b.disabled) return;
         document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.toggle('active', x === b));
         onPick(b.dataset.v);
       }));
     }
-    document.getElementById('repsTrendMetricSeg').innerHTML = REP_METRICS.map(m => `<button data-v="${m.key}"${m.key === trendKey ? ' class="active"' : ''}>${m.label.replace('#', '')}</button>`).join('');
-    seg('repsBrandSeg', v => { brand = v; selRep = null; const keep = monthSel.value; populateMonths(keep); populatePeriods(periodSel.value); renderAll(); });
-    seg('repsPoolSeg', v => { pool = v; renderAll(); });
-    seg('repsFcSeg', v => { fcMethod = v; renderAll(); });
-    seg('repsTrendMetricSeg', v => { trendKey = v; renderTrend(monthSel.value, periodSel.value); });
-    seg('repsTrendModeSeg', v => { trendMode = v; renderTrend(monthSel.value, periodSel.value); });
+    document.getElementById('repsTrendMetricSeg').innerHTML = REP_METRICS.map(m => `<button data-v="${m.key}"${m.key === trendKey ? ' class="active"' : ''}>${m.short}</button>`).join('');
+    bindSeg('repsBrandSeg', v => { brand = v; selRep = null; const keep = monthSel.value; populateMonths(keep); populatePeriods(periodSel.value); renderAll(); });
+    bindSeg('repsPoolSeg', v => { pool = v; renderAll(); });
+    bindSeg('repsFcSeg', v => { fcMethod = v; renderAll(); });
+    bindSeg('repsRankModeSeg', v => { rankMode = v; renderRank(monthSel.value, periodSel.value); });
+    bindSeg('repsTrendMetricSeg', v => { trendKey = v; renderTrend(monthSel.value, periodSel.value); });
+    bindSeg('repsTrendModeSeg', v => { trendMode = v; renderTrend(monthSel.value, periodSel.value); });
     monthSel.addEventListener('change', () => { populatePeriods(PERIODS[PERIODS.length - 1]); renderAll(); });
     periodSel.addEventListener('change', renderAll);
     document.getElementById('repsReloadBtn').addEventListener('click', () => load());
@@ -4201,7 +4710,7 @@
       msg.style.display = 'block'; msg.classList.remove('err'); msg.textContent = 'กำลังโหลดข้อมูล…';
       document.getElementById('repsContent').style.display = 'none';
       try {
-        const [repText, mpText] = await Promise.all([fetchRepCsv(), fetchManpowerCsv().catch(() => null)]);
+        const [repText, mpText] = await Promise.all([fetchRepCsv(), fetchManpowerCsv().catch(() => null), loadPipeData().catch(() => null)]);
         RS = parseRepCSV(repText);
         MPF = mpText ? parseManpowerFull(mpText) : null;
         if (!Object.keys(RS).length) throw new Error('แท็บ Rep Snapshot ยังไม่มีข้อมูล');
@@ -4270,6 +4779,7 @@
 
   function bootApp() {
     Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => { renderMasterOverview(); return repsApp.load(); });
+    loadPipeData().then(() => renderMasterPipeline()).catch(() => renderMasterPipeline());
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
