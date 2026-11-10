@@ -328,6 +328,7 @@
   .pipe-name { font-size: 12px; font-weight: 700; }
   .pipe-tot { font-size: 11px; color: var(--muted); text-align: right; }
   .pipe-tot b { font-size: 14px; color: var(--text); }
+  .pipe-divider { border-top: 1px solid var(--border); margin: 6px 0 2px; }
   .pipe-seg { display: flex; gap: 2px; height: 28px; border-radius: 4px; overflow: hidden; }
   .pipe-seg.thin { height: 8px; border-radius: 999px; }
   .pipe-seg.empty { display: block; height: auto; font-size: 12px; color: var(--muted); }
@@ -394,23 +395,14 @@
     <div class="section-title"><span class="n">1</span> ยอดขายจริง (Real Data) — Globish Pro + Globish Kids รวมกัน <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
     <div class="cards" id="masterCards"></div>
 
-    <div class="section-title"><span class="n">2</span> Pipeline ที่ยังค้าง (ยังไม่ Won / ยังไม่ Lost) <span class="section-hint" id="masterPipeHint"></span></div>
-    <div class="cards" id="masterPipeCards"></div>
-    <div class="chart-card">
-      <h3>ลูกค้าที่ Booked แล้วและยังเปิดอยู่ — ตอนนี้อยู่ขั้นไหน</h3>
-      <div id="masterPipeBars"></div>
-      <div class="chart-wrap short" id="masterPipeTrendWrap" style="display:none;margin-top:10px;"><canvas id="chartMasterPipeTrend"></canvas></div>
-      <div class="fc-note" id="masterPipeNote"></div>
-    </div>
-
-    <div class="section-title"><span class="n">3</span> Total Revenue Forecast — แยก Globish Pro / Globish Kids <span class="section-hint">Top-down: คาดการณ์ยอดรวม WH ทั้งก้อนโดยตรง (ตัวเลขหลัก)</span></div>
+    <div class="section-title"><span class="n">2</span> Total Revenue Forecast — แยก Globish Pro / Globish Kids <span class="section-hint">Top-down: คาดการณ์ยอดรวม WH ทั้งก้อนโดยตรง (ตัวเลขหลัก)</span></div>
     <div class="cards" id="masterTotalFcCards" style="grid-template-columns:repeat(3,1fr);"></div>
     <div class="chart-card">
       <div class="chart-wrap tall"><canvas id="chartMasterTotalFc"></canvas></div>
       <div class="fc-note" id="masterTotalFcNote"></div>
     </div>
 
-    <div class="section-title"><span class="n">4</span> คาดการณ์สิ้นเดือนแยกตามประเภทลูกค้า (New / Retention) — Globish Pro + Globish Kids รวมกัน <span class="section-hint">Bottom-up: คาดการณ์แต่ละก้อนแยกแล้วบวกกัน</span></div>
+    <div class="section-title"><span class="n">3</span> คาดการณ์สิ้นเดือนแยกตามประเภทลูกค้า (New / Retention) — Globish Pro + Globish Kids รวมกัน <span class="section-hint">Bottom-up: คาดการณ์แต่ละก้อนแยกแล้วบวกกัน</span></div>
     <div class="cards" id="masterFcCards"></div>
     <div class="fc-note" id="masterFcLogicNote" style="margin-top:10px;line-height:1.6;"></div>
 
@@ -503,7 +495,16 @@
       </div>
     </div>
 
-    <div class="section-title"><span class="n">5</span> Relative Metrics</div>
+    <div class="section-title"><span class="n">5</span> Pipeline ที่ยังค้าง (ยังไม่ Won / ยังไม่ Lost) <span class="section-hint" id="pipeHint-pro"></span></div>
+    <div class="cards" id="pipeCards-pro"></div>
+    <div class="chart-card">
+      <h3>ลูกค้าที่ Booked แล้วและยังเปิดอยู่ — ตอนนี้อยู่ขั้นไหน</h3>
+      <div id="pipeBars-pro"></div>
+      <div class="chart-wrap short" id="pipeTrendWrap-pro" style="display:none;margin-top:10px;"><canvas id="chartPipeTrend-pro"></canvas></div>
+      <div class="fc-note" id="pipeNote-pro"></div>
+    </div>
+
+    <div class="section-title"><span class="n">6</span> Relative Metrics</div>
     <div class="grid-2">
       <div class="chart-card">
         <h3>CVR All vs CVR In-In</h3>
@@ -740,7 +741,16 @@
       </div>
     </div>
 
-    <div class="section-title"><span class="n">5</span> Relative Metrics</div>
+    <div class="section-title"><span class="n">5</span> Pipeline ที่ยังค้าง (ยังไม่ Won / ยังไม่ Lost) <span class="section-hint" id="pipeHint-kids"></span></div>
+    <div class="cards" id="pipeCards-kids"></div>
+    <div class="chart-card">
+      <h3>ลูกค้าที่ Booked แล้วและยังเปิดอยู่ — ตอนนี้อยู่ขั้นไหน</h3>
+      <div id="pipeBars-kids"></div>
+      <div class="chart-wrap short" id="pipeTrendWrap-kids" style="display:none;margin-top:10px;"><canvas id="chartPipeTrend-kids"></canvas></div>
+      <div class="fc-note" id="pipeNote-kids"></div>
+    </div>
+
+    <div class="section-title"><span class="n">6</span> Relative Metrics</div>
     <div class="grid-2">
       <div class="chart-card">
         <h3>CVR All vs CVR In-In</h3>
@@ -3724,14 +3734,14 @@
     let diffTxt = '';
     if (sumPt != null && topDown != null && isFc) {
       const d = sumPt - topDown;
-      diffTxt = ` · ต่างจากส่วน 3 (${fmtBaht(topDown)}) ${d >= 0 ? '+' : '−'}${fmtBaht(Math.abs(d))} (${topDown ? (d / topDown * 100 >= 0 ? '+' : '') + (d / topDown * 100).toFixed(1) : '0'}%)`;
+      diffTxt = ` · ต่างจากส่วน 2 (${fmtBaht(topDown)}) ${d >= 0 ? '+' : '−'}${fmtBaht(Math.abs(d))} (${topDown ? (d / topDown * 100 >= 0 ? '+' : '') + (d / topDown * 100).toFixed(1) : '0'}%)`;
     }
     html = `<div class="card"><div class="label">Total (New + Retention)${isFc ? ' <span class="fc-badge">คาดการณ์</span>' : ''}</div><div class="value">${sumPt == null ? '—' : fmtBaht(sumPt)}</div>
       <div class="fc-note">${sumPt == null ? 'ข้อมูลยังไม่พอสำหรับคาดการณ์' : (isFc ? `ช่วง ${fmtBaht(sumLo)} – ${fmtBaht(sumHi)} · New ${fmtBaht(ptOf(parts[0]))} + Retention ${fmtBaht(ptOf(parts[1]))}${diffTxt}` : 'ปิดเดือนแล้ว — ยอดจริง')}</div></div>` + html;
     document.getElementById('masterFcCards').innerHTML = html;
-    document.getElementById('masterFcLogicNote').innerHTML = `<b>ส่วน 3 กับส่วน 4 คาดการณ์คนละ logic:</b>
-      <b>ส่วน 3 (Top-down)</b> คาดการณ์ Total Revenue (WH) ทั้งก้อนโดยตรง จากรูปแบบการสะสมยอดรวมของเดือนก่อน ๆ — ใช้เป็นตัวเลขคาดการณ์รวมหลัก ·
-      <b>ส่วน 4 (Bottom-up)</b> คาดการณ์ New Revenue (ERP) และ Retention &amp; Other แยกกัน แต่ละก้อนใช้รูปแบบการสะสมของตัวเอง (ลูกค้าใหม่กับลูกค้าเดิมจ่ายเงินคนละจังหวะในเดือน) แล้วนำมาบวกเป็น Total (New + Retention) — ใช้ดูว่ายอดจะมาจากลูกค้าใหม่หรือลูกค้าเดิมเท่าไร ·
+    document.getElementById('masterFcLogicNote').innerHTML = `<b>ส่วน 2 กับส่วน 3 คาดการณ์คนละ logic:</b>
+      <b>ส่วน 2 (Top-down)</b> คาดการณ์ Total Revenue (WH) ทั้งก้อนโดยตรง จากรูปแบบการสะสมยอดรวมของเดือนก่อน ๆ — ใช้เป็นตัวเลขคาดการณ์รวมหลัก ·
+      <b>ส่วน 3 (Bottom-up)</b> คาดการณ์ New Revenue (ERP) และ Retention &amp; Other แยกกัน แต่ละก้อนใช้รูปแบบการสะสมของตัวเอง (ลูกค้าใหม่กับลูกค้าเดิมจ่ายเงินคนละจังหวะในเดือน) แล้วนำมาบวกเป็น Total (New + Retention) — ใช้ดูว่ายอดจะมาจากลูกค้าใหม่หรือลูกค้าเดิมเท่าไร ·
       ทั้งสองแบบใช้สูตรเดียวกัน (ยอดสะสม ÷ สัดส่วนเฉลี่ยที่เดือนก่อน ๆ สะสมถึงวันเดียวกัน คำนวณแยก Pro / Kids แล้วรวม) ตัวเลขรวมจึงต่างกันได้เล็กน้อย · ถ้าต่างกันมาก แปลว่าสัดส่วน New / Retention เดือนนี้ไม่เหมือนเดือนก่อน ๆ`;
   }
 
@@ -3871,67 +3881,71 @@
   }
 
 
-  // ----- Master: open pipeline (Pro + Kids) -----
-  let masterPipeChart = null;
-  function renderMasterPipeline() {
-    const cards = document.getElementById('masterPipeCards');
+  // ----- Brand Overview: open pipeline (not Won / Lost) for one brand -----
+  const brandPipeCharts = {};
+  function renderBrandPipeline(brand, sfx) {
+    const cards = document.getElementById('pipeCards-' + sfx);
     if (!cards) return;
-    const note = document.getElementById('masterPipeNote');
-    const dates = pipeDates();
-    if (!PIPE_DATA || !dates.length) {
-      cards.innerHTML = `<div class="state-msg" style="grid-column:1/-1">${PIPE_DATA === null && PIPE_PROMISE ? 'กำลังโหลดข้อมูล pipeline…' : 'ยังไม่มีข้อมูล pipeline (แท็บ Rep Pipeline)'}</div>`;
-      document.getElementById('masterPipeBars').innerHTML = '';
+    const note = document.getElementById('pipeNote-' + sfx);
+    const B = PIPE_DATA && PIPE_DATA[brand];
+    const dates = B ? B.dates : [];
+    if (brandPipeCharts[sfx]) { brandPipeCharts[sfx].destroy(); delete brandPipeCharts[sfx]; }
+    if (!dates.length) {
+      cards.innerHTML = `<div class="state-msg" style="grid-column:1/-1">${PIPE_PROMISE && !PIPE_DATA ? 'กำลังโหลดข้อมูล pipeline…' : 'ยังไม่มีข้อมูล pipeline (แท็บ Rep Pipeline)'}</div>`;
+      document.getElementById('pipeBars-' + sfx).innerHTML = ''; note.textContent = '';
+      document.getElementById('pipeTrendWrap-' + sfx).style.display = 'none';
       return;
     }
     const d = dates[dates.length - 1], dPrev = dates.length > 1 ? dates[dates.length - 2] : null;
-    const P = pipeSum('Pro', d, 'All') || pipeZero(), K = pipeSum('Kids', d, 'All') || pipeZero();
-    const T = pipeZero(); PIPE_KEYS.forEach(k => { T[k] = P[k] + K[k]; });
-    let TP = null;
-    if (dPrev) { const a = pipeSum('Pro', dPrev, 'All') || pipeZero(), b = pipeSum('Kids', dPrev, 'All') || pipeZero(); TP = pipeZero(); PIPE_KEYS.forEach(k => { TP[k] = a[k] + b[k]; }); }
+    const T = pipeSum(brand, d, 'All') || pipeZero();
+    const TP = dPrev ? pipeSum(brand, dPrev, 'All') : null;
+    const H = pipeSum(brand, d, 'Hot') || pipeZero(), Cc = pipeSum(brand, d, 'Cold') || pipeZero();
     const dlt = k => {
       if (!TP) return '';
       const x = T[k] - TP[k], cls = x > 0 ? 'up' : x < 0 ? 'down' : 'flat';
       return `<span class="delta ${cls}">${x > 0 ? '▲' : x < 0 ? '▼' : '▬'} ${fmtNum(Math.abs(x))}</span> <span class="kpi-vs">vs ${pipeDateLabel(dPrev)}</span>`;
     };
     const tile = (k, label, color, extra) => `<div class="card pipe-tile"><div class="label"><i class="sw" style="background:${color}"></i>${label}</div><div class="value">${fmtNum(T[k])}</div>
-      <div class="sub2">Pro ${fmtNum(P[k])} · Kids ${fmtNum(K[k])}</div>${extra ? `<div class="sub2">${extra}</div>` : ''}${TP ? `<div class="sub2">${dlt(k)}</div>` : ''}</div>`;
+      <div class="sub2">Hot ${fmtNum(H[k])} · Cold ${fmtNum(Cc[k])}</div>${extra ? `<div class="sub2">${extra}</div>` : ''}${TP ? `<div class="sub2">${dlt(k)}</div>` : ''}</div>`;
     cards.innerHTML =
       tile('open_lead', 'ยังเป็น Lead (ยังไม่ Book)', PIPE_RAMP.lead, 'รวม lead ที่ยังไม่ได้แจกให้เซล') +
       tile('open_booked', 'ผ่าน Booked แล้ว', PIPE_RAMP.book, `ค้างเกิน 30 วัน <b>${fmtNum(T.aged30)}</b> (${T.open_booked ? Math.round(T.aged30 / T.open_booked * 100) : 0}%)`) +
       tile('open_cd', 'ผ่าน Consult Done แล้ว', PIPE_RAMP.cd, `${T.open_booked ? Math.round(T.open_cd / T.open_booked * 100) : 0}% ของที่ Booked ค้าง`) +
       tile('open_cc', 'ผ่าน Close Call แล้ว', PIPE_RAMP.cc, `${T.open_booked ? Math.round(T.open_cc / T.open_booked * 100) : 0}% ของที่ Booked ค้าง`);
-    document.getElementById('masterPipeHint').textContent = `ข้อมูล ณ ${pipeDateLabel(d)} · ไม่ขึ้นกับเดือน/snapshot ที่เลือก`;
-    const row = (name, v) => `<div class="pipe-row"><div class="pipe-name">${name}</div>${pipeSegBarHtml(v)}<div class="pipe-tot"><b>${fmtNum(v.open_booked)}</b> ค้าง</div></div>`;
+    document.getElementById('pipeHint-' + sfx).textContent = `ข้อมูล ณ ${pipeDateLabel(d)} · สถานะปัจจุบัน ไม่ขึ้นกับเดือน/snapshot ที่เลือก`;
+    // one row per rep with open bookings (largest first) + brand total
+    const cell = B.data[d] || {};
+    const reps = Object.keys(cell).map(r => ({ rep: r, v: cell[r].All || pipeZero() })).filter(x => x.v.open_booked > 0).sort((a, b) => b.v.open_booked - a.v.open_booked);
+    const maxRep = Math.max(1, ...reps.map(x => x.v.open_booked));
+    const row = (name, v, strong) => `<div class="pipe-row"><div class="pipe-name"${strong ? '' : ' style="font-weight:600"'}>${name}</div><div>${pipeSegBarHtml(v, strong ? null : { scaleMax: maxRep })}</div><div class="pipe-tot"><b>${fmtNum(v.open_booked)}</b> ค้าง${v.aged30 ? `<br>เกิน 30 วัน ${fmtNum(v.aged30)}` : ''}</div></div>`;
     const statusRow = (name, v) => `<tr><td>${name}</td>${PIPE_STATUS.map(s => `<td>${fmtNum(v[s[0]])}</td>`).join('')}<td><b>${fmtNum(v.open_booked)}</b></td></tr>`;
-    document.getElementById('masterPipeBars').innerHTML =
-      `<div class="reps-rank-legend">${pipeLegendHtml(false)}</div>` + row('Globish Pro', P) + row('Globish Kids', K) +
+    document.getElementById('pipeBars-' + sfx).innerHTML =
+      `<div class="reps-rank-legend">${pipeLegendHtml(false)}</div>` + row('รวมทั้งแบรนด์', T, true) +
+      `<div class="pipe-divider"></div>` + reps.map(x => row(x.rep, x.v)).join('') +
       `<details class="reps-details"><summary>สถานะ opportunity ใน ERP (Booking / Consulting / Closing / Follow Up / Rebooking)</summary>
-        <div class="reps-table-wrap"><table class="detail-table"><thead><tr><th></th>${PIPE_STATUS.map(s => `<th>${s[1]}</th>`).join('')}<th>รวม</th></tr></thead><tbody>${statusRow('Globish Pro', P)}${statusRow('Globish Kids', K)}${statusRow('รวม', T)}</tbody></table></div></details>`;
-    // trend (needs >= 2 days of history)
-    const wrap = document.getElementById('masterPipeTrendWrap');
-    if (masterPipeChart) { masterPipeChart.destroy(); masterPipeChart = null; }
+        <div class="reps-table-wrap"><table class="detail-table"><thead><tr><th></th>${PIPE_STATUS.map(s => `<th>${s[1]}</th>`).join('')}<th>รวม</th></tr></thead><tbody>${reps.map(x => statusRow(x.rep, x.v)).join('')}${statusRow('<b>รวม</b>', T)}</tbody></table></div></details>`;
+    const wrap = document.getElementById('pipeTrendWrap-' + sfx);
     if (dates.length < 2) {
       wrap.style.display = 'none';
-      note.textContent = `เริ่มเก็บประวัติ pipeline วันที่ ${pipeDateLabel(dates[0])} — กราฟแนวโน้มรายวันจะแสดงเมื่อมีข้อมูลตั้งแต่ 2 วันขึ้นไป`;
+      note.textContent = `เริ่มเก็บประวัติ pipeline วันที่ ${pipeDateLabel(dates[0])} — กราฟแนวโน้มรายวันจะแสดงเมื่อมีข้อมูลตั้งแต่ 2 วันขึ้นไป · รายละเอียดรายคนแยก Hot/Cold ดูได้ที่หน้า Sales Performance (รายคน)`;
       return;
     }
     wrap.style.display = '';
     const ds = dates.slice(-60);
     const series = [['open_booked', 'ผ่าน Booked แล้ว', PIPE_RAMP.book], ['open_cd', 'ผ่าน Consult Done แล้ว', PIPE_RAMP.cd], ['open_cc', 'ผ่าน Close Call แล้ว', PIPE_RAMP.cc]];
-    const val = (dd, k) => ((pipeSum('Pro', dd, 'All') || pipeZero())[k] + (pipeSum('Kids', dd, 'All') || pipeZero())[k]);
-    masterPipeChart = new Chart(document.getElementById('chartMasterPipeTrend'), {
+    brandPipeCharts[sfx] = new Chart(document.getElementById('chartPipeTrend-' + sfx), {
       type: 'line',
-      data: { labels: ds.map(pipeDateLabel), datasets: series.map(s => ({ label: s[1], data: ds.map(dd => val(dd, s[0])), borderColor: s[2], backgroundColor: s[2], borderWidth: 2, pointRadius: 3, tension: 0.25 })) },
+      data: { labels: ds.map(pipeDateLabel), datasets: series.map(x => ({ label: x[1], data: ds.map(dd => (pipeSum(brand, dd, 'All') || pipeZero())[x[0]]), borderColor: x[2], backgroundColor: x[2], borderWidth: 2, pointRadius: 3, tension: 0.25 })) },
       options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
         plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
         scales: { y: { beginAtZero: true, grid: { color: '#eef0f5' } }, x: { grid: { display: false } } } }
     });
-    note.textContent = 'แนวโน้มจำนวนลูกค้าที่ยังค้างใน pipeline (Pro + Kids) รายวัน';
+    note.textContent = 'แนวโน้มจำนวนลูกค้าที่ยังค้างใน pipeline รายวัน · รายละเอียดรายคนแยก Hot/Cold ดูได้ที่หน้า Sales Performance (รายคน)';
   }
+  function renderBrandPipelines() { renderBrandPipeline('Pro', 'pro'); renderBrandPipeline('Kids', 'kids'); }
 
   function renderMasterAll() {
     renderMasterCards();
-    renderMasterPipeline();
     renderMasterTotalFc();
     renderMasterForecast();
   }
@@ -4016,10 +4030,12 @@
   function pipeSegBarHtml(v, opts) {
     const total = PIPE_SEGS.reduce((a, s) => a + (v[s.key] || 0), 0);
     if (!total) return `<div class="pipe-seg empty">ไม่มีลูกค้าที่ Booked แล้วค้างอยู่</div>`;
-    return `<div class="pipe-seg${opts && opts.thin ? ' thin' : ''}">` + PIPE_SEGS.map(s => {
+    // opts.scaleMax: bar length proportional to total vs the largest row (compare counts across rows)
+    const w = opts && opts.scaleMax ? Math.max(total / opts.scaleMax * 100, 3) : 100;
+    return `<div class="pipe-seg${opts && opts.thin ? ' thin' : ''}" style="width:${w}%">` + PIPE_SEGS.map(s => {
       const n = v[s.key] || 0; if (!n) return '';
       const pct = n / total * 100;
-      return `<div class="pipe-blk" style="flex:${n} 1 0;background:${s.color};color:${s.text}" title="${s.label}: ${fmtNum(n)} (${pct.toFixed(0)}%)">${opts && opts.thin ? '' : `<span>${pct >= 9 ? fmtNum(n) : ''}</span>`}</div>`;
+      return `<div class="pipe-blk" style="flex:${n} 1 0;background:${s.color};color:${s.text}" title="${s.label}: ${fmtNum(n)} (${pct.toFixed(0)}%)">${opts && opts.thin ? '' : `<span>${pct * w / 100 >= 5 ? fmtNum(n) : ''}</span>`}</div>`;
     }).join('') + '</div>';
   }
   function pipeLegendHtml(withLead) {
@@ -4740,6 +4756,7 @@
       if (btn.dataset.page === 'kids') kidsApp.forceChartResize();
       if (btn.dataset.page === 'reps') repsApp.forceChartResize();
       if (btn.dataset.page === 'master' && masterFcChart) requestAnimationFrame(() => masterFcChart.resize());
+      if ((btn.dataset.page === 'pro' || btn.dataset.page === 'kids')) requestAnimationFrame(() => Object.values(brandPipeCharts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } }));
     });
   });
   document.querySelectorAll('.moved-note a[data-goto]').forEach(a => a.addEventListener('click', () => {
@@ -4779,7 +4796,7 @@
 
   function bootApp() {
     Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => { renderMasterOverview(); return repsApp.load(); });
-    loadPipeData().then(() => renderMasterPipeline()).catch(() => renderMasterPipeline());
+    loadPipeData().then(renderBrandPipelines).catch(renderBrandPipelines);
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
