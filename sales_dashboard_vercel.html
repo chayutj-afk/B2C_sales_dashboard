@@ -262,6 +262,29 @@
   @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 600px) { .wd-cards { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr; } }
 
+  /* ---- Sales Performance (per rep) ---- */
+  .reps-toolbar { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .reps-toolbar label { font-size: 12px; color: var(--muted); margin-right: 6px; }
+  .reps-table-wrap { overflow-x: auto; }
+  .reps-table td { vertical-align: top; }
+  .reps-table td .tot, .pool-table td .tot { display: block; font-size: 10px; color: var(--muted); font-weight: 500; }
+  .reps-table tr.rep-row { cursor: pointer; }
+  .reps-table tr.rep-row:hover td { background: #f8f9fd; }
+  .reps-table tr.team-row td { border-top: 2px solid var(--border); font-weight: 700; background: #fafbfe; }
+  .rep-dot { display: inline-block; width: 8px; height: 8px; border-radius: 999px; margin-right: 6px; }
+  .reps-chip { border: 1px solid var(--border); background: var(--card); cursor: pointer; color: var(--text); }
+  .reps-chip.active { background: var(--c); border-color: var(--c); color: #fff; }
+  .reps-cards { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .fc-method { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+  .fc-method.on { border-color: var(--accent); background: var(--accent-light); }
+  .fc-method .label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .fc-method .value { font-size: 20px; font-weight: 800; margin: 4px 0; }
+  .seg button:disabled { opacity: .45; cursor: not-allowed; }
+  #masterCards .card[data-key] { cursor: pointer; }
+  #masterCards .card[data-key]:hover { border-color: var(--accent); }
+  .moved-note { background: var(--accent-light); border: 1px dashed #c7d2fe; border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #3730a3; }
+  .moved-note a { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; }
+  @media (max-width: 700px) { .reps-toolbar { gap: 8px; } }
 </style>
 </head>
 <body>
@@ -289,6 +312,7 @@
   <button class="page-btn active" data-page="master">Master Overview</button>
   <button class="page-btn" data-page="pro">Globish Pro Performance</button>
   <button class="page-btn" data-page="kids">Globish Kids Performance</button>
+  <button class="page-btn" data-page="reps">Sales Performance (รายคน)</button>
   <button class="page-btn" data-page="slots">Consult Slot Monitoring</button>
   <button class="logout-btn" id="logoutBtn">ออกจากระบบ</button>
 </div>
@@ -312,10 +336,17 @@
   </div>
 
   <div id="masterContent" style="display:none;">
-    <div class="section-title"><span class="n">1</span> ยอดขายจริง (Real Data) — Globish Pro + Globish Kids รวมกัน</div>
+    <div class="section-title"><span class="n">1</span> ยอดขายจริง (Real Data) — Globish Pro + Globish Kids รวมกัน <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
     <div class="cards" id="masterCards"></div>
 
-    <div class="section-title"><span class="n">2</span> คาดการณ์สิ้นเดือน — Globish Pro + Globish Kids รวมกัน</div>
+    <div class="section-title"><span class="n">2</span> Total Revenue Forecast — แยก Globish Pro / Globish Kids</div>
+    <div class="cards" id="masterTotalFcCards" style="grid-template-columns:repeat(3,1fr);"></div>
+    <div class="chart-card">
+      <div class="chart-wrap tall"><canvas id="chartMasterTotalFc"></canvas></div>
+      <div class="fc-note" id="masterTotalFcNote"></div>
+    </div>
+
+    <div class="section-title"><span class="n">3</span> คาดการณ์สิ้นเดือน (New / Retention) — Globish Pro + Globish Kids รวมกัน</div>
     <div class="cards" id="masterFcCards"></div>
 
     <div class="footnote">
@@ -491,7 +522,7 @@
     </div>
 
     <div id="panel-wd-pro" class="tab-panel">
-    <div class="section-title">Productivity per Working Day <span class="section-hint">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · วันทำงาน = วันที่ MP (Manpower) &gt; 0 · ใช้เดือน/snapshot จากตัวเลือกด้านบน <span id="wdSubline"></span></span></div>
+    <div class="section-title">Productivity per Working Day <span class="section-hint">Lead / Book Consult / Consult Done / Close Call / Won เฉลี่ยต่อ 1 วันทำงาน · วันทำงาน = วันที่มีเซลเข้างานอย่างน้อย 1 คน (Cold / Hot / Retention ตามชีท Manpower) · ใช้เดือน/snapshot จากตัวเลือกด้านบน <span id="wdSubline"></span></span></div>
     <div id="wdStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
 
     <div id="wdContent" style="display:none;">
@@ -525,7 +556,7 @@
 
       <div class="footnote">
         ข้อมูลยอด Lead / Book / Consult Done / Close Call / Won มาจากชีท "B2C Pro - Tracking Performance" (ลูกค้าใหม่จาก ERP, ยอดสะสมตาม snapshot) ·
-        วันทำงานมาจากชีท "Manpower" คอลัมน์ F (MP): นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
+        วันทำงานมาจากชีท "Manpower": MP ของแต่ละวัน = คอลัมน์ F ถ้ากรอกไว้ ไม่อย่างนั้นนับจำนวนเซลที่เข้างาน (ช่อง Sales Cold / Hot / Retention เป็นตัวเลข &gt; 0) · นับเฉพาะวันที่ MP &gt; 0 ตั้งแต่วันที่ 1 ถึงวันสุดท้ายของ snapshot (เช่น snapshot 1-15 นับวันที่ 1-15) ·
         ค่าต่อวันทำงาน = ยอดสะสม ณ snapshot ÷ จำนวนวันทำงานในช่วงเดียวกัน ·
         ชีทอัปเดตข้อมูลถึงเมื่อวาน (today−1) ดังนั้น snapshot ที่ยังไม่ครบจะนับวันทำงานถึงเมื่อวานเท่านั้น (เช่น วันที่ 27 → snapshot 1-31 นับวันที่ 1-26) ·
         เดือนที่ยังไม่ได้กรอก MP (ทุกวัน MP = 0 หรือว่าง) จะแสดงเป็น "—"
@@ -561,12 +592,7 @@
       <div class="section-title">คาดการณ์สิ้นเดือน <span class="section-hint" id="fcSubtitle-pro"></span></div>
       <div class="cards" id="fcCards-pro"></div>
 
-      <div class="section-title"><span class="n">1</span> Revenue Total — ยอดจริงย้อนหลัง เทียบกับคาดการณ์เดือนนี้</div>
-      <div class="chart-card">
-        <div class="chart-wrap tall"><canvas id="chartFcRevBar-pro"></canvas></div>
-        <div class="chart-hint">คลิกที่แท่งเดือนก่อนหน้าเพื่อดูรายละเอียดของเดือนนั้น</div>
-        <div class="fc-note" id="fcRevNote-pro"></div>
-      </div>
+      <div class="moved-note">Total Revenue Forecast (แยก Globish Pro / Kids) ย้ายไปอยู่ที่หน้า <a data-goto="master">Master Overview</a> แล้ว</div>
 
       <div class="section-title"><span class="n">2</span> รูปแบบการสะสมยอดขายรายวัน (Pacing) เทียบเดือนก่อนหน้า</div>
       <div class="chart-card">
@@ -587,10 +613,7 @@
       </div>
 
       <div class="section-title"><span class="n">5</span> Breakdown รายคน — คาดการณ์สิ้นเดือน</div>
-      <div class="chart-card">
-        <div class="fc-note warn" id="fcRepNote-pro" style="margin-bottom:10px;"></div>
-        <div class="chart-wrap"><canvas id="chartFcRep-pro"></canvas></div>
-      </div>
+      <div class="moved-note">Forecast Revenue รายคน ย้ายไปอยู่ที่หน้า <a data-goto="reps">Sales Performance (รายคน)</a> แล้ว (เลือกได้ 2 วิธี: ตามรูปแบบ Snapshot / Run-rate ต่อ WD)</div>
 
       <div class="footnote">
         <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ วันที่เดียวกับที่ข้อมูลเดือนที่เลือกมีถึง (snapshot ที่ยังไม่ครบจะใช้วันที่ข้อมูลล่าสุด = เมื่อวาน และประมาณยอดของเดือนก่อน ๆ ณ วันนั้นแบบเส้นตรงระหว่าง snapshot) ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
@@ -769,12 +792,7 @@
       <div class="section-title">คาดการณ์สิ้นเดือน <span class="section-hint" id="fcSubtitle-kids"></span></div>
       <div class="cards" id="fcCards-kids"></div>
 
-      <div class="section-title"><span class="n">1</span> Revenue Total — ยอดจริงย้อนหลัง เทียบกับคาดการณ์เดือนนี้</div>
-      <div class="chart-card">
-        <div class="chart-wrap tall"><canvas id="chartFcRevBar-kids"></canvas></div>
-        <div class="chart-hint">คลิกที่แท่งเดือนก่อนหน้าเพื่อดูรายละเอียดของเดือนนั้น</div>
-        <div class="fc-note" id="fcRevNote-kids"></div>
-      </div>
+      <div class="moved-note">Total Revenue Forecast (แยก Globish Pro / Kids) ย้ายไปอยู่ที่หน้า <a data-goto="master">Master Overview</a> แล้ว</div>
 
       <div class="section-title"><span class="n">2</span> รูปแบบการสะสมยอดขายรายวัน (Pacing) เทียบเดือนก่อนหน้า</div>
       <div class="chart-card">
@@ -795,10 +813,7 @@
       </div>
 
       <div class="section-title"><span class="n">5</span> Breakdown รายคน — คาดการณ์สิ้นเดือน</div>
-      <div class="chart-card">
-        <div class="fc-note warn" id="fcRepNote-kids" style="margin-bottom:10px;"></div>
-        <div class="chart-wrap"><canvas id="chartFcRep-kids"></canvas></div>
-      </div>
+      <div class="moved-note">Forecast Revenue รายคน ย้ายไปอยู่ที่หน้า <a data-goto="reps">Sales Performance (รายคน)</a> แล้ว (เลือกได้ 2 วิธี: ตามรูปแบบ Snapshot / Run-rate ต่อ WD)</div>
 
       <div class="footnote">
         <b>วิธีคำนวณ:</b> สำหรับแต่ละเดือนก่อนหน้าที่ปิดเดือนแล้ว (มีข้อมูลถึง 1-31) คำนวณสัดส่วน “ยอดสะสม ณ วันที่เดียวกับที่ข้อมูลเดือนที่เลือกมีถึง (snapshot ที่ยังไม่ครบจะใช้วันที่ข้อมูลล่าสุด = เมื่อวาน และประมาณยอดของเดือนก่อน ๆ ณ วันนั้นแบบเส้นตรงระหว่าง snapshot) ÷ ยอดรวมทั้งเดือน” แล้วนำสัดส่วนเฉลี่ยของเดือนก่อนหน้าเหล่านั้นมาหารยอดสะสมปัจจุบันของเดือนที่กำลังดู เพื่อประมาณยอดสิ้นเดือน · ช่วงคาดการณ์ (ต่ำสุด–สูงสุด) มาจากสัดส่วนที่ต่ำสุด/สูงสุดที่เคยเกิดขึ้นจริงในอดีต · วิธีนี้ไม่ได้ปรับ seasonality หรือปัจจัยพิเศษรายเดือน จึงควรใช้เป็นแนวทางประกอบการตัดสินใจ ไม่ใช่ตัวเลขที่แม่นยำ 100%
@@ -808,6 +823,88 @@
   </div>
 
   <div id="stateMsg-kids" class="state-msg">กำลังโหลดข้อมูล…</div>
+</div>
+
+<div id="page-reps" class="page">
+  <div class="header">
+    <div>
+      <h1>Sales Performance — รายคน</h1>
+      <div class="sub" id="repsSubline">กำลังโหลดข้อมูลรายเซล…</div>
+    </div>
+    <div class="controls">
+      <div>
+        <label>แบรนด์</label>
+        <div class="seg" id="repsBrandSeg"><button data-v="Pro" class="active">Globish Pro</button><button data-v="Kids">Globish Kids</button></div>
+      </div>
+      <div>
+        <label for="repsMonthSel">เดือน</label>
+        <select id="repsMonthSel"></select>
+      </div>
+      <div>
+        <label for="repsPeriodSel">Snapshot ณ วันที่</label>
+        <select id="repsPeriodSel"></select>
+      </div>
+      <button class="reload-btn" id="repsReloadBtn">↻ รีเฟรชข้อมูล</button>
+    </div>
+  </div>
+
+  <div id="repsContent" style="display:none;">
+    <div class="reps-toolbar">
+      <div><label>Lead pool</label>
+        <div class="seg" id="repsPoolSeg"><button data-v="All" class="active">ทั้งหมด</button><button data-v="Hot">Hot Lead</button><button data-v="Cold">Cold Lead</button></div>
+      </div>
+      <div><label>วิธีคาดการณ์ Revenue</label>
+        <div class="seg" id="repsFcSeg"><button data-v="snap" class="active">ตามรูปแบบ Snapshot</button><button data-v="wd">Run-rate ต่อ WD</button></div>
+      </div>
+    </div>
+    <div id="repsNote"></div>
+
+    <div class="section-title"><span class="n">1</span> ภาพรวมทีม <span class="section-hint" id="repsTableHint"></span></div>
+    <div class="chart-card">
+      <div class="reps-table-wrap"><table class="detail-table reps-table" id="repsTable"></table></div>
+      <div class="chart-hint">คลิกชื่อเซลเพื่อดูรายละเอียดด้านล่าง · ตัวเลขใหญ่ = ยอดรวม (Total) · ตัวเลขเล็ก = ต่อวันทำงาน (Per WD)</div>
+    </div>
+
+    <div class="section-title"><span class="n">2</span> รายละเอียดรายคน <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
+    <div class="rep-chip-row" id="repsChips" style="margin-bottom:12px;"></div>
+    <div class="cards reps-cards" id="repsCards"></div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <h3 id="repsPoolTitle">Hot Lead vs Cold Lead</h3>
+        <div class="reps-table-wrap"><table class="detail-table" id="repsPoolTable"></table></div>
+      </div>
+      <div class="chart-card">
+        <h3 id="repsFcTitle">Forecast Revenue</h3>
+        <div id="repsFcBox"></div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="n">3</span> แนวโน้มรายเดือน ณ snapshot เดียวกัน <span class="section-hint" id="repsTrendHint"></span></div>
+    <div class="chart-card">
+      <div class="reps-toolbar" style="margin-bottom:8px;">
+        <div class="seg" id="repsTrendMetricSeg"></div>
+        <div class="seg" id="repsTrendModeSeg"><button data-v="total" class="active">Total</button><button data-v="wd">Per WD</button></div>
+      </div>
+      <div class="chart-wrap tall"><canvas id="chartRepsTrend"></canvas></div>
+    </div>
+
+    <div class="section-title"><span class="n">4</span> Forecast Revenue รายคน — คาดการณ์สิ้นเดือน <span class="section-hint" id="repsFcHint"></span></div>
+    <div class="chart-card">
+      <div class="fc-note warn" id="repsFcNote" style="margin-bottom:10px;"></div>
+      <div class="chart-wrap tall"><canvas id="chartRepsFc"></canvas></div>
+    </div>
+
+    <div class="footnote">
+      <b>ที่มาของตัวเลข:</b> Lead / Booked / Consult Done / Close Call / Won / Revenue (ERP) มาจากแท็บ Rep Snapshot ซึ่งคำนวณจาก ERP (Transformed) ด้วยนิยามเดียวกับยอดรวมของแบรนด์ แยกตาม lead_owner และแช่แข็งทุก snapshot ที่ปิดแล้ว · ผลรวมทุกคนในโหมด “ทั้งหมด” = ยอดรวมแบรนด์ในหน้า Performance ·
+      Revenue (WH) = ยอดขายจริงรายคนจาก Whitehouse (ไม่แยก Hot/Cold) ·
+      <b>Per WD</b> = ยอด ÷ จำนวนวันที่เซลคนนั้นเข้างานตามชีท Manpower ถึงวันที่ข้อมูลมีถึง — โหมด Hot ใช้วันที่รับ Hot Lead, โหมด Cold ใช้วันที่รับ Cold Lead, โหมดทั้งหมดใช้วันที่รับ lead ประเภทใดก็ได้ (รวม Retention) ·
+      CVR All = Won ÷ Lead · CVR In-In = Won ประเภท In ÷ Lead · BKS = Revenue (ERP) ÷ Won ·
+      <b>Forecast:</b> “ตามรูปแบบ Snapshot” = ยอดสะสม ÷ สัดส่วนเฉลี่ยที่เดือนก่อน ๆ สะสมถึงวันเดียวกัน (วิธีเดียวกับหน้า Forecast เดิม) · “Run-rate ต่อ WD” = ยอดต่อ WD ที่ผ่านมา × จำนวน WD ทั้งเดือนตาม Manpower · ใช้ Revenue (WH) ถ้ามี ไม่อย่างนั้นใช้ Revenue (ERP)
+    </div>
+  </div>
+
+  <div id="repsStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
 </div>
 
 <div id="page-slots" class="page">
@@ -1931,6 +2028,7 @@
     }
 
     function renderForecastRevBar(month, period) {
+      if (!$('chartFcRevBar')) return; // moved to Master Overview
       const fc = computeForecast(parsed.table1.total, month, period);
       const hist = fc.hist || [];
       const labels = hist.map(monthLabel).concat([monthLabel(month) + (fc.status === 'ok' ? ' (คาดการณ์)' : '')]);
@@ -2070,6 +2168,7 @@
     }
 
     function renderForecastRep(month, period) {
+      if (!$('chartFcRep')) return; // moved to Sales Performance (per rep)
       const activeReps = activeRepsFor(month);
       const fcs = activeReps.map(r => computeForecast(parsed.table1.reps[r], month, period));
       const data = fcs.map(fc => fcPointValue(fc));
@@ -2845,6 +2944,118 @@
   }
   const slotsApp = createSlotsApp({ fetchCsv: fetchSlotsCsv });
 
+
+  // ---------- generic snapshot-matrix modal (Master Overview + Sales Performance) ----------
+  // Same look as the brand pages' metric popup: a line of each month's latest
+  // value + the full matrix (rows = snapshot 1-5..1-31, columns = months).
+  function openSnapshotModal(cfg) {
+    const months = cfg.months || [];
+    const block = cfg.block;
+    if (!block) return;
+    document.getElementById('monthModalOverlay').classList.add('show');
+    document.getElementById('modalTitle').textContent = cfg.title;
+    document.getElementById('modalSub').textContent = cfg.sub || 'ย้อนหลังทุกเดือน ทุก snapshot (1-5 ถึง 1-31)' + (cfg.onJump ? ' · คลิกชื่อเดือนเพื่อไปที่เดือนนั้น' : '');
+    const pv = (p, m) => cfg.valueAt ? cfg.valueAt(p, m) : getValue(block, p, m);
+    const latest = months.map(m => {
+      const ps = PERIODS.filter(p => pv(p, m) != null);
+      return ps.length ? pv(ps[ps.length - 1], m) : null;
+    });
+    const thead = months.map(m => `<th class="${cfg.onJump ? 'month-link' : ''}" data-month="${m}">${monthLabel(m)}</th>`).join('');
+    const body = PERIODS.map(p => `<tr><td>ถึงวันที่ ${p.split('-')[1]}</td>${months.map(m => {
+      const v = pv(p, m);
+      const part = v != null && isPartialSnapshot(p, m) ? ` <span style="color:var(--muted);font-size:10px">(ถึง ${effectiveDay(p, m)})</span>` : '';
+      return `<td>${v == null ? '—' : cfg.fmt(v)}${part}</td>`;
+    }).join('')}</tr>`).join('');
+    document.getElementById('modalBody').innerHTML = `
+      <div class="chart-wrap" style="height:220px;margin-bottom:8px;"><canvas id="modalTrendChart"></canvas></div>
+      ${cfg.extraHtml || ''}
+      <div class="modal-section-title">รายละเอียดทุก snapshot ของแต่ละเดือน</div>
+      <div style="overflow-x:auto;"><table class="detail-table"><thead><tr><th>Snapshot</th>${thead}</tr></thead><tbody>${body}</tbody></table></div>`;
+    destroyModalChart();
+    modalChartInstance = new Chart(document.getElementById('modalTrendChart'), {
+      type: 'line',
+      data: { labels: months.map(monthLabel), datasets: [{ label: cfg.title, data: latest, borderColor: cfg.color, backgroundColor: cfg.color, tension: 0.3, spanGaps: true, pointRadius: 3 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => cfg.fmt(c.raw) } } },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: (v) => cfg.kind === 'percent' ? v + '%' : cfg.kind === 'currency' ? (v / 1000) + 'k' : v }, grid: { color: '#f0f1f6' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+    if (cfg.onJump) {
+      document.querySelectorAll('#modalBody .month-link').forEach(el => el.addEventListener('click', () => { closeMonthDetail(); cfg.onJump(el.dataset.month); }));
+    }
+  }
+
+  // Sum of two additive blocks (Pro + Kids). null only where both are null.
+  function sumBlocks(a, b, months) {
+    return {
+      dataRows: PERIODS.map(p => {
+        const values = {};
+        months.forEach(m => {
+          const va = getValue(a, p, m), vb = getValue(b, p, m);
+          values[m] = va == null && vb == null ? null : (va || 0) + (vb || 0);
+        });
+        return { period: p, values };
+      })
+    };
+  }
+
+  // ---------- Manpower (Sales by lead type) ----------
+  // Layout (rows 8-9 of the "Manpower" tab): a group header row with
+  // "Sales (Cold Lead)" / "Sales (Hot Lead)" / "Sales (Retention Lead)", each
+  // spanning one column per rep, and a rep-name row right below. A cell counts
+  // as a working day for that rep & lead type when it holds a number > 0
+  // (letters such as A / B / S / H, 0 or blank = not working that type).
+  // Returns { 'MM/YYYY': { [day]: { colF, Cold: Set, Hot: Set, Retention: Set } } }
+  function parseManpowerFull(text) {
+    const rows = parseCSV(text);
+    const out = {};
+    const DATE_RE = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    let hdr = -1;
+    for (let r = 0; r < Math.min(rows.length, 40); r++) {
+      if ((rows[r] || []).some(c => /^\s*Sales\s*\(/i.test(c || ''))) { hdr = r; break; }
+    }
+    const cols = []; // { c, type, name }
+    if (hdr >= 0) {
+      const g = rows[hdr], names = rows[hdr + 1] || [];
+      let type = null;
+      for (let c = 0; c < Math.max(g.length, names.length); c++) {
+        const h = (g[c] || '').trim();
+        if (h) type = /^Sales\s*\(/i.test(h) ? (/hot/i.test(h) ? 'Hot' : /cold/i.test(h) ? 'Cold' : /retention/i.test(h) ? 'Retention' : null) : null;
+        const n = (names[c] || '').trim();
+        if (type && n) cols.push({ c, type, name: n });
+      }
+    }
+    rows.forEach(row => {
+      for (let c = 0; c < Math.min(row.length, 6); c++) {
+        const m = DATE_RE.exec((row[c] || '').trim());
+        if (!m) continue;
+        const day = Number(m[1]), key = m[2].padStart(2, '0') + '/' + m[3];
+        const f = parseNumber(row[c + 2]);
+        const rec = { colF: typeof f === 'number' ? f : 0, Cold: new Set(), Hot: new Set(), Retention: new Set() };
+        cols.forEach(col => {
+          const v = parseNumber(row[col.c]);
+          if (typeof v === 'number' && v > 0) rec[col.type].add(col.name.toLowerCase());
+        });
+        (out[key] = out[key] || {})[day] = rec;
+        break;
+      }
+    });
+    return out;
+  }
+  // Sales on shift that day: column F (MP) when filled, otherwise the number
+  // of distinct reps working any lead type (column F is no longer maintained
+  // since Manpower was split into Cold / Hot / Retention).
+  function mpOfDay(rec) {
+    if (!rec) return 0;
+    if (rec.colF > 0) return rec.colF;
+    const s = new Set([...rec.Cold, ...rec.Hot, ...rec.Retention]);
+    return s.size;
+  }
+
   // ---------- Pro Productivity per Working Day ----------
   // Working days come from the "Manpower" tab: one row per date (col D,
   // dd/mm/yyyy) with the number of sales on shift in col F (MP). A day counts
@@ -2868,21 +3079,12 @@
     return resp.text();
   }
 
-  // Returns { 'MM/YYYY': { [day]: mp } }
+  // Returns { 'MM/YYYY': { [day]: mp } } — mp = column F when filled, otherwise
+  // the number of sales working any lead type that day (see mpOfDay()).
   function parseManpowerCSV(text) {
+    const full = parseManpowerFull(text);
     const out = {};
-    const DATE_RE = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    parseCSV(text).forEach(row => {
-      for (let c = 0; c < Math.min(row.length, 6); c++) {
-        const m = DATE_RE.exec((row[c] || '').trim());
-        if (!m) continue;
-        const day = Number(m[1]), mm = m[2].padStart(2, '0'), yyyy = m[3];
-        const mp = parseNumber(row[c + 2]); // MP sits two columns right of the date (D -> F)
-        const key = mm + '/' + yyyy;
-        (out[key] = out[key] || {})[day] = typeof mp === 'number' ? mp : 0;
-        break;
-      }
-    });
+    Object.keys(full).forEach(k => { out[k] = {}; Object.keys(full[k]).forEach(d => { out[k][d] = mpOfDay(full[k][d]); }); });
     return out;
   }
 
@@ -3407,30 +3609,37 @@
     const newK = getValue(k.table2.revenue, period, month) || 0;
     const retP = getValue(p.table3.total, period, month) || 0;
     const retK = getValue(k.table3.total, period, month) || 0;
+    const wonP = getValue(p.table2.won, period, month) || 0, wonK = getValue(k.table2.won, period, month) || 0;
+    const leadP = getValue(p.table2.lead, period, month) || 0, leadK = getValue(k.table2.lead, period, month) || 0;
     document.getElementById('masterCards').innerHTML = partialNoteHtml(period, month) + `
-      <div class="card">
+      <div class="card" data-key="totalRevenue">
         <div class="label">Total Revenue (WH) — ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}</div>
         <div class="value">${fmtBaht(totalP + totalK)}</div>
         <div class="sub2">Globish Pro ${fmtBaht(totalP)} · Globish Kids ${fmtBaht(totalK)}</div>
       </div>
-      <div class="card">
+      <div class="card" data-key="newRevenue">
         <div class="label">New Revenue (ERP)</div>
         <div class="value" style="color:var(--new)">${fmtBaht(newP + newK)}</div>
         <div class="sub2">Globish Pro ${fmtBaht(newP)} · Globish Kids ${fmtBaht(newK)}</div>
       </div>
-      <div class="card">
+      <div class="card" data-key="retentionRevenue">
         <div class="label">Retention &amp; Other (Est.)</div>
         <div class="value" style="color:var(--retention)">${fmtBaht(retP + retK)}</div>
         <div class="sub2">Globish Pro ${fmtBaht(retP)} · Globish Kids ${fmtBaht(retK)}</div>
       </div>
+      <div class="card" data-key="won">
+        <div class="label">Won / Lead (New)</div>
+        <div class="value">${fmtNum(wonP + wonK)} <span style="font-size:13px;color:var(--muted);font-weight:600;">/ ${fmtNum(leadP + leadK)} leads</span></div>
+        <div class="sub2">Pro ${fmtNum(wonP)}/${fmtNum(leadP)} · Kids ${fmtNum(wonK)}/${fmtNum(leadK)}</div>
+      </div>
     `;
+    document.querySelectorAll('#masterCards .card[data-key]').forEach(el => el.addEventListener('click', () => openMasterDetail(el.dataset.key)));
   }
 
   function renderMasterForecast() {
     const month = masterMonthSel.value, period = masterPeriodSel.value;
     const p = proApp.getModel(), k = kidsApp.getModel();
     const combos = [
-      { title: 'Total Revenue (WH)', color: 'var(--text)', blockP: p.table1.total, blockK: k.table1.total, fmt: fmtBaht },
       { title: 'New Revenue (ERP)', color: 'var(--new)', blockP: p.table2.revenue, blockK: k.table2.revenue, fmt: fmtBaht },
       { title: 'Retention & Other (Est.)', color: 'var(--retention)', blockP: p.table3.total, blockK: k.table3.total, fmt: fmtBaht }
     ];
@@ -3463,21 +3672,553 @@
       return;
     }
     if (!masterMonthSel.value) populateMasterSelectors();
-    renderMasterCards();
-    renderMasterForecast();
+    renderMasterAll();
     msg.style.display = 'none';
     content.style.display = 'block';
   }
 
   masterMonthSel.addEventListener('change', () => {
     populateMasterPeriods(masterMonthSel.value);
-    renderMasterCards();
-    renderMasterForecast();
+    renderMasterAll();
   });
-  masterPeriodSel.addEventListener('change', () => {
+  masterPeriodSel.addEventListener('change', renderMasterAll);
+
+
+  // ----- Master: click a card -> snapshot matrix of Pro + Kids combined -----
+  function masterBlocks() {
+    const p = proApp.getModel(), k = kidsApp.getModel();
+    const ms = masterMonthsWithData();
+    return {
+      months: ms,
+      totalRevenue: { label: 'Total Revenue (WH)', block: sumBlocks(p.table1.total, k.table1.total, ms), color: '#4f46e5', kind: 'currency', fmt: fmtBaht, pro: p.table1.total, kids: k.table1.total },
+      newRevenue: { label: 'New Revenue (ERP)', block: sumBlocks(p.table2.revenue, k.table2.revenue, ms), color: '#3b82f6', kind: 'currency', fmt: fmtBaht, pro: p.table2.revenue, kids: k.table2.revenue },
+      retentionRevenue: { label: 'Retention & Other (Est.)', block: sumBlocks(p.table3.total, k.table3.total, ms), color: '#a855f7', kind: 'currency', fmt: fmtBaht, pro: p.table3.total, kids: k.table3.total },
+      won: { label: 'Won (New)', block: sumBlocks(p.table2.won, k.table2.won, ms), color: '#16a34a', kind: 'count', fmt: fmtNum, pro: p.table2.won, kids: k.table2.won },
+      lead: { label: 'Lead (New)', block: sumBlocks(p.table2.lead, k.table2.lead, ms), color: '#94a3b8', kind: 'count', fmt: fmtNum, pro: p.table2.lead, kids: k.table2.lead }
+    };
+  }
+  function masterJump(month) {
+    masterMonthSel.value = month;
+    populateMasterPeriods(month);
+    renderMasterAll();
+  }
+  function openMasterDetail(key) {
+    const mb = masterBlocks();
+    const m = mb[key];
+    if (!m) return;
+    // split row under the chart: latest snapshot of the selected month, Pro vs Kids
+    const month = masterMonthSel.value, period = masterPeriodSel.value;
+    const vp = getValue(m.pro, period, month), vk = getValue(m.kids, period, month);
+    const extra = `<div class="fc-note">${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}: Globish Pro <b>${m.fmt(vp || 0)}</b> + Globish Kids <b>${m.fmt(vk || 0)}</b> = <b>${m.fmt((vp || 0) + (vk || 0))}</b></div>`;
+    openSnapshotModal({ title: m.label + ' — Globish Pro + Kids', block: m.block, months: mb.months, fmt: m.fmt, color: m.color, kind: m.kind, extraHtml: extra, onJump: masterJump });
+  }
+
+  // ----- Master: Total Revenue Forecast, split Pro / Kids -----
+  let masterFcChart = null;
+  function renderMasterTotalFc() {
+    const month = masterMonthSel.value, period = masterPeriodSel.value;
+    const p = proApp.getModel(), k = kidsApp.getModel();
+    const fcP = computeForecastOf(p.months, p.table1.total, month, period);
+    const fcK = computeForecastOf(k.months, k.table1.total, month, period);
+    const card = (title, fc, color) => {
+      const pt = pointOf(fc);
+      let note;
+      if (fc.status === 'ok') note = `ยอดถึงตอนนี้ ${fmtBaht(fc.currentVal)} · ช่วง ${fmtBaht(fc.forecastLow)} – ${fmtBaht(fc.forecastHigh)}`;
+      else if (fc.status === 'complete') note = 'ปิดเดือนแล้ว — ยอดจริง ไม่ใช่คาดการณ์';
+      else note = 'ข้อมูลยังไม่พอสำหรับคาดการณ์';
+      return `<div class="card"><div class="label">${title}${fc.status === 'ok' ? ' <span class="fc-badge">คาดการณ์</span>' : ''}</div><div class="value" style="color:${color}">${pt == null ? '—' : fmtBaht(pt)}</div><div class="fc-note">${note}</div></div>`;
+    };
+    const st = combineStatus(fcP, fcK);
+    const tot = st === 'partial' ? null : (pointOf(fcP) || 0) + (pointOf(fcK) || 0);
+    const lo = (lowOf(fcP) || 0) + (lowOf(fcK) || 0), hi = (highOf(fcP) || 0) + (highOf(fcK) || 0);
+    const totNote = st === 'ok' ? `ช่วง ${fmtBaht(lo)} – ${fmtBaht(hi)} · Pro ${fmtBaht(pointOf(fcP))} (${tot ? (pointOf(fcP) / tot * 100).toFixed(0) : 0}%) + Kids ${fmtBaht(pointOf(fcK))} (${tot ? (pointOf(fcK) / tot * 100).toFixed(0) : 0}%)`
+      : st === 'complete' ? 'ปิดเดือนแล้วทั้งสองแบรนด์ — ยอดจริง' : 'ข้อมูลของ Pro หรือ Kids ยังไม่พอสำหรับคาดการณ์รวม';
+    document.getElementById('masterTotalFcCards').innerHTML =
+      `<div class="card"><div class="label">Total Revenue สิ้นเดือน — รวม${st === 'ok' ? ' <span class="fc-badge">คาดการณ์</span>' : ''}</div><div class="value">${tot == null ? '—' : fmtBaht(tot)}</div><div class="fc-note">${totNote}</div></div>` +
+      card('Globish Pro', fcP, '#4f46e5') + card('Globish Kids', fcK, '#16a34a');
+
+    // chart: closed months (actual, stacked Pro/Kids) + selected month (actual so far + forecast remainder)
+    const ms = masterMonthsWithData();
+    const idx = ms.indexOf(month);
+    const hist = ms.slice(Math.max(0, idx - 6), idx).filter(m => isMonthComplete(m));
+    const labels = hist.map(monthLabel).concat([monthLabel(month) + (st === 'ok' ? ' (คาดการณ์)' : '')]);
+    const actP = hist.map(m => getValue(p.table1.total, '1-31', m) || 0).concat([getValue(p.table1.total, period, month) || 0]);
+    const actK = hist.map(m => getValue(k.table1.total, '1-31', m) || 0).concat([getValue(k.table1.total, period, month) || 0]);
+    const restP = hist.map(() => null).concat([fcP.status === 'ok' ? Math.max(0, fcP.forecastAvg - fcP.currentVal) : null]);
+    const restK = hist.map(() => null).concat([fcK.status === 'ok' ? Math.max(0, fcK.forecastAvg - fcK.currentVal) : null]);
+    if (masterFcChart) { masterFcChart.destroy(); masterFcChart = null; }
+    const n = labels.length - 1;
+    masterFcChart = new Chart(document.getElementById('chartMasterTotalFc'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Pro — ยอดจริง', data: actP, backgroundColor: '#4f46e5', stack: 's', borderRadius: 4, maxBarThickness: 56 },
+          { label: 'Kids — ยอดจริง', data: actK, backgroundColor: '#16a34a', stack: 's', borderRadius: 4, maxBarThickness: 56 },
+          { label: 'Pro — ส่วนคาดการณ์ถึงสิ้นเดือน', data: restP, backgroundColor: 'rgba(79,70,229,0.28)', stack: 's', borderRadius: 4, maxBarThickness: 56 },
+          { label: 'Kids — ส่วนคาดการณ์ถึงสิ้นเดือน', data: restK, backgroundColor: 'rgba(22,163,74,0.28)', stack: 's', borderRadius: 4, maxBarThickness: 56 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: {
+            filter: c => c.raw != null,
+            callbacks: {
+              label: c => `${c.dataset.label}: ${fmtBaht(c.raw)}`,
+              footer: items => {
+                const i = items[0].dataIndex;
+                if (i !== n) return `รวม ${fmtBaht(actP[i] + actK[i])}`;
+                return tot == null ? '' : [`คาดการณ์รวม ${fmtBaht(tot)}`, st === 'ok' ? `ช่วง ${fmtBaht(lo)} – ${fmtBaht(hi)}` : ''];
+              }
+            }
+          }
+        },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } } },
+        onClick: (e, els) => { if (els && els.length && els[0].index < n) masterJump(hist[els[0].index]); },
+        onHover: (e, els) => { if (e.native && e.native.target) e.native.target.style.cursor = els.length && els[0].index < n ? 'pointer' : 'default'; }
+      }
+    });
+    const note = document.getElementById('masterTotalFcNote');
+    note.textContent = fcP.status === 'ok' || fcK.status === 'ok'
+      ? `คาดการณ์แยกแต่ละแบรนด์ด้วยสัดส่วนสะสมเฉลี่ยของเดือนก่อน ๆ ณ วันที่ ${effectiveDay(period, month)} เท่ากัน แล้วนำมารวม · แท่งสีอ่อน = ส่วนที่คาดว่าจะเพิ่มถึงสิ้นเดือน · คลิกแท่งเดือนก่อนหน้าเพื่อไปที่เดือนนั้น`
+      : 'เดือนที่เลือกปิดข้อมูลครบแล้ว หรือยังไม่มีเดือนก่อนหน้าพอสำหรับคาดการณ์';
+  }
+
+  function renderMasterAll() {
     renderMasterCards();
+    renderMasterTotalFc();
     renderMasterForecast();
-  });
+  }
+
+  // ---------- Sales Performance (per rep, snapshot style) ----------
+  // Source: "Rep Snapshot" tab of the DB sheet (IMPORTRANGE of the Snapshot
+  // Engine's Rep_Snapshot): one row per brand × month × snapshot × rep × pool
+  // (All / Hot / Cold) with lead, book, cd, cc, won, inin, revenue. Closed
+  // snapshots are frozen by the engine. Working days come from Manpower.
+  const REP_SHEET_GID = '2142994793';
+  const REP_SHEET_NAME = 'Rep Snapshot';
+  async function fetchRepCsv() {
+    const exportUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${REP_SHEET_GID}&cb=${Date.now()}`;
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(REP_SHEET_NAME)}&cb=${Date.now()}`;
+    let resp;
+    try {
+      resp = await fetch(exportUrl, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('export HTTP ' + resp.status);
+    } catch (e0) {
+      await new Promise(res => setTimeout(res, 800));
+      resp = await fetch(gvizUrl, { cache: 'no-store' });
+    }
+    if (!resp.ok) throw new Error(`ดึงข้อมูล Rep Snapshot ไม่สำเร็จ (HTTP ${resp.status})`);
+    return resp.text();
+  }
+
+  const REP_BASE = ['lead', 'book', 'cd', 'cc', 'won', 'inin', 'revenue'];
+  function parseRepCSV(text) {
+    const rows = parseCSV(text);
+    const head = (rows[0] || []).map(h => (h || '').trim().toLowerCase());
+    const ix = k => head.indexOf(k);
+    const need = ['brand', 'month', 'period', 'rep', 'pool'].concat(REP_BASE);
+    const miss = need.filter(k => ix(k) < 0);
+    if (miss.length) throw new Error('แท็บ Rep Snapshot ไม่มีคอลัมน์: ' + miss.join(', '));
+    const out = {};
+    rows.slice(1).forEach(r => {
+      const brand = (r[ix('brand')] || '').trim();
+      let month = (r[ix('month')] || '').trim();
+      const period = (r[ix('period')] || '').trim();
+      const rep = (r[ix('rep')] || '').trim();
+      const pool = (r[ix('pool')] || '').trim();
+      if (!brand || !rep || !PERIOD_RE.test(period)) return;
+      const mm = /^(\d{1,2})\/(\d{4})$/.exec(month);
+      if (!mm) return;
+      month = mm[1].padStart(2, '0') + '/' + mm[2];
+      const B = out[brand] = out[brand] || { months: new Set(), keys: {}, data: {}, reps: new Set() };
+      B.months.add(month);
+      const k = month + '|' + period;
+      B.keys[k] = true;
+      const cell = B.data[k] = B.data[k] || {};
+      const rec = cell[rep] = cell[rep] || {};
+      const v = {};
+      REP_BASE.forEach(m => { const n = parseNumber(r[ix(m)]); v[m] = typeof n === 'number' ? n : 0; });
+      rec[pool] = v;
+      B.reps.add(rep);
+    });
+    Object.values(out).forEach(B => {
+      B.months = [...B.months].sort((a, b) => (a.slice(3) + a.slice(0, 2)).localeCompare(b.slice(3) + b.slice(0, 2)));
+    });
+    return out;
+  }
+
+  const REP_METRICS = [
+    { key: 'lead', label: '#Lead', kind: 'count', wd: true, color: '#4f46e5' },
+    { key: 'book', label: '#Booked', kind: 'count', wd: true, color: '#06b6d4' },
+    { key: 'cd', label: '#Consult Done', kind: 'count', wd: true, color: '#0ea5e9' },
+    { key: 'cc', label: '#Close Call', kind: 'count', wd: true, color: '#f59e0b' },
+    { key: 'won', label: '#Won', kind: 'count', wd: true, color: '#16a34a' },
+    { key: 'cvrAll', label: 'CVR All', kind: 'percent', color: '#4f46e5' },
+    { key: 'cvrInIn', label: 'CVR In-In', kind: 'percent', color: '#f59e0b' },
+    { key: 'bks', label: 'BKS', kind: 'currency', color: '#0891b2' },
+    { key: 'revenue', label: 'Revenue (ERP)', kind: 'currency', wd: true, color: '#be185d' }
+  ];
+  const RATE_DEF = {
+    cvrAll: v => v.lead ? v.won / v.lead * 100 : null,
+    cvrInIn: v => v.lead ? v.inin / v.lead * 100 : null,
+    bks: v => v.won ? v.revenue / v.won : null
+  };
+  const POOL_LABEL = { All: 'ทั้งหมด', Hot: 'Hot Lead', Cold: 'Cold Lead' };
+  const POOL_COLOR = { All: '#4f46e5', Hot: '#f97316', Cold: '#0ea5e9' };
+  const EXTRA_COLORS = ['#8b5cf6', '#14b8a6', '#ef4444', '#84cc16', '#d946ef', '#0f766e', '#a16207', '#64748b'];
+  const fmtKind = (kind) => kind === 'percent' ? fmtPct : kind === 'currency' ? fmtBaht : fmtNum;
+  const fmt1 = n => n == null ? '—' : n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  function createRepsApp() {
+    let RS = null, MPF = null;
+    let brand = 'Pro', pool = 'All', fcMethod = 'snap', trendKey = 'lead', trendMode = 'total', selRep = null;
+    let charts = {};
+    const monthSel = document.getElementById('repsMonthSel');
+    const periodSel = document.getElementById('repsPeriodSel');
+    const brandApp = () => brand === 'Pro' ? proApp : kidsApp;
+    const B = () => RS && RS[brand];
+    const months = () => (B() ? B().months : []);
+    const zero = () => ({ lead: 0, book: 0, cd: 0, cc: 0, won: 0, inin: 0, revenue: 0 });
+    function destroy(k) { if (charts[k]) { charts[k].destroy(); delete charts[k]; } }
+    function colorOf(rep) {
+      if (REP_COLORS[rep]) return REP_COLORS[rep];
+      const all = [...(B() ? B().reps : [])].sort();
+      return EXTRA_COLORS[Math.max(0, all.indexOf(rep)) % EXTRA_COLORS.length];
+    }
+
+    // raw counts for (rep, pool) at month/period — null = snapshot not reached
+    function baseAt(rep, pl, month, period) {
+      const b = B();
+      if (!b || !b.keys[month + '|' + period]) return null;
+      const rec = (b.data[month + '|' + period] || {})[rep];
+      return (rec && rec[pl]) || zero();
+    }
+    function teamAt(pl, month, period) {
+      const b = B();
+      if (!b || !b.keys[month + '|' + period]) return null;
+      const s = zero();
+      Object.values(b.data[month + '|' + period] || {}).forEach(rec => { const v = rec[pl]; if (v) REP_BASE.forEach(m => { s[m] += v[m]; }); });
+      return s;
+    }
+    function metricOf(v, key) { if (!v) return null; return RATE_DEF[key] ? RATE_DEF[key](v) : v[key]; }
+    function valueAt(rep, pl, key, month, period) { return metricOf(rep === '__team' ? teamAt(pl, month, period) : baseAt(rep, pl, month, period), key); }
+    function block(rep, pl, key) {
+      return { dataRows: PERIODS.map(p => { const values = {}; months().forEach(m => { values[m] = valueAt(rep, pl, key, m, p); }); return { period: p, values }; }) };
+    }
+    function whBlock(rep) {
+      const md = brandApp().getModel();
+      return md && md.table1 && md.table1.reps ? md.table1.reps[rep] || null : null;
+    }
+
+    // ----- working days (Manpower) -----
+    function wd(rep, month, endDay, pl) {
+      const days = MPF && MPF[month];
+      if (!days || !rep || rep === '__team') return null;
+      const r = rep.toLowerCase();
+      let n = 0;
+      for (let d = 1; d <= endDay; d++) {
+        const rec = days[d];
+        if (!rec) continue;
+        const on = pl === 'Hot' ? rec.Hot.has(r) : pl === 'Cold' ? rec.Cold.has(r) : (rec.Hot.has(r) || rec.Cold.has(r) || rec.Retention.has(r));
+        if (on) n++;
+      }
+      return n > 0 ? n : null;
+    }
+    function wdAt(rep, pl, month, period) { return wd(rep, month, effectiveDay(period, month), pl); }
+    function perWd(v, w) { return v == null || !w ? null : v / w; }
+
+    // ----- selectors -----
+    function periodsFor(month) { const b = B(); return b ? PERIODS.filter(p => b.keys[month + '|' + p]) : []; }
+    function populateMonths(keepMonth) {
+      const ms = months().filter(m => periodsFor(m).length);
+      monthSel.innerHTML = ms.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
+      monthSel.value = keepMonth && ms.includes(keepMonth) ? keepMonth : ms[ms.length - 1];
+    }
+    function populatePeriods(keepPeriod) {
+      const m = monthSel.value, ps = periodsFor(m);
+      periodSel.innerHTML = ps.map(p => `<option value="${p}">${periodOptionText(p, m)}</option>`).join('');
+      periodSel.value = keepPeriod && ps.includes(keepPeriod) ? keepPeriod : ps[ps.length - 1];
+    }
+    function repsIn(month, period) {
+      const cell = (B() && B().data[month + '|' + period]) || {};
+      return Object.keys(cell).filter(r => REP_BASE.some(m => (cell[r].All || {})[m] || (cell[r][pool] || {})[m]))
+        .sort((a, b) => ((cell[b][pool] || {}).revenue || 0) - ((cell[a][pool] || {}).revenue || 0) || ((cell[b].All || {}).lead || 0) - ((cell[a].All || {}).lead || 0));
+    }
+
+    // ----- forecast (two methods) -----
+    function revBlockFor(rep) {
+      const wh = pool === 'All' ? whBlock(rep) : null;
+      return wh ? { block: wh, src: 'WH' } : { block: block(rep, pool, 'revenue'), src: 'ERP' };
+    }
+    function forecastOf(rep, month, period, method) {
+      const { block: blk, src } = revBlockFor(rep);
+      const ms = brandApp().getMonthsWithData ? (src === 'WH' ? brandApp().getModel().months : months()) : months();
+      if (method === 'snap') return Object.assign(computeForecastOf(ms, blk, month, period), { src, method });
+      const cur = getValue(blk, period, month);
+      const day = effectiveDay(period, month), dim = daysInMonthOf(month);
+      if (cur == null) return { status: 'no-current', src, method };
+      if (day >= dim) return { status: 'complete', currentVal: cur, src, method };
+      const w0 = wd(rep, month, day, pool), w1 = wd(rep, month, dim, pool);
+      if (!w0 || !w1) return { status: 'no-wd', currentVal: cur, src, method };
+      return { status: 'ok', currentVal: cur, forecastAvg: cur / w0 * w1, wdSoFar: w0, wdMonth: w1, src, method };
+    }
+    function fcText(fc) {
+      if (fc.status === 'ok' && fc.method === 'snap') return `${fmtBaht(fc.forecastAvg)} <span class="fc-badge">คาดการณ์</span>`;
+      if (fc.status === 'ok') return `${fmtBaht(fc.forecastAvg)} <span class="fc-badge">คาดการณ์</span>`;
+      if (fc.status === 'complete') return `${fmtBaht(fc.currentVal)} <span style="font-size:11px;color:var(--muted)">(ยอดจริงทั้งเดือน)</span>`;
+      return '—';
+    }
+    function fcDetail(fc) {
+      if (fc.status === 'ok' && fc.method === 'snap') return `ช่วง ${fmtBaht(fc.forecastLow)} – ${fmtBaht(fc.forecastHigh)} · อิง ${fc.histCount} เดือนก่อนหน้า (ณ วันที่ ${fc.day} มักได้ ${(fc.avgFrac * 100).toFixed(1)}% ของยอดทั้งเดือน)`;
+      if (fc.status === 'ok') return `${fmtBaht(fc.currentVal)} ÷ ${fc.wdSoFar} WD × ${fc.wdMonth} WD ทั้งเดือน (${fmtBaht(fc.currentVal / fc.wdSoFar)}/WD)`;
+      if (fc.status === 'complete') return 'เดือนนี้ปิดข้อมูลครบแล้ว — เป็นยอดจริง ไม่ใช่การคาดการณ์';
+      if (fc.status === 'no-wd') return 'ไม่มีข้อมูลวันทำงานของเซลคนนี้ในชีท Manpower';
+      if (fc.status === 'no-history') return 'ยังไม่มีเดือนก่อนหน้าพอสำหรับคาดการณ์ (หรือยอดปัจจุบันเป็น 0)';
+      return 'ยังไม่มีข้อมูล';
+    }
+
+    // ----- render -----
+    function cellHtml(v, w, kind) {
+      const f = fmtKind(kind);
+      return `${v == null ? '—' : f(v)}${w !== undefined ? `<span class="tot">${w == null ? '— /WD' : (kind === 'currency' ? fmtBaht(w) : fmt1(w)) + ' /WD'}</span>` : ''}`;
+    }
+    function renderTable(month, period) {
+      const reps = repsIn(month, period);
+      if (!selRep || !reps.includes(selRep)) selRep = reps[0] || null;
+      const showWH = pool === 'All';
+      const head = `<tr><th>เซล</th><th>WD</th>${REP_METRICS.map(m => `<th>${m.label}</th>`).join('')}${showWH ? '<th>Revenue (WH)</th>' : ''}<th>Forecast Revenue</th></tr>`;
+      const rowHtml = (rep, isTeam) => {
+        const w = isTeam ? null : wdAt(rep, pool, month, period);
+        const v = isTeam ? teamAt(pool, month, period) : baseAt(rep, pool, month, period);
+        const cells = REP_METRICS.map(m => `<td>${cellHtml(metricOf(v, m.key), m.wd ? (isTeam ? undefined : perWd(metricOf(v, m.key), w)) : undefined, m.kind)}</td>`).join('');
+        let whCell = '';
+        if (showWH) {
+          if (isTeam) whCell = `<td>${fmtBaht(getValue(brandApp().getModel().table1.total, period, month))}</td>`;
+          else { const wb = whBlock(rep); const wv = wb ? getValue(wb, period, month) : null; whCell = `<td>${cellHtml(wb ? wv : null, wb ? perWd(wv, w) : undefined, 'currency')}</td>`; }
+        }
+        const fc = isTeam ? null : forecastOf(rep, month, period, fcMethod);
+        const fcCell = isTeam ? '<td></td>' : `<td title="${fc ? fcDetail(fc).replace(/"/g, '') : ''}">${fc ? fcText(fc) : '—'}${fc && fc.src === 'ERP' && fc.status !== 'no-current' ? '<span class="tot">จาก ERP</span>' : ''}</td>`;
+        const name = isTeam ? '<b>รวมทีม</b>' : `<span class="rep-dot" style="background:${colorOf(rep)}"></span>${rep}`;
+        return `<tr class="${isTeam ? 'team-row' : 'rep-row'}${rep === selRep ? ' current' : ''}" data-rep="${isTeam ? '' : rep}"><td>${name}</td><td>${isTeam ? '' : (w == null ? '—' : w)}</td>${cells}${whCell}${fcCell}</tr>`;
+      };
+      const tbl = document.getElementById('repsTable');
+      tbl.innerHTML = `<thead>${head}</thead><tbody>${reps.map(r => rowHtml(r, false)).join('')}${rowHtml('__team', true)}</tbody>`;
+      tbl.querySelectorAll('tr.rep-row').forEach(tr => tr.addEventListener('click', () => { selRep = tr.dataset.rep; renderDetail(); highlightRow(); }));
+      document.getElementById('repsTableHint').textContent = `${brand === 'Pro' ? 'Globish Pro' : 'Globish Kids'} · ${POOL_LABEL[pool]} · ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}${isPartialSnapshot(period, month) ? ' (ข้อมูลถึงวันที่ ' + effectiveDay(period, month) + ')' : ''}`;
+    }
+    function highlightRow() {
+      document.querySelectorAll('#repsTable tr.rep-row').forEach(tr => tr.classList.toggle('current', tr.dataset.rep === selRep));
+      document.querySelectorAll('#repsChips .rep-chip').forEach(ch => ch.classList.toggle('active', ch.dataset.rep === selRep));
+    }
+    function renderChips(month, period) {
+      const reps = repsIn(month, period);
+      const el = document.getElementById('repsChips');
+      el.innerHTML = reps.map(r => `<button class="rep-chip reps-chip" data-rep="${r}" style="--c:${colorOf(r)}">${r}</button>`).join('');
+      el.querySelectorAll('.rep-chip').forEach(ch => ch.addEventListener('click', () => { selRep = ch.dataset.rep; renderDetail(); highlightRow(); }));
+    }
+    function prevMonthOf(m) { const ms = months(), i = ms.indexOf(m); return i > 0 ? ms[i - 1] : null; }
+    function deltaVsPrev(blk, key, kind, month, period) {
+      const pm = prevMonthOf(month);
+      if (!pm) return '';
+      const cur = getValue(blk, period, month);
+      const prev = RATE_DEF[key] ? getValue(blk, period, pm) : sameDayValue(blk, pm, period, month);
+      if (cur == null || prev == null) return '';
+      const diff = cur - prev, cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat', arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
+      const pct = prev ? ` (${diff >= 0 ? '+' : ''}${(diff / Math.abs(prev) * 100).toFixed(1)}%)` : '';
+      const val = kind === 'percent' ? Math.abs(diff).toFixed(2) + 'pp' : fmtKind(kind)(Math.abs(diff));
+      return `<span class="delta ${cls}">${arrow} ${val}${kind === 'percent' ? '' : pct}</span> <span style="color:var(--muted)">vs ${monthLabel(pm)}</span>`;
+    }
+    function openRepMetric(key) {
+      const isWH = key === 'whRevenue';
+      const m = isWH ? { label: 'Revenue (WH)', kind: 'currency', color: '#4f46e5' } : REP_METRICS.find(x => x.key === key);
+      const blk = isWH ? whBlock(selRep) : block(selRep, pool, key);
+      openSnapshotModal({
+        title: `${selRep} — ${m.label}${isWH ? '' : ' · ' + POOL_LABEL[pool]} (${brand === 'Pro' ? 'Globish Pro' : 'Globish Kids'})`,
+        block: blk, months: isWH ? brandApp().getModel().months.filter(mo => months().includes(mo)) : months(), fmt: fmtKind(m.kind), color: m.color, kind: m.kind,
+        onJump: (mo) => { monthSel.value = mo; populatePeriods(PERIODS[PERIODS.length - 1]); renderAll(); }
+      });
+    }
+    function renderDetail() {
+      const month = monthSel.value, period = periodSel.value;
+      const cards = document.getElementById('repsCards');
+      if (!selRep) { cards.innerHTML = '<div class="state-msg">ไม่มีข้อมูลเซลในช่วงนี้</div>'; return; }
+      const w = wdAt(selRep, pool, month, period);
+      let html = `<div class="card"><div class="label">วันทำงาน (WD) — ${POOL_LABEL[pool]}</div><div class="value">${w == null ? '—' : w}</div><div class="sub2">ถึงวันที่ ${effectiveDay(period, month)} ตามชีท Manpower</div></div>`;
+      REP_METRICS.forEach(m => {
+        const blk = block(selRep, pool, m.key);
+        const v = getValue(blk, period, month);
+        html += `<div class="card rep-card" data-key="${m.key}" style="cursor:pointer;"><div class="label">${m.label}</div><div class="value">${v == null ? '—' : fmtKind(m.kind)(v)}</div>
+          ${m.wd ? `<div class="sub2">ต่อ WD: <b>${m.kind === 'currency' ? (perWd(v, w) == null ? '—' : fmtBaht(perWd(v, w))) : fmt1(perWd(v, w))}</b></div>` : ''}
+          <div class="sub2">${deltaVsPrev(blk, m.key, m.kind, month, period)}</div></div>`;
+      });
+      const wb = pool === 'All' ? whBlock(selRep) : null;
+      if (wb) {
+        const v = getValue(wb, period, month);
+        html += `<div class="card rep-card" data-key="whRevenue" style="cursor:pointer;"><div class="label">Revenue (WH)</div><div class="value">${fmtBaht(v)}</div><div class="sub2">ต่อ WD: <b>${perWd(v, w) == null ? '—' : fmtBaht(perWd(v, w))}</b></div><div class="sub2">${deltaVsPrev(wb, 'whRevenue', 'currency', month, period)}</div></div>`;
+      }
+      cards.innerHTML = partialNoteHtml(period, month) + html;
+      cards.querySelectorAll('.rep-card').forEach(el => el.addEventListener('click', () => openRepMetric(el.dataset.key)));
+      renderPoolTable(month, period);
+      renderFcBox(month, period);
+      renderTrend(month, period);
+    }
+    function renderPoolTable(month, period) {
+      document.getElementById('repsPoolTitle').textContent = `${selRep} — Hot Lead vs Cold Lead`;
+      const pools = ['All', 'Hot', 'Cold'];
+      const wds = pools.map(pl => wdAt(selRep, pl, month, period));
+      const vs = pools.map(pl => baseAt(selRep, pl, month, period));
+      let html = `<thead><tr><th>Metric</th>${pools.map(pl => `<th style="color:${POOL_COLOR[pl]}">${POOL_LABEL[pl]}</th>`).join('')}</tr></thead><tbody>`;
+      html += `<tr><td>วันทำงาน (WD)</td>${wds.map(w => `<td>${w == null ? '—' : w}</td>`).join('')}</tr>`;
+      REP_METRICS.forEach(m => {
+        html += `<tr><td>${m.label}</td>${pools.map((pl, i) => { const v = metricOf(vs[i], m.key); return `<td>${cellHtml(v, m.wd ? perWd(v, wds[i]) : undefined, m.kind)}</td>`; }).join('')}</tr>`;
+      });
+      html += '</tbody>';
+      const t = document.getElementById('repsPoolTable');
+      t.innerHTML = html;
+      t.classList.add('pool-table');
+    }
+    function renderFcBox(month, period) {
+      document.getElementById('repsFcTitle').textContent = `${selRep} — Forecast Revenue สิ้นเดือน`;
+      const a = forecastOf(selRep, month, period, 'snap'), b = forecastOf(selRep, month, period, 'wd');
+      const box = (fc, title, on) => `<div class="fc-method${on ? ' on' : ''}"><div class="label">${title}${on ? ' <span class="fc-badge">ที่เลือก</span>' : ''}</div><div class="value">${fcText(fc)}</div><div class="fc-note">${fcDetail(fc)}</div></div>`;
+      const src = a.src === 'WH' ? 'Revenue (WH)' : 'Revenue (ERP' + (pool !== 'All' ? ' · ' + POOL_LABEL[pool] : '') + ')';
+      document.getElementById('repsFcBox').innerHTML = `<div class="fc-note" style="margin:0 0 8px;">ฐานที่ใช้: <b>${src}</b> · ยอด ณ ตอนนี้ ${fmtBaht(getValue(revBlockFor(selRep).block, period, month))}</div>` +
+        box(a, 'ตามรูปแบบ Snapshot', fcMethod === 'snap') + box(b, 'Run-rate ต่อ WD', fcMethod === 'wd');
+    }
+    function renderTrend(month, period) {
+      const m = REP_METRICS.find(x => x.key === trendKey);
+      const ms = months();
+      const isRate = !!RATE_DEF[trendKey];
+      const datasets = ['All', 'Hot', 'Cold'].map(pl => {
+        const blk = block(selRep, pl, trendKey);
+        return {
+          label: POOL_LABEL[pl], borderColor: POOL_COLOR[pl], backgroundColor: POOL_COLOR[pl], tension: 0.3, spanGaps: true, pointRadius: 3,
+          borderWidth: pl === 'All' ? 3 : 2,
+          data: ms.map(mo => {
+            const v = isRate ? getValue(blk, period, mo) : sameDayValue(blk, mo, period, month);
+            if (trendMode !== 'wd' || isRate || !m.wd) return v;
+            const d = mo === month || !isPartialSnapshot(period, month) ? effectiveDay(period, mo) : Math.min(effectiveDay(period, month), daysInMonthOf(mo));
+            return perWd(v, wd(selRep, mo, d, pl));
+          })
+        };
+      });
+      destroy('trend');
+      const f = trendMode === 'wd' && m.wd && !isRate ? (v => m.kind === 'currency' ? fmtBaht(v) : fmt1(v)) : fmtKind(m.kind);
+      charts.trend = new Chart(document.getElementById('chartRepsTrend'), {
+        type: 'line',
+        data: { labels: ms.map(mo => snapLabel(mo, period)), datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 11 } } }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.raw == null ? '—' : f(c.raw)}` } } },
+          scales: { y: { beginAtZero: true, ticks: { callback: v => m.kind === 'percent' ? v + '%' : m.kind === 'currency' ? (v / 1000) + 'k' : v }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } }
+        }
+      });
+      document.getElementById('repsTrendHint').textContent = `${selRep} · ${m.label}${trendMode === 'wd' && m.wd ? ' ต่อ WD' : ''} · ทุกเดือน ณ ${isPartialSnapshot(period, month) ? 'วันที่ ' + effectiveDay(period, month) : 'snapshot ' + period}`;
+      document.querySelectorAll('#repsTrendModeSeg button').forEach(b => { b.disabled = isRate || !m.wd; });
+    }
+    function renderFcChart(month, period) {
+      const reps = repsIn(month, period);
+      const fcs = reps.map(r => forecastOf(r, month, period, fcMethod));
+      const cur = fcs.map(fc => fc.currentVal != null ? fc.currentVal : null);
+      const rest = fcs.map(fc => fc.status === 'ok' ? Math.max(0, fc.forecastAvg - fc.currentVal) : null);
+      destroy('fc');
+      charts.fc = new Chart(document.getElementById('chartRepsFc'), {
+        type: 'bar',
+        data: {
+          labels: reps,
+          datasets: [
+            { label: 'ยอดถึงตอนนี้', data: cur, backgroundColor: reps.map(colorOf), borderRadius: 4, maxBarThickness: 26 },
+            { label: 'ส่วนที่คาดว่าจะเพิ่มถึงสิ้นเดือน', data: rest, backgroundColor: reps.map(r => colorOf(r) + '55'), borderRadius: 4, maxBarThickness: 26 }
+          ]
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
+            tooltip: { callbacks: { label: c => { const fc = fcs[c.dataIndex]; return c.datasetIndex === 0 ? `ยอดถึงตอนนี้ (${fc.src}): ${fmtBaht(fc.currentVal)}` : [`คาดการณ์สิ้นเดือน: ${fc.status === 'ok' ? fmtBaht(fc.forecastAvg) : '—'}`, fcDetail(fc).replace(/<[^>]+>/g, '')]; } } }
+          },
+          scales: { x: { stacked: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, y: { stacked: true, grid: { display: false } } },
+          onClick: (e, els) => { if (els && els.length) { selRep = reps[els[0].index]; renderDetail(); highlightRow(); } }
+        }
+      });
+      const wrap = document.getElementById('chartRepsFc').parentElement;
+      wrap.style.height = Math.max(220, reps.length * 34 + 70) + 'px';
+      document.getElementById('repsFcHint').textContent = fcMethod === 'snap' ? 'วิธี: ตามรูปแบบ Snapshot' : 'วิธี: Run-rate ต่อ WD (Manpower)';
+      const done = !isPartialSnapshot(period, month) && effectiveDay(period, month) >= daysInMonthOf(month);
+      document.getElementById('repsFcNote').innerHTML = done ? 'เดือนนี้ปิดข้อมูลครบแล้ว ตัวเลขที่แสดงคือยอดจริงทั้งเดือน ไม่ใช่การคาดการณ์' : '';
+      document.getElementById('repsFcNote').style.display = done ? '' : 'none';
+    }
+    function renderNote() {
+      const notes = [];
+      const md = brandApp().getModel();
+      if (!MPF) notes.push('โหลดชีท Manpower ไม่ได้ จึงคำนวณ Per WD และ Run-rate ไม่ได้');
+      if (!md) notes.push('โหลดข้อมูล WH ของแบรนด์นี้ไม่ได้ จึงไม่มี Revenue (WH)');
+      const unnamed = [...(B() ? B().reps : [])].filter(r => /^[a-z0-9._-]+$/.test(r) && r.includes('.'));
+      if (unnamed.length) notes.push(`มี lead_owner ที่ยังไม่ได้ตั้งชื่อในแท็บ Rep_Map ของชีท Snapshot Engine: ${unnamed.join(', ')}`);
+      document.getElementById('repsNote').innerHTML = notes.map(n => `<div class="wd-warn" style="margin-bottom:10px;">${n}</div>`).join('');
+    }
+    function renderAll() {
+      if (!B()) {
+        document.getElementById('repsContent').style.display = 'none';
+        const msg = document.getElementById('repsStateMsg');
+        msg.style.display = 'block'; msg.classList.add('err');
+        msg.textContent = `ยังไม่มีข้อมูลรายเซลของ ${brand === 'Pro' ? 'Globish Pro' : 'Globish Kids'} ในแท็บ Rep Snapshot`;
+        return;
+      }
+      document.getElementById('repsStateMsg').style.display = 'none';
+      document.getElementById('repsContent').style.display = 'block';
+      const month = monthSel.value, period = periodSel.value;
+      renderNote();
+      renderTable(month, period);
+      renderChips(month, period);
+      highlightRow();
+      renderDetail();
+      renderFcChart(month, period);
+    }
+
+    function seg(id, onPick) {
+      document.querySelectorAll('#' + id + ' button').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('#' + id + ' button').forEach(x => x.classList.toggle('active', x === b));
+        onPick(b.dataset.v);
+      }));
+    }
+    document.getElementById('repsTrendMetricSeg').innerHTML = REP_METRICS.map(m => `<button data-v="${m.key}"${m.key === trendKey ? ' class="active"' : ''}>${m.label.replace('#', '')}</button>`).join('');
+    seg('repsBrandSeg', v => { brand = v; selRep = null; const keep = monthSel.value; populateMonths(keep); populatePeriods(periodSel.value); renderAll(); });
+    seg('repsPoolSeg', v => { pool = v; renderAll(); });
+    seg('repsFcSeg', v => { fcMethod = v; renderAll(); });
+    seg('repsTrendMetricSeg', v => { trendKey = v; renderTrend(monthSel.value, periodSel.value); });
+    seg('repsTrendModeSeg', v => { trendMode = v; renderTrend(monthSel.value, periodSel.value); });
+    monthSel.addEventListener('change', () => { populatePeriods(PERIODS[PERIODS.length - 1]); renderAll(); });
+    periodSel.addEventListener('change', renderAll);
+    document.getElementById('repsReloadBtn').addEventListener('click', () => load());
+
+    async function load() {
+      const msg = document.getElementById('repsStateMsg');
+      msg.style.display = 'block'; msg.classList.remove('err'); msg.textContent = 'กำลังโหลดข้อมูล…';
+      document.getElementById('repsContent').style.display = 'none';
+      try {
+        const [repText, mpText] = await Promise.all([fetchRepCsv(), fetchManpowerCsv().catch(() => null)]);
+        RS = parseRepCSV(repText);
+        MPF = mpText ? parseManpowerFull(mpText) : null;
+        if (!Object.keys(RS).length) throw new Error('แท็บ Rep Snapshot ยังไม่มีข้อมูล');
+        populateMonths(monthSel.value);
+        populatePeriods(periodSel.value);
+        document.getElementById('repsSubline').innerHTML = `<a href="${SHEET_EDIT_URL}#gid=${REP_SHEET_GID}" target="_blank" rel="noopener">เปิดแท็บ Rep Snapshot</a> · <a href="${SHEET_EDIT_URL}#gid=${MP_SHEET_GID}" target="_blank" rel="noopener">เปิดชีท Manpower</a> · โหลดข้อมูลเมื่อ ${new Date().toLocaleTimeString('th-TH')}`;
+        renderAll();
+      } catch (err) {
+        msg.textContent = 'โหลดข้อมูลรายเซลไม่สำเร็จ: ' + (err && err.message ? err.message : String(err));
+        msg.classList.add('err');
+      }
+    }
+    function forceChartResize() { requestAnimationFrame(() => Object.values(charts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } })); }
+    window.addEventListener('resize', forceChartResize);
+    return { load, forceChartResize, renderAll };
+  }
+  const repsApp = createRepsApp();
 
   // ---------- top-level page nav ----------
   document.querySelectorAll('.page-btn').forEach(btn => {
@@ -3488,8 +4229,14 @@
       document.getElementById('page-' + btn.dataset.page).classList.add('active');
       if (btn.dataset.page === 'pro') proApp.forceChartResize();
       if (btn.dataset.page === 'kids') kidsApp.forceChartResize();
+      if (btn.dataset.page === 'reps') repsApp.forceChartResize();
+      if (btn.dataset.page === 'master' && masterFcChart) requestAnimationFrame(() => masterFcChart.resize());
     });
   });
+  document.querySelectorAll('.moved-note a[data-goto]').forEach(a => a.addEventListener('click', () => {
+    const b = document.querySelector('.page-btn[data-page="' + a.dataset.goto + '"]');
+    if (b) { b.click(); window.scrollTo(0, 0); }
+  }));
 
   // ---------- new-version banner ----------
   // Tabs left open for hours keep running the old page (the "รีเฟรชข้อมูล"
@@ -3522,7 +4269,7 @@
   })();
 
   function bootApp() {
-    Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => renderMasterOverview());
+    Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => { renderMasterOverview(); return repsApp.load(); });
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
