@@ -18,6 +18,7 @@
     --accent-light: #eef0fe;
     --new: #3b82f6;
     --retention: #a855f7;
+    --tiktok: #0f766e;
     --good: #16a34a;
     --bad: #dc2626;
     --zin: #6366f1;
@@ -282,6 +283,9 @@
   .seg button:disabled { opacity: .45; cursor: not-allowed; }
   #masterCards .card[data-key] { cursor: pointer; }
   #masterCards .card[data-key]:hover { border-color: var(--accent); }
+  @media (min-width: 1200px) { #masterCards { grid-template-columns: repeat(5, 1fr); } }
+  #masterCards .card.tiktok { border-style: dashed; }
+  #masterCards .card.tiktok .chan { display: inline-block; font-size: 10px; font-weight: 700; color: var(--tiktok); background: #ccfbf1; border-radius: 999px; padding: 1px 7px; margin-left: 4px; vertical-align: middle; }
   .moved-note { background: var(--accent-light); border: 1px dashed #c7d2fe; border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #3730a3; }
   .moved-note a { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; }
   @media (max-width: 700px) { .reps-toolbar { gap: 8px; } }
@@ -3701,6 +3705,7 @@
         <div class="value">${fmtNum(wonP + wonK)} <span style="font-size:13px;color:var(--muted);font-weight:600;">/ ${fmtNum(leadP + leadK)} leads</span></div>
         <div class="sub2">Pro ${fmtNum(wonP)}/${fmtNum(leadP)} · Kids ${fmtNum(wonK)}/${fmtNum(leadK)}</div>
       </div>
+      ${tiktokCardHtml(month, period)}
     `;
     document.querySelectorAll('#masterCards .card[data-key]').forEach(el => el.addEventListener('click', () => openMasterDetail(el.dataset.key)));
   }
@@ -4042,6 +4047,67 @@
     // same order as the bars (most advanced stage first, at the baseline)
     const items = PIPE_SEGS.map(s => ({ color: s.color, label: s.label })).concat(withLead ? [{ color: PIPE_RAMP.lead, label: 'ยังเป็น Lead (ยังไม่ Book)' }] : []);
     return items.map(it => `<span><i style="background:${it.color}"></i>${it.label}</span>`).join('');
+  }
+
+  // ---------- TikTok (separate channel — NOT added to Total Revenue) ----------
+  // Source: "TikTok Snapshot" tab of the DB sheet (IMPORTRANGE of the Snapshot
+  // Engine's Snapshot_TikTok, filled daily from the WH TikTok Orders Summary
+  // API). Same checkpoint × month layout as the brand snapshots, 3 blocks:
+  // Revenue (net, after refunds) / Orders / Refund. No Pro/Kids split in the
+  // API. WH "Anonymus" (= TikTok) is already excluded from Total Revenue (WH),
+  // so showing TikTok separately does not double count.
+  const TT_SHEET_GID = '905173311';
+  const TT_SHEET_NAME = 'TikTok Snapshot';
+  let TT_MODEL = null, TT_PROMISE = null;
+  async function fetchTikTokCsv() {
+    const exportUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${TT_SHEET_GID}&cb=${Date.now()}`;
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(TT_SHEET_NAME)}&range=A1:M30&cb=${Date.now()}`;
+    let resp;
+    try {
+      resp = await fetch(exportUrl, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('export HTTP ' + resp.status);
+    } catch (e0) {
+      await new Promise(res => setTimeout(res, 800));
+      resp = await fetch(gvizUrl, { cache: 'no-store' });
+    }
+    if (!resp.ok) throw new Error(`ดึงข้อมูล TikTok Snapshot ไม่สำเร็จ (HTTP ${resp.status})`);
+    return resp.text();
+  }
+  function parseTikTokCSV(text) {
+    const blocks = scanBlocks(parseCSV(text), { allowBlankLabels: true, templates: { 0: ['Revenue', 'Orders', 'Refund'] } }).filter(b => b.col === 0);
+    const by = l => blocks.find(b => b.label === l);
+    const m = { revenue: by('Revenue'), orders: by('Orders'), refund: by('Refund') };
+    if (!m.revenue) throw new Error('แท็บ TikTok Snapshot โครงสร้างไม่ตรง');
+    return m;
+  }
+  function loadTikTok(force) {
+    if (!TT_PROMISE || force) {
+      TT_PROMISE = fetchTikTokCsv().then(parseTikTokCSV).then(m => { TT_MODEL = m; return m; })
+        .catch(e => { TT_MODEL = null; TT_PROMISE = null; console.warn('[TikTok]', e); return null; });
+    }
+    return TT_PROMISE;
+  }
+  function prevMonthOf(m) {
+    const [mm, yyyy] = m.split('/').map(Number);
+    const d = new Date(yyyy, mm - 2, 1);
+    return String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+  }
+  function tiktokCardHtml(month, period) {
+    const head = `<div class="label">TikTok Revenue <span class="chan">ช่องทางแยก</span></div>`;
+    if (!TT_MODEL) {
+      return `<div class="card tiktok">${head}<div class="value" style="color:var(--tiktok)">—</div><div class="sub2">${TT_PROMISE ? 'กำลังโหลด…' : 'โหลดข้อมูล TikTok ไม่สำเร็จ'}</div></div>`;
+    }
+    const rev = getValue(TT_MODEL.revenue, period, month);
+    const ord = getValue(TT_MODEL.orders, period, month);
+    const ref = getValue(TT_MODEL.refund, period, month);
+    const pm = prevMonthOf(month);
+    const prev = TT_MODEL.revenue.months.includes(pm) ? sameDayValue(TT_MODEL.revenue, pm, period, month) : null;
+    return `<div class="card tiktok" title="ยอดขายผ่าน TikTok Shop หลังหัก refund · ไม่ได้รวมอยู่ใน Total Revenue (WH)">
+        ${head}
+        <div class="value" style="color:var(--tiktok)">${fmtBaht(rev)}</div>
+        <div class="sub2">${fmtNum(ord)} orders · refund ${fmtBaht(ref || 0)} · ไม่รวมใน Total</div>
+        <div class="sub2">เทียบ ${monthLabel(pm)} ช่วงเดียวกัน ${deltaBadge(rev, prev)}</div>
+      </div>`;
   }
 
   // ---------- Sales Performance (per rep, snapshot style) ----------
@@ -4797,6 +4863,8 @@
   function bootApp() {
     Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => { renderMasterOverview(); return repsApp.load(); });
     loadPipeData().then(renderBrandPipelines).catch(renderBrandPipelines);
+    // TikTok card fills in when its tab arrives (re-render only if Master is already showing)
+    loadTikTok().then(() => { if (masterMonthSel.value) { try { renderMasterCards(); } catch (e) { console.warn(e); } } });
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
