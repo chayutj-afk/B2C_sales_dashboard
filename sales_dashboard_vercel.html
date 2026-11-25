@@ -285,6 +285,15 @@
   #masterCards .card[data-key]:hover { border-color: var(--accent); }
   @media (min-width: 1200px) { #masterCards { grid-template-columns: repeat(5, 1fr); } }
   #masterCards .card.tiktok { border-style: dashed; }
+  #masterCards .card.tiktok { cursor: pointer; }
+  #masterCards .card.tiktok:hover { border-color: var(--tiktok); }
+  #page-tiktok .section-title .n { background: var(--tiktok); }
+  #page-tiktok .card.tt-click { cursor: pointer; }
+  #page-tiktok .card.tt-click:hover { border-color: var(--tiktok); }
+  #page-tiktok .chan { display: inline-block; font-size: 11px; font-weight: 700; color: var(--tiktok); background: #ccfbf1; border-radius: 999px; padding: 2px 9px; margin-left: 6px; vertical-align: middle; }
+  #ttMonthTable tbody tr { cursor: pointer; }
+  #ttMonthTable tbody tr:hover td { background: #f0fdfa; }
+  #ttMonthTable tr.current td { background: #ccfbf1; }
   #masterCards .card.tiktok .chan { display: inline-block; font-size: 10px; font-weight: 700; color: var(--tiktok); background: #ccfbf1; border-radius: 999px; padding: 1px 7px; margin-left: 4px; vertical-align: middle; }
   .moved-note { background: var(--accent-light); border: 1px dashed #c7d2fe; border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #3730a3; }
   .moved-note a { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; }
@@ -371,6 +380,7 @@
 <div class="page-nav">
   <button class="page-btn active" data-page="master">Master Overview</button>
   <button class="page-btn" data-page="pro">Globish Pro Performance</button>
+  <button class="page-btn" data-page="tiktok">TikTok Performance</button>
   <button class="page-btn" data-page="kids">Globish Kids Performance</button>
   <button class="page-btn" data-page="reps">Sales Performance (รายคน)</button>
   <button class="page-btn" data-page="slots">Consult Slot Monitoring</button>
@@ -416,6 +426,68 @@
   </div>
 
   <div id="masterStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
+</div>
+
+<div id="page-tiktok" class="page">
+  <div class="header">
+    <div>
+      <h1>TikTok Performance <span class="chan">ช่องทางแยก</span></h1>
+      <div class="sub" id="subline-tiktok">กำลังโหลดข้อมูล TikTok…</div>
+    </div>
+    <div class="controls">
+      <div>
+        <label for="monthSel-tiktok">เดือน</label>
+        <select id="monthSel-tiktok"></select>
+      </div>
+      <div>
+        <label for="periodSel-tiktok">Snapshot ณ วันที่</label>
+        <select id="periodSel-tiktok"></select>
+      </div>
+      <button class="reload-btn" id="reloadBtn-tiktok">↻ รีเฟรชข้อมูล</button>
+    </div>
+  </div>
+
+  <div id="ttContent" style="display:none;">
+    <div class="section-title"><span class="n">1</span> ยอดขายจริง (Real Data) — TikTok Shop <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
+    <div class="cards" id="ttCards"></div>
+
+    <div class="section-title"><span class="n">2</span> คาดการณ์สิ้นเดือน <span class="section-hint">ยอดสะสม ÷ สัดส่วนเฉลี่ยที่เดือนก่อน ๆ สะสมถึงวันเดียวกัน</span></div>
+    <div class="cards" id="ttFcCards" style="grid-template-columns:repeat(3,1fr);"></div>
+    <div class="chart-card">
+      <div class="chart-wrap tall"><canvas id="chartTtFc"></canvas></div>
+      <div class="fc-note" id="ttFcNote"></div>
+    </div>
+
+    <div class="section-title"><span class="n">3</span> Pacing — ยอดสะสมระหว่างเดือน <span class="section-hint">เทียบเดือนที่เลือกกับเดือนก่อนและค่าเฉลี่ย 3 เดือนล่าสุดที่ปิดแล้ว</span></div>
+    <div class="chart-card">
+      <div class="chart-wrap"><canvas id="chartTtPacing"></canvas></div>
+      <div class="fc-note" id="ttPacingNote"></div>
+    </div>
+
+    <div class="section-title"><span class="n">4</span> แนวโน้มรายเดือน <span class="section-hint">ยอด ณ snapshot ล่าสุดของแต่ละเดือน · เดือนที่ยังไม่จบแสดงสีอ่อน</span></div>
+    <div class="grid-2">
+      <div class="chart-card">
+        <h3>Net Revenue &amp; Orders</h3>
+        <div class="chart-wrap"><canvas id="chartTtTrend"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>AOV (ยอดต่อออเดอร์) &amp; Refund Rate</h3>
+        <div class="chart-wrap"><canvas id="chartTtAov"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="n">5</span> สรุปรายเดือน <span class="section-hint">คลิกแถวเพื่อไปที่เดือนนั้น</span></div>
+    <div class="chart-card">
+      <div style="overflow-x:auto;"><table class="detail-table" id="ttMonthTable"></table></div>
+    </div>
+
+    <div class="footnote">
+      ข้อมูลจากแท็บ "TikTok Snapshot" (ดึงรายวันจาก WH TikTok Orders Summary) · Net Revenue = ยอดหลังหัก refund · Orders ไม่นับออเดอร์ที่ refund · Refund Rate = Refund ÷ (Net Revenue + Refund) · API ไม่แยก Globish Pro / Kids ·
+      ยอด TikTok <b>ไม่ได้รวม</b>อยู่ใน Total Revenue (WH) ของหน้าอื่น (WH "Anonymus" = TikTok ถูกตัดออกแล้ว) จึงไม่นับซ้ำ · การคาดการณ์ใช้สูตรเดียวกับหน้า Master Overview
+    </div>
+  </div>
+
+  <div id="ttStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
 </div>
 
 <div id="page-pro" class="page">
@@ -3708,6 +3780,8 @@
       ${tiktokCardHtml(month, period)}
     `;
     document.querySelectorAll('#masterCards .card[data-key]').forEach(el => el.addEventListener('click', () => openMasterDetail(el.dataset.key)));
+    const ttCard = document.querySelector('#masterCards .card.tiktok');
+    if (ttCard) ttCard.addEventListener('click', () => { const b = document.querySelector('.page-btn[data-page="tiktok"]'); if (b) { b.click(); window.scrollTo(0, 0); } });
   }
 
   function renderMasterForecast() {
@@ -4102,13 +4176,296 @@
     const ref = getValue(TT_MODEL.refund, period, month);
     const pm = prevMonthOf(month);
     const prev = TT_MODEL.revenue.months.includes(pm) ? sameDayValue(TT_MODEL.revenue, pm, period, month) : null;
-    return `<div class="card tiktok" title="ยอดขายผ่าน TikTok Shop หลังหัก refund · ไม่ได้รวมอยู่ใน Total Revenue (WH)">
+    return `<div class="card tiktok" title="ยอดขายผ่าน TikTok Shop หลังหัก refund · ไม่ได้รวมอยู่ใน Total Revenue (WH) · คลิกเพื่อดูหน้า TikTok Performance">
         ${head}
         <div class="value" style="color:var(--tiktok)">${fmtBaht(rev)}</div>
         <div class="sub2">${fmtNum(ord)} orders · refund ${fmtBaht(ref || 0)} · ไม่รวมใน Total</div>
         <div class="sub2">เทียบ ${monthLabel(pm)} ช่วงเดียวกัน ${deltaBadge(rev, prev)}</div>
       </div>`;
   }
+
+  // ---------- TikTok Performance page ----------
+  const TT_COLOR = '#0f766e', TT_LIGHT = 'rgba(15,118,110,0.28)';
+  const ttMonthSel = document.getElementById('monthSel-tiktok');
+  const ttPeriodSel = document.getElementById('periodSel-tiktok');
+  const ttCharts = {};
+  function ttMonths() {
+    if (!TT_MODEL) return [];
+    return TT_MODEL.revenue.months.filter(m => PERIODS.some(p => (getValue(TT_MODEL.revenue, p, m) || 0) > 0));
+  }
+  function ttPeriods(m) { return PERIODS.filter(p => getValue(TT_MODEL.revenue, p, m) != null); }
+  function ttLatestPeriod(m) { const ps = ttPeriods(m); return ps[ps.length - 1]; }
+  function ttAovAt(p, m) {
+    const r = getValue(TT_MODEL.revenue, p, m), o = getValue(TT_MODEL.orders, p, m);
+    return r != null && o ? r / o : null;
+  }
+  function ttRefRateAt(p, m) {
+    const r = getValue(TT_MODEL.revenue, p, m), f = getValue(TT_MODEL.refund, p, m) || 0;
+    return r != null && (r + f) > 0 ? f / (r + f) * 100 : null;
+  }
+  function ttSame(block, pm, period, month) { return ttMonths().includes(pm) ? sameDayValue(block, pm, period, month) : null; }
+  // delta badge with a custom formatter; invert = an increase is bad (refund)
+  function ttDelta(cur, prev, fmt, invert) {
+    if (cur == null || prev == null) return '<span class="delta flat">ไม่มีข้อมูลเทียบ</span>';
+    const diff = cur - prev;
+    const pct = prev !== 0 ? diff / Math.abs(prev) * 100 : null;
+    const good = invert ? diff < 0 : diff > 0;
+    const cls = diff === 0 ? 'flat' : good ? 'up' : 'down';
+    const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '▬';
+    return `<span class="delta ${cls}">${arrow} ${fmt(Math.abs(diff))}${pct != null ? ` (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%)` : ''}</span>`;
+  }
+  function ttJump(month) {
+    ttMonthSel.value = month;
+    ttPopulatePeriods(month);
+    renderTikTokAll();
+  }
+  function ttPopulatePeriods(month) {
+    const avail = ttPeriods(month);
+    ttPeriodSel.innerHTML = '';
+    avail.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p; opt.textContent = periodOptionText(p, month);
+      ttPeriodSel.appendChild(opt);
+    });
+    ttPeriodSel.value = avail[avail.length - 1];
+  }
+  function ttPopulateSelectors() {
+    const ms = ttMonths();
+    ttMonthSel.innerHTML = '';
+    ms.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = monthLabel(m); ttMonthSel.appendChild(o); });
+    ttMonthSel.value = ms[ms.length - 1];
+    ttPopulatePeriods(ms[ms.length - 1]);
+  }
+  function ttDestroy(key) { if (ttCharts[key]) { ttCharts[key].destroy(); delete ttCharts[key]; } }
+
+  function renderTikTokCards() {
+    const M = TT_MODEL, month = ttMonthSel.value, period = ttPeriodSel.value, ms = ttMonths();
+    const pm = prevMonthOf(month);
+    const rev = getValue(M.revenue, period, month), ord = getValue(M.orders, period, month), ref = getValue(M.refund, period, month) || 0;
+    const aov = ord ? rev / ord : null;
+    const refRate = rev != null && rev + ref > 0 ? ref / (rev + ref) * 100 : null;
+    const pRev = ttSame(M.revenue, pm, period, month), pOrd = ttSame(M.orders, pm, period, month), pRef = ttSame(M.refund, pm, period, month);
+    const pAov = pRev != null && pOrd ? pRev / pOrd : null;
+    const pRate = pRev != null && pRef != null && pRev + pRef > 0 ? pRef / (pRev + pRef) * 100 : null;
+    const day = effectiveDay(period, month);
+    // share of all B2C revenue (WH Pro + Kids + TikTok) — TikTok is not inside WH
+    let shareTxt = '';
+    const p = proApp.getModel(), k = kidsApp.getModel();
+    if (p && k && rev != null) {
+      const wh = (getValue(p.table1.total, period, month) || 0) + (getValue(k.table1.total, period, month) || 0);
+      if (wh > 0) shareTxt = `<div class="sub2">= ${(rev / (wh + rev) * 100).toFixed(1)}% ของยอดรวม WH + TikTok (WH ${fmtBaht(wh)})</div>`;
+    }
+    const perDay = rev != null && day > 0 ? rev / day : null;
+    const pctFmt = v => v.toFixed(2) + 'pp';
+    document.getElementById('ttCards').innerHTML = partialNoteHtml(period, month) + `
+      <div class="card tt-click" data-key="revenue">
+        <div class="label">Net Revenue (หลังหัก refund) — ${monthLabel(month)} ถึงวันที่ ${period.split('-')[1]}</div>
+        <div class="value" style="color:var(--tiktok)">${fmtBaht(rev)}</div>
+        <div class="sub2">เฉลี่ย ${fmtBaht(perDay)} / วัน (${day} วัน)</div>
+        ${shareTxt}
+        <div class="sub2">เทียบ ${monthLabel(pm)} ช่วงเดียวกัน ${ttDelta(rev, pRev, fmtBaht)}</div>
+      </div>
+      <div class="card tt-click" data-key="orders">
+        <div class="label">Orders (ไม่รวมที่ refund)</div>
+        <div class="value">${fmtNum(ord)}</div>
+        <div class="sub2">เฉลี่ย ${ord != null && day > 0 ? (ord / day).toFixed(1) : '—'} orders / วัน</div>
+        <div class="sub2">เทียบ ${monthLabel(pm)} ช่วงเดียวกัน ${ttDelta(ord, pOrd, fmtNum)}</div>
+      </div>
+      <div class="card tt-click" data-key="aov">
+        <div class="label">AOV (ยอดต่อออเดอร์)</div>
+        <div class="value">${fmtBaht(aov)}</div>
+        <div class="sub2">Net Revenue ÷ Orders</div>
+        <div class="sub2">เทียบ ${monthLabel(pm)} ช่วงเดียวกัน ${ttDelta(aov, pAov, fmtBaht)}</div>
+      </div>
+      <div class="card tt-click" data-key="refund">
+        <div class="label">Refund</div>
+        <div class="value" style="color:var(--bad)">${fmtBaht(ref)}</div>
+        <div class="sub2">Refund Rate ${refRate == null ? '—' : refRate.toFixed(2) + '%'} ${ttDelta(refRate, pRate, pctFmt, true).replace(/ \([^)]*\)<\/span>$/, '</span>')}</div>
+        <div class="sub2">เทียบ ${monthLabel(pm)} ช่วงเดียวกัน ${ttDelta(ref, pRef, fmtBaht, true)}</div>
+      </div>`;
+    const cfgs = {
+      revenue: { title: 'TikTok Net Revenue', block: M.revenue, fmt: fmtBaht, kind: 'currency' },
+      orders: { title: 'TikTok Orders', block: M.orders, fmt: fmtNum, kind: 'count' },
+      aov: { title: 'TikTok AOV (ยอดต่อออเดอร์)', block: M.revenue, fmt: fmtBaht, kind: 'currency', valueAt: ttAovAt },
+      refund: { title: 'TikTok Refund', block: M.refund, fmt: fmtBaht, kind: 'currency' }
+    };
+    document.querySelectorAll('#ttCards .card[data-key]').forEach(el => el.addEventListener('click', () => {
+      const c = cfgs[el.dataset.key];
+      openSnapshotModal(Object.assign({ months: ms, color: TT_COLOR, onJump: ttJump }, c));
+    }));
+  }
+
+  function renderTikTokForecast() {
+    const M = TT_MODEL, month = ttMonthSel.value, period = ttPeriodSel.value, ms = ttMonths();
+    const fcR = computeForecastOf(ms, M.revenue, month, period);
+    const fcO = computeForecastOf(ms, M.orders, month, period);
+    const ptR = pointOf(fcR), ptO = pointOf(fcO);
+    const note = fc => fc.status === 'ok' ? null : fc.status === 'complete' ? 'ปิดเดือนแล้ว — ยอดจริง ไม่ใช่คาดการณ์' : 'ข้อมูลเดือนก่อนหน้ายังไม่พอสำหรับคาดการณ์';
+    const card = (title, fc, fmt, color) => {
+      const n = note(fc) || `ยอดถึงตอนนี้ ${fmt(fc.currentVal)} · ช่วง ${fmt(fc.forecastLow)} – ${fmt(fc.forecastHigh)} · อิง ${fc.histCount} เดือน`;
+      const pt = pointOf(fc);
+      return `<div class="card"><div class="label">${title}${fc.status === 'ok' ? ' <span class="fc-badge" style="background:var(--tiktok)">คาดการณ์</span>' : ''}</div><div class="value" style="color:${color}">${pt == null ? '—' : fmt(pt)}</div><div class="fc-note">${n}</div></div>`;
+    };
+    const aovPt = ptR != null && ptO ? ptR / ptO : null;
+    const pm = prevMonthOf(month);
+    const prevFinal = ms.includes(pm) && isMonthComplete(pm) ? getValue(M.revenue, '1-31', pm) : null;
+    document.getElementById('ttFcCards').innerHTML =
+      card('Net Revenue สิ้นเดือน', fcR, fmtBaht, 'var(--tiktok)') +
+      card('Orders สิ้นเดือน', fcO, fmtNum, 'var(--text)') +
+      `<div class="card"><div class="label">AOV สิ้นเดือน (โดยประมาณ)</div><div class="value">${aovPt == null ? '—' : fmtBaht(aovPt)}</div>
+        <div class="fc-note">${prevFinal != null && ptR != null && fcR.status === 'ok' ? `Net Revenue คาดการณ์เทียบ ${monthLabel(pm)} ทั้งเดือน (${fmtBaht(prevFinal)}) ${ttDelta(ptR, prevFinal, fmtBaht)}` : 'Net Revenue คาดการณ์ ÷ Orders คาดการณ์'}</div></div>`;
+
+    const idx = ms.indexOf(month);
+    const hist = ms.slice(Math.max(0, idx - 6), idx).filter(m => isMonthComplete(m));
+    const isFc = fcR.status === 'ok';
+    const labels = hist.map(monthLabel).concat([monthLabel(month) + (isFc ? ' (คาดการณ์)' : '')]);
+    const act = hist.map(m => getValue(M.revenue, '1-31', m) || 0).concat([getValue(M.revenue, period, month) || 0]);
+    const rest = hist.map(() => null).concat([isFc ? Math.max(0, fcR.forecastAvg - fcR.currentVal) : null]);
+    const ords = hist.map(m => getValue(M.orders, '1-31', m)).concat([isFc ? fcO.forecastAvg : getValue(M.orders, period, month)]);
+    const n = labels.length - 1;
+    ttDestroy('fc');
+    ttCharts.fc = new Chart(document.getElementById('chartTtFc'), {
+      type: 'bar',
+      data: { labels, datasets: [
+        { label: 'ยอดจริง', data: act, backgroundColor: TT_COLOR, stack: 's', borderRadius: 4, maxBarThickness: 56 },
+        { label: 'ส่วนคาดการณ์ถึงสิ้นเดือน', data: rest, backgroundColor: TT_LIGHT, stack: 's', borderRadius: 4, maxBarThickness: 56 }
+      ] },
+      options: {
+        responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: { filter: c => c.raw != null, callbacks: {
+            label: c => `${c.dataset.label}: ${fmtBaht(c.raw)}`,
+            footer: items => {
+              const i = items[0].dataIndex;
+              const o = ords[i] != null ? `Orders ${fmtNum(ords[i])}${i === n && isFc ? ' (คาดการณ์)' : ''}` : '';
+              if (i !== n || !isFc) return o;
+              return [`คาดการณ์รวม ${fmtBaht(fcR.forecastAvg)}`, `ช่วง ${fmtBaht(fcR.forecastLow)} – ${fmtBaht(fcR.forecastHigh)}`, o];
+            }
+          } }
+        },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } } },
+        onClick: (e, els) => { if (els && els.length && els[0].index < n) ttJump(hist[els[0].index]); },
+        onHover: (e, els) => { if (e.native && e.native.target) e.native.target.style.cursor = els.length && els[0].index < n ? 'pointer' : 'default'; }
+      }
+    });
+    document.getElementById('ttFcNote').textContent = isFc
+      ? `คาดการณ์ด้วยสัดส่วนสะสมเฉลี่ยของเดือนก่อน ๆ ณ วันที่ ${effectiveDay(period, month)} เท่ากัน · แท่งสีอ่อน = ส่วนที่คาดว่าจะเพิ่มถึงสิ้นเดือน · คลิกแท่งเดือนก่อนหน้าเพื่อไปที่เดือนนั้น`
+      : 'เดือนที่เลือกปิดข้อมูลครบแล้ว หรือยังไม่มีเดือนก่อนหน้าพอสำหรับคาดการณ์ · คลิกแท่งเดือนก่อนหน้าเพื่อไปที่เดือนนั้น';
+  }
+
+  function renderTikTokPacing() {
+    const M = TT_MODEL, month = ttMonthSel.value, period = ttPeriodSel.value, ms = ttMonths();
+    const pm = prevMonthOf(month);
+    const idx = ms.indexOf(month);
+    const avgMs = ms.slice(0, idx).filter(m => isMonthComplete(m)).slice(-3);
+    const upto = PERIODS.indexOf(period);
+    const labels = PERIODS.map(p => 'ถึงวันที่ ' + p.split('-')[1]);
+    const cur = PERIODS.map((p, i) => i <= upto ? getValue(M.revenue, p, month) : null);
+    const prev = ms.includes(pm) ? PERIODS.map(p => getValue(M.revenue, p, pm)) : null;
+    const avg = avgMs.length ? PERIODS.map(p => { const vs = avgMs.map(m => getValue(M.revenue, p, m)).filter(v => v != null); return vs.length ? average(vs) : null; }) : null;
+    const ds = [{ label: monthLabel(month), data: cur, borderColor: TT_COLOR, backgroundColor: TT_COLOR, borderWidth: 3, pointRadius: 4, tension: 0.25 }];
+    if (prev) ds.push({ label: monthLabel(pm), data: prev, borderColor: '#94a3b8', backgroundColor: '#94a3b8', borderWidth: 2, pointRadius: 3, tension: 0.25 });
+    if (avg) ds.push({ label: `เฉลี่ย ${avgMs.map(monthLabel).join(', ')}`, data: avg, borderColor: '#f59e0b', backgroundColor: '#f59e0b', borderDash: [6, 4], borderWidth: 2, pointRadius: 2, tension: 0.25 });
+    ttDestroy('pacing');
+    ttCharts.pacing = new Chart(document.getElementById('chartTtPacing'), {
+      type: 'line', data: { labels, datasets: ds },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { filter: c => c.raw != null, callbacks: { label: c => `${c.dataset.label}: ${fmtBaht(c.raw)}` } } },
+        scales: { y: { beginAtZero: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } } }
+    });
+    const part = isPartialSnapshot(period, month) ? ` · จุดสุดท้ายของ ${monthLabel(month)} เป็นข้อมูลถึงวันที่ ${effectiveDay(period, month)} (ยังไม่ครบ snapshot)` : '';
+    document.getElementById('ttPacingNote').textContent = 'ยอด Net Revenue สะสม ณ แต่ละ snapshot' + part;
+  }
+
+  function renderTikTokTrend() {
+    const M = TT_MODEL, ms = ttMonths(), sel = ttMonthSel.value;
+    const lp = ms.map(ttLatestPeriod);
+    const rev = ms.map((m, i) => getValue(M.revenue, lp[i], m));
+    const ord = ms.map((m, i) => getValue(M.orders, lp[i], m));
+    const aov = ms.map((m, i) => ttAovAt(lp[i], m));
+    const rate = ms.map((m, i) => ttRefRateAt(lp[i], m));
+    const labels = ms.map((m, i) => isMonthComplete(m) ? monthLabel(m) : `${monthLabel(m)} (ถึง ${effectiveDay(lp[i], m)})`);
+    const colors = ms.map(m => isMonthComplete(m) ? (m === sel ? '#115e59' : TT_COLOR) : TT_LIGHT);
+    ttDestroy('trend'); ttDestroy('aov');
+    ttCharts.trend = new Chart(document.getElementById('chartTtTrend'), {
+      data: { labels, datasets: [
+        { type: 'bar', label: 'Net Revenue', data: rev, backgroundColor: colors, borderRadius: 4, maxBarThickness: 44, yAxisID: 'y', order: 2 },
+        { type: 'line', label: 'Orders', data: ord, borderColor: '#f59e0b', backgroundColor: '#f59e0b', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y1', order: 1 }
+      ] },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.yAxisID === 'y' ? `Net Revenue: ${fmtBaht(c.raw)}` : `Orders: ${fmtNum(c.raw)}` } } },
+        scales: { y: { beginAtZero: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } }, y1: { beginAtZero: true, position: 'right', grid: { display: false } }, x: { grid: { display: false } } },
+        onClick: (e, els) => { if (els && els.length) ttJump(ms[els[0].index]); } }
+    });
+    ttCharts.aov = new Chart(document.getElementById('chartTtAov'), {
+      type: 'line',
+      data: { labels, datasets: [
+        { label: 'AOV (฿)', data: aov, borderColor: TT_COLOR, backgroundColor: TT_COLOR, borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y' },
+        { label: 'Refund Rate (%)', data: rate, borderColor: '#dc2626', backgroundColor: '#dc2626', borderDash: [5, 4], borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y1' }
+      ] },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.yAxisID === 'y' ? `AOV: ${fmtBaht(c.raw)}` : `Refund Rate: ${c.raw == null ? '—' : c.raw.toFixed(2) + '%'}` } } },
+        scales: { y: { beginAtZero: true, ticks: { callback: v => '฿' + v.toLocaleString('en-US') }, grid: { color: '#f0f1f6' } }, y1: { beginAtZero: true, position: 'right', ticks: { callback: v => v + '%' }, grid: { display: false } }, x: { grid: { display: false } } } }
+    });
+  }
+
+  function renderTikTokTable() {
+    const M = TT_MODEL, ms = ttMonths(), sel = ttMonthSel.value;
+    const rows = ms.map((m, i) => {
+      const p = ttLatestPeriod(m);
+      const rev = getValue(M.revenue, p, m), ord = getValue(M.orders, p, m), ref = getValue(M.refund, p, m) || 0;
+      const pm = i > 0 ? ms[i - 1] : null;
+      const prevRev = pm && pm === prevMonthOf(m) ? sameDayValue(M.revenue, pm, p, m) : null;
+      const done = isMonthComplete(m);
+      const mom = rev != null && prevRev ? (rev - prevRev) / prevRev * 100 : null;
+      const momTxt = mom == null ? '—' : `<span class="delta ${mom > 0 ? 'up' : mom < 0 ? 'down' : 'flat'}">${mom > 0 ? '▲' : mom < 0 ? '▼' : '▬'} ${mom >= 0 ? '+' : ''}${mom.toFixed(1)}%</span>${done ? '' : ' <span style="color:var(--muted);font-size:10px">(ช่วงเดียวกัน)</span>'}`;
+      const rate = ttRefRateAt(p, m);
+      return `<tr data-month="${m}" class="${m === sel ? 'current' : ''}"><td>${monthLabel(m)}${done ? '' : ` <span style="color:var(--muted);font-size:10px">(ถึง ${effectiveDay(p, m)})</span>`}</td>
+        <td>${fmtBaht(rev)}</td><td>${fmtNum(ord)}</td><td>${fmtBaht(ord ? rev / ord : null)}</td><td>${fmtBaht(ref)}</td><td>${rate == null ? '—' : rate.toFixed(2) + '%'}</td><td>${momTxt}</td></tr>`;
+    }).reverse();
+    const tbl = document.getElementById('ttMonthTable');
+    tbl.innerHTML = `<thead><tr><th>เดือน</th><th>Net Revenue</th><th>Orders</th><th>AOV</th><th>Refund</th><th>Refund Rate</th><th>Net Revenue MoM</th></tr></thead><tbody>${rows.join('')}</tbody>`;
+    tbl.querySelectorAll('tbody tr').forEach(tr => tr.addEventListener('click', () => { ttJump(tr.dataset.month); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+  }
+
+  function renderTikTokAll() {
+    renderTikTokCards();
+    renderTikTokForecast();
+    renderTikTokPacing();
+    renderTikTokTrend();
+    renderTikTokTable();
+  }
+
+  function renderTikTokPage() {
+    const msg = document.getElementById('ttStateMsg'), content = document.getElementById('ttContent');
+    const sub = document.getElementById('subline-tiktok');
+    const ms = ttMonths();
+    if (!TT_MODEL || !ms.length) {
+      msg.textContent = TT_MODEL ? 'ยังไม่มีข้อมูลยอดขาย TikTok ในแท็บ TikTok Snapshot' : (TT_PROMISE ? 'กำลังโหลดข้อมูล…' : 'โหลดข้อมูล TikTok ไม่สำเร็จ · ลองกด ↻ รีเฟรชข้อมูล');
+      msg.classList.toggle('err', !TT_PROMISE || !!TT_MODEL);
+      msg.style.display = 'block'; content.style.display = 'none';
+      sub.textContent = 'ยอดขายผ่าน TikTok Shop — ช่องทางแยก ไม่รวมใน Total Revenue (WH)';
+      return;
+    }
+    const keep = ttMonthSel.value && ms.includes(ttMonthSel.value) ? ttMonthSel.value : null;
+    const keepP = ttPeriodSel.value;
+    if (!keep) ttPopulateSelectors();
+    else { ttPopulatePeriods(keep); if (ttPeriods(keep).includes(keepP)) ttPeriodSel.value = keepP; }
+    const last = ms[ms.length - 1];
+    sub.innerHTML = `ยอดขายผ่าน TikTok Shop — ช่องทางแยก ไม่รวมใน Total Revenue (WH) · ข้อมูลตั้งแต่ ${monthLabel(ms[0])} ถึง ${monthLabel(last)} วันที่ ${effectiveDay(ttLatestPeriod(last), last)}`;
+    msg.style.display = 'none'; content.style.display = 'block';
+    renderTikTokAll();
+  }
+  ttMonthSel.addEventListener('change', () => { ttPopulatePeriods(ttMonthSel.value); renderTikTokAll(); });
+  ttPeriodSel.addEventListener('change', renderTikTokAll);
+  document.getElementById('reloadBtn-tiktok').addEventListener('click', () => {
+    TT_MODEL = null;
+    loadTikTok(true);
+    renderTikTokPage();
+    TT_PROMISE.then(() => { renderTikTokPage(); if (masterMonthSel.value) { try { renderMasterCards(); } catch (e) { console.warn(e); } } });
+  });
+  function ttForceResize() { requestAnimationFrame(() => Object.values(ttCharts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } })); }
 
   // ---------- Sales Performance (per rep, snapshot style) ----------
   // Source: "Rep Snapshot" tab of the DB sheet (IMPORTRANGE of the Snapshot
@@ -4821,6 +5178,7 @@
       if (btn.dataset.page === 'pro') proApp.forceChartResize();
       if (btn.dataset.page === 'kids') kidsApp.forceChartResize();
       if (btn.dataset.page === 'reps') repsApp.forceChartResize();
+      if (btn.dataset.page === 'tiktok') ttForceResize();
       if (btn.dataset.page === 'master' && masterFcChart) requestAnimationFrame(() => masterFcChart.resize());
       if ((btn.dataset.page === 'pro' || btn.dataset.page === 'kids')) requestAnimationFrame(() => Object.values(brandPipeCharts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } }));
     });
@@ -4861,10 +5219,10 @@
   })();
 
   function bootApp() {
-    Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => { renderMasterOverview(); return repsApp.load(); });
+    Promise.all([proApp.load().then(() => Promise.all([kidsApp.load(), wdApp.load()])), slotsApp.load()]).then(() => { renderMasterOverview(); if (TT_MODEL) { try { renderTikTokPage(); } catch (e) { console.warn(e); } } return repsApp.load(); });
     loadPipeData().then(renderBrandPipelines).catch(renderBrandPipelines);
     // TikTok card fills in when its tab arrives (re-render only if Master is already showing)
-    loadTikTok().then(() => { if (masterMonthSel.value) { try { renderMasterCards(); } catch (e) { console.warn(e); } } });
+    loadTikTok().then(() => { if (masterMonthSel.value) { try { renderMasterCards(); } catch (e) { console.warn(e); } } try { renderTikTokPage(); } catch (e) { console.warn(e); } });
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
