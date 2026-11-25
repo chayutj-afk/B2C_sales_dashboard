@@ -294,6 +294,16 @@
   #ttMonthTable tbody tr { cursor: pointer; }
   #ttMonthTable tbody tr:hover td { background: #f0fdfa; }
   #ttMonthTable tr.current td { background: #ccfbf1; }
+  #page-tiktok .tab-btn.active { color: var(--tiktok); border-bottom-color: var(--tiktok); }
+  #page-tiktok .tt-st-pill { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+  #page-tiktok .tt-st-pill.ok { background: #dcfce7; color: #166534; }
+  #page-tiktok .tt-st-pill.bad { background: #fee2e2; color: #991b1b; }
+  #page-tiktok .tt-sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  #page-tiktok .card.tt-warn { border-color: #fecaca; background: linear-gradient(0deg, #fef2f2, var(--card) 70%); }
+  #ttStuckTable td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .tt-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tt-filter button { font-size: 12px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--muted); cursor: pointer; font-weight: 600; }
+  .tt-filter button.active { background: var(--tiktok); border-color: var(--tiktok); color: #fff; }
   #masterCards .card.tiktok .chan { display: inline-block; font-size: 10px; font-weight: 700; color: var(--tiktok); background: #ccfbf1; border-radius: 999px; padding: 1px 7px; margin-left: 4px; vertical-align: middle; }
   .moved-note { background: var(--accent-light); border: 1px dashed #c7d2fe; border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #3730a3; }
   .moved-note a { color: var(--accent); font-weight: 700; cursor: pointer; text-decoration: underline; }
@@ -380,10 +390,10 @@
 <div class="page-nav">
   <button class="page-btn active" data-page="master">Master Overview</button>
   <button class="page-btn" data-page="pro">Globish Pro Performance</button>
-  <button class="page-btn" data-page="tiktok">TikTok Performance</button>
   <button class="page-btn" data-page="kids">Globish Kids Performance</button>
   <button class="page-btn" data-page="reps">Sales Performance (รายคน)</button>
   <button class="page-btn" data-page="slots">Consult Slot Monitoring</button>
+  <button class="page-btn" data-page="tiktok">TikTok Performance</button>
   <button class="logout-btn" id="logoutBtn">ออกจากระบบ</button>
 </div>
 
@@ -435,11 +445,11 @@
       <div class="sub" id="subline-tiktok">กำลังโหลดข้อมูล TikTok…</div>
     </div>
     <div class="controls">
-      <div>
+      <div class="tt-ov-ctrl">
         <label for="monthSel-tiktok">เดือน</label>
         <select id="monthSel-tiktok"></select>
       </div>
-      <div>
+      <div class="tt-ov-ctrl">
         <label for="periodSel-tiktok">Snapshot ณ วันที่</label>
         <select id="periodSel-tiktok"></select>
       </div>
@@ -447,6 +457,12 @@
     </div>
   </div>
 
+  <div class="tabs" id="ttTabs">
+    <button class="tab-btn active" data-tttab="overview">Overview</button>
+    <button class="tab-btn" data-tttab="status">สถานะจัดส่ง</button>
+  </div>
+
+  <div id="ttPanelOverview">
   <div id="ttContent" style="display:none;">
     <div class="section-title"><span class="n">1</span> ยอดขายจริง (Real Data) — TikTok Shop <span class="section-hint">คลิกการ์ดเพื่อดูทุก snapshot ย้อนหลังทุกเดือน</span></div>
     <div class="cards" id="ttCards"></div>
@@ -488,6 +504,55 @@
   </div>
 
   <div id="ttStateMsg" class="state-msg">กำลังโหลดข้อมูล…</div>
+  </div>
+
+  <div id="ttPanelStatus" style="display:none;">
+    <div id="ttStContent" style="display:none;">
+      <div class="fc-note" id="ttStMeta" style="margin:-6px 0 10px;"></div>
+      <div class="section-title"><span class="n">1</span> ออเดอร์ที่ยังไม่จบ (สถานะปัจจุบัน) <span class="section-hint">ไม่ขึ้นกับเดือน/snapshot ที่เลือกในหน้า Overview</span></div>
+      <div class="cards" id="ttStCards"></div>
+
+      <div class="section-title"><span class="n">2</span> สถานะตามเดือนที่จ่ายเงิน <span class="section-hint">ยอด Net ของออเดอร์ที่จ่ายในแต่ละเดือน แยกตามสถานะปัจจุบัน</span></div>
+      <div class="chart-card">
+        <div class="chart-wrap tall"><canvas id="chartTtStMix"></canvas></div>
+        <div style="overflow-x:auto;margin-top:12px;"><table class="detail-table" id="ttStMixTable"></table></div>
+      </div>
+
+      <div class="section-title"><span class="n">3</span> อายุออเดอร์ที่ยังไม่จบ <span class="section-hint">นับจากวันที่จ่ายเงิน</span></div>
+      <div class="grid-2">
+        <div class="chart-card">
+          <h3>จำนวนออเดอร์ตามอายุ</h3>
+          <div class="chart-wrap"><canvas id="chartTtStAging"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Backlog รายวัน (ออเดอร์ที่ยังไม่จบ)</h3>
+          <div class="chart-wrap"><canvas id="chartTtStBacklog"></canvas></div>
+          <div class="fc-note" id="ttStBacklogNote"></div>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="n">4</span> ออเดอร์ค้างเกินเกณฑ์ <span class="section-hint" id="ttStStuckRule"></span></div>
+      <div class="chart-card">
+        <div class="tt-filter" id="ttStStuckFilter"></div>
+        <div style="overflow-x:auto;max-height:460px;overflow-y:auto;"><table class="detail-table" id="ttStuckTable"></table></div>
+        <div class="fc-note" id="ttStStuckNote"></div>
+      </div>
+
+      <div class="section-title"><span class="n">5</span> ระยะเวลาจ่ายเงิน → เสร็จสมบูรณ์ <span class="section-hint">เฉพาะออเดอร์ที่ระบบเห็นตอนเปลี่ยนเป็น Completed</span></div>
+      <div class="chart-card"><div id="ttStLead"></div></div>
+
+      <details class="reps-details" style="margin-top:14px;"><summary>ตรวจยอด: ผลรวมรายออเดอร์ เทียบ Summary API</summary>
+        <div style="overflow-x:auto;"><table class="detail-table" id="ttStCheck"></table></div>
+      </details>
+
+      <div class="footnote">
+        ข้อมูลรายออเดอร์จาก WH <code>/Internal/Tiktok/Orders</code> ผ่าน Snapshot Engine (แท็บ TT_Orders / TT_Status_Log / TT_Status_Daily → TT_Dash → DB แท็บ "TikTok Status") · sync วันละครั้งพร้อมยอด WH · ดึงออเดอร์ที่จ่ายในเดือนนี้และย้อนหลัง 2 เดือนทุกวัน (เดือนเก่ากว่านั้นแสดงสถานะ ณ วันที่ sync ล่าสุดที่ดึงถึง) ·
+        สถานะ: รอจัดส่ง = AWAITING_SHIPMENT · ระหว่างขนส่ง = IN_TRANSIT · ส่งถึงแล้ว = DELIVERED (รอ TikTok ปิดเป็น Completed) · เสร็จสมบูรณ์ = COMPLETED · ยกเลิก/คืนเงิน = isCancelled ·
+        วันที่เปลี่ยนสถานะละเอียดระดับวัน และเริ่มเก็บประวัติตั้งแต่ 25 พ.ย. 26 (ออเดอร์ก่อนหน้านั้นรู้แค่สถานะปัจจุบัน)
+      </div>
+    </div>
+    <div id="ttStStateMsg" class="state-msg">กำลังโหลดข้อมูลสถานะ…</div>
+  </div>
 </div>
 
 <div id="page-pro" class="page">
@@ -4464,7 +4529,157 @@
     loadTikTok(true);
     renderTikTokPage();
     TT_PROMISE.then(() => { renderTikTokPage(); if (masterMonthSel.value) { try { renderMasterCards(); } catch (e) { console.warn(e); } } });
+    TTS_MODEL = null; loadTts(true); renderTtsPage(); TTS_PROMISE.then(() => { renderTtsPage(); ttForceResize(); });
   });
+  // ---------- TikTok: สถานะจัดส่ง (sub-tab) ----------
+  const TTS_SHEET_GID = '905173312', TTS_SHEET_NAME = 'TikTok Status';
+  const TTS_GROUPS = [
+    { key: 'AWAITING', label: 'รอจัดส่ง', color: '#f59e0b' },
+    { key: 'IN_TRANSIT', label: 'ระหว่างขนส่ง', color: '#38bdf8' },
+    { key: 'DELIVERED', label: 'ส่งถึงแล้ว (รอ Completed)', color: '#818cf8' },
+    { key: 'COMPLETED', label: 'เสร็จสมบูรณ์', color: '#0f766e' },
+    { key: 'CANCELLED', label: 'ยกเลิก/คืนเงิน', color: '#ef4444' },
+    { key: 'OTHER', label: 'อื่น ๆ', color: '#94a3b8' }
+  ];
+  const TTS_OPEN = ['AWAITING', 'IN_TRANSIT', 'DELIVERED', 'OTHER'];
+  const ttsG = k => TTS_GROUPS.find(g => g.key === k) || TTS_GROUPS[5];
+  let TTS_MODEL = null, TTS_PROMISE = null, ttsStuckFilter = 'ALL';
+  async function fetchTtsCsv() {
+    const exportUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${TTS_SHEET_GID}&cb=${Date.now()}`;
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(TTS_SHEET_NAME)}&cb=${Date.now()}`;
+    let resp;
+    try { resp = await fetch(exportUrl, { cache: 'no-store' }); if (!resp.ok) throw new Error('export HTTP ' + resp.status); }
+    catch (e0) { await new Promise(res => setTimeout(res, 800)); resp = await fetch(gvizUrl, { cache: 'no-store' }); }
+    if (!resp.ok) throw new Error(`ดึงข้อมูล TikTok Status ไม่สำเร็จ (HTTP ${resp.status})`);
+    return resp.text();
+  }
+  function parseTtsCSV(text) {
+    const rows = parseCSV(text);
+    if (!rows.length || (rows[0][0] || '').trim() !== 'kind') throw new Error('แท็บ TikTok Status โครงสร้างไม่ตรง');
+    const m = { meta: {}, check: [], mix: [], aging: [], stuck: [], backlog: [], lead: [] };
+    const n = v => { const x = parseNumber(v); return x == null ? 0 : x; };
+    rows.slice(1).forEach(r => {
+      const kind = (r[0] || '').trim(); if (!kind) return;
+      const o = { k1: (r[1] || '').trim(), k2: (r[2] || '').trim(), k3: (r[3] || '').trim(), orders: n(r[4]), net: n(r[5]), value: parseNumber(r[6]) };
+      if (kind === 'meta') m.meta[o.k1] = o.k2 || (r[4] || '').trim();
+      else if (m[kind]) m[kind].push(o);
+    });
+    return m;
+  }
+  function loadTts(force) {
+    if (!TTS_PROMISE || force) {
+      TTS_PROMISE = fetchTtsCsv().then(parseTtsCSV).then(m => { TTS_MODEL = m; return m; })
+        .catch(e => { TTS_MODEL = null; TTS_PROMISE = null; console.warn('[TikTok Status]', e); return null; });
+    }
+    return TTS_PROMISE;
+  }
+  const ymLabel = ym => monthLabel(ym.slice(5, 7) + '/' + ym.slice(0, 4));
+
+  function renderTtsPage() {
+    const msg = document.getElementById('ttStStateMsg'), content = document.getElementById('ttStContent');
+    const M = TTS_MODEL;
+    if (!M) {
+      msg.textContent = TTS_PROMISE ? 'กำลังโหลดข้อมูลสถานะ…' : 'โหลดข้อมูลสถานะไม่สำเร็จ · ลองกด ↻ รีเฟรชข้อมูล';
+      msg.classList.toggle('err', !TTS_PROMISE);
+      msg.style.display = 'block'; content.style.display = 'none';
+      return;
+    }
+    msg.style.display = 'none'; content.style.display = 'block';
+    const ok = M.meta.validation === 'OK';
+    document.getElementById('ttStMeta').innerHTML = `อัปเดตล่าสุด ${M.meta.synced_at || '—'} · ข้อมูลออเดอร์ที่จ่ายถึงวันที่ ${M.meta.data_through || '—'} · ตรวจยอดกับ Summary API <span class="tt-st-pill ${ok ? 'ok' : 'bad'}">${ok ? 'ตรงกันทุกเดือน' : 'มีเดือนที่ไม่ตรง'}</span>`;
+
+    // ---- cards ----
+    const open = TTS_OPEN.map(k => M.aging.filter(a => a.k1 === k)).flat();
+    const sumO = arr => arr.reduce((t, a) => t + a.orders, 0), sumN = arr => arr.reduce((t, a) => t + a.net, 0);
+    const byG = k => M.aging.filter(a => a.k1 === k);
+    let rule = {}; try { rule = JSON.parse(M.meta.stuck_rule || '{}'); } catch (e) { /* noop */ }
+    const stuckOf = k => M.stuck.filter(s => s.k2 === k);
+    const card = (label, arr, color, extra, warn) => `<div class="card${warn ? ' tt-warn' : ''}"><div class="label">${color ? `<i class="tt-sw" style="background:${color}"></i>` : ''}${label}</div><div class="value">${fmtNum(sumO(arr))} <span style="font-size:13px;color:var(--muted);font-weight:600;">orders</span></div><div class="sub2">${fmtBaht(sumN(arr))}</div>${extra ? `<div class="sub2">${extra}</div>` : ''}</div>`;
+    const stuckLine = k => { const s = stuckOf(k); return s.length ? `<b style="color:var(--bad)">ค้างเกิน ${rule[k]} วัน ${fmtNum(s.length)}</b> (${fmtBaht(sumN(s))})` : `ไม่มีที่ค้างเกิน ${rule[k] || '-'} วัน`; };
+    document.getElementById('ttStCards').innerHTML =
+      card('ยังไม่จบทั้งหมด', open, null, `ค้างเกินเกณฑ์ ${fmtNum(M.stuck.length)} orders`) +
+      card(ttsG('AWAITING').label, byG('AWAITING'), ttsG('AWAITING').color, stuckLine('AWAITING'), stuckOf('AWAITING').length > 0) +
+      card(ttsG('IN_TRANSIT').label, byG('IN_TRANSIT'), ttsG('IN_TRANSIT').color, stuckLine('IN_TRANSIT'), stuckOf('IN_TRANSIT').length > 0) +
+      card(ttsG('DELIVERED').label, byG('DELIVERED'), ttsG('DELIVERED').color, stuckLine('DELIVERED'), stuckOf('DELIVERED').length > 0);
+
+    // ---- mix chart + table ----
+    const yms = [...new Set(M.mix.map(x => x.k1))].sort();
+    const mixVal = (ym, g, f) => { const r = M.mix.find(x => x.k1 === ym && x.k2 === g); return r ? r[f] : 0; };
+    const groupsPresent = TTS_GROUPS.filter(g => M.mix.some(x => x.k2 === g.key));
+    ttDestroy('stMix');
+    ttCharts.stMix = new Chart(document.getElementById('chartTtStMix'), {
+      type: 'bar',
+      data: { labels: yms.map(ymLabel), datasets: groupsPresent.map(g => ({ label: g.label, data: yms.map(ym => mixVal(ym, g.key, 'net')), backgroundColor: g.color, stack: 's', borderRadius: 3, maxBarThickness: 56 })) },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
+          tooltip: { filter: c => c.raw > 0, callbacks: {
+            label: c => { const ym = yms[c.dataIndex]; const tot = M.mix.filter(x => x.k1 === ym).reduce((t, x) => t + x.net, 0); return `${c.dataset.label}: ${fmtBaht(c.raw)} (${tot ? (c.raw / tot * 100).toFixed(1) : 0}%) · ${fmtNum(mixVal(ym, groupsPresent[c.datasetIndex].key, 'orders'))} orders`; } } } },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, ticks: { callback: v => (v / 1000) + 'k' }, grid: { color: '#f0f1f6' } } } }
+    });
+    const th = groupsPresent.map(g => `<th><i class="tt-sw" style="background:${g.color}"></i>${g.label}</th>`).join('');
+    const body = yms.slice().reverse().map(ym => {
+      const tot = M.mix.filter(x => x.k1 === ym && x.k2 !== 'CANCELLED').reduce((t, x) => t + x.orders, 0);
+      const comp = mixVal(ym, 'COMPLETED', 'orders');
+      return `<tr><td>${ymLabel(ym)}</td>${groupsPresent.map(g => { const o = mixVal(ym, g.key, 'orders'); return `<td>${o ? fmtNum(o) : '—'}</td>`; }).join('')}<td><b>${tot ? (comp / tot * 100).toFixed(1) + '%' : '—'}</b></td></tr>`;
+    }).join('');
+    document.getElementById('ttStMixTable').innerHTML = `<thead><tr><th>เดือนที่จ่าย (จำนวนออเดอร์)</th>${th}<th>% Completed (ไม่นับยกเลิก)</th></tr></thead><tbody>${body}</tbody>`;
+
+    // ---- aging chart ----
+    const buckets = [...new Set(M.aging.map(a => a.k2))];
+    const order = ['0-2 วัน', '3-7 วัน', '8-14 วัน', '15-30 วัน', '31+ วัน'];
+    buckets.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    const openG = TTS_GROUPS.filter(g => TTS_OPEN.includes(g.key) && M.aging.some(a => a.k1 === g.key));
+    ttDestroy('stAging');
+    ttCharts.stAging = new Chart(document.getElementById('chartTtStAging'), {
+      type: 'bar',
+      data: { labels: buckets, datasets: openG.map(g => ({ label: g.label, data: buckets.map(b => { const r = M.aging.find(a => a.k1 === g.key && a.k2 === b); return r ? r.orders : 0; }), backgroundColor: g.color, stack: 's', borderRadius: 3 })) },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { filter: c => c.raw > 0, callbacks: { label: c => { const r = M.aging.find(a => a.k1 === openG[c.datasetIndex].key && a.k2 === buckets[c.dataIndex]); return `${c.dataset.label}: ${fmtNum(c.raw)} orders · ${fmtBaht(r ? r.net : 0)}`; } } } },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#f0f1f6' } } } }
+    });
+
+    // ---- backlog chart ----
+    const dates = [...new Set(M.backlog.map(b => b.k1))].sort();
+    ttDestroy('stBacklog');
+    ttCharts.stBacklog = new Chart(document.getElementById('chartTtStBacklog'), {
+      type: dates.length > 1 ? 'line' : 'bar',
+      data: { labels: dates.map(d => { const [y, mo, dd] = d.split('-'); return `${Number(dd)} ${MONTH_LABEL[mo]}`; }), datasets: openG.map(g => ({ label: g.label, data: dates.map(d => { const r = M.backlog.find(b => b.k1 === d && b.k2 === g.key); return r ? r.orders : 0; }), borderColor: g.color, backgroundColor: g.color, borderWidth: 2, pointRadius: 3, tension: 0.25, maxBarThickness: 40 })) },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } } },
+        scales: { y: { beginAtZero: true, grid: { color: '#f0f1f6' } }, x: { grid: { display: false } } } }
+    });
+    document.getElementById('ttStBacklogNote').textContent = dates.length > 1 ? 'จำนวนออเดอร์ที่ยังไม่จบ ณ วันที่ sync แต่ละวัน' : `เริ่มเก็บข้อมูลวันที่ ${dates[0] || '—'} — กราฟแนวโน้มจะแสดงเมื่อมีข้อมูลตั้งแต่ 2 วันขึ้นไป`;
+
+    // ---- stuck table ----
+    document.getElementById('ttStStuckRule').textContent = 'เกณฑ์: ' + Object.keys(rule).filter(k => k !== 'OTHER').map(k => `${ttsG(k).label} > ${rule[k]} วัน`).join(' · ');
+    const fl = [{ key: 'ALL', label: `ทั้งหมด (${M.stuck.length})` }].concat(TTS_OPEN.filter(k => stuckOf(k).length).map(k => ({ key: k, label: `${ttsG(k).label} (${stuckOf(k).length})` })));
+    if (!fl.some(f => f.key === ttsStuckFilter)) ttsStuckFilter = 'ALL';
+    const fEl = document.getElementById('ttStStuckFilter');
+    fEl.innerHTML = fl.map(f => `<button data-k="${f.key}" class="${f.key === ttsStuckFilter ? 'active' : ''}">${f.label}</button>`).join('');
+    fEl.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ttsStuckFilter = b.dataset.k; renderTtsPage(); }));
+    const list = M.stuck.filter(s => ttsStuckFilter === 'ALL' || s.k2 === ttsStuckFilter);
+    document.getElementById('ttStuckTable').innerHTML = `<thead><tr><th>Order ID (TikTok)</th><th>สถานะ</th><th>วันที่จ่ายเงิน</th><th>ค้างมา (วัน)</th><th>ยอด</th></tr></thead><tbody>${list.map(s => `<tr><td>${s.k1}</td><td><i class="tt-sw" style="background:${ttsG(s.k2).color}"></i>${ttsG(s.k2).label}</td><td>${s.k3}</td><td><b>${fmtNum(s.value)}</b></td><td>${fmtBaht(s.net)}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted)">ไม่มีออเดอร์ค้าง</td></tr>'}</tbody>`;
+    document.getElementById('ttStStuckNote').textContent = `รวม ${fmtNum(list.length)} orders · ${fmtBaht(sumN(list))} · เรียงจากค้างนานสุด (แสดงสูงสุด 300 รายการ) · ใช้ Order ID ค้นใน TikTok Seller Center ได้`;
+
+    // ---- lead time ----
+    document.getElementById('ttStLead').innerHTML = M.lead.length
+      ? `<table class="detail-table"><thead><tr><th>เดือนที่จ่าย</th><th>ออเดอร์ที่วัดได้</th><th>เฉลี่ย (วัน)</th><th>มัธยฐาน (วัน)</th></tr></thead><tbody>${M.lead.slice().reverse().map(l => `<tr><td>${ymLabel(l.k1)}</td><td>${fmtNum(l.orders)}</td><td>${l.value == null ? '—' : l.value.toFixed(1)}</td><td>${l.k2 || '—'}</td></tr>`).join('')}</tbody></table>`
+      : '<div class="fc-note">ยังไม่มีข้อมูล — ระบบเริ่มเก็บวันที่ออเดอร์เปลี่ยนเป็น Completed ตั้งแต่ 25 พ.ย. 26 ตัวเลขจะเริ่มขึ้นหลังมีออเดอร์ที่จบในช่วงนี้</div>';
+
+    // ---- validation ----
+    document.getElementById('ttStCheck').innerHTML = `<thead><tr><th>เดือน</th><th>ช่วงวันที่</th><th>Orders</th><th>ผลรวมรายออเดอร์</th><th>Summary API</th><th>ผล</th></tr></thead><tbody>${M.check.map(c => `<tr><td>${ymLabel(c.k1)}</td><td>${c.k3}</td><td>${fmtNum(c.orders)}</td><td>${fmtBaht(c.net)}</td><td>${fmtBaht(c.value)}</td><td><span class="tt-st-pill ${c.k2 === 'OK' ? 'ok' : 'bad'}">${c.k2}</span></td></tr>`).join('')}</tbody>`;
+  }
+
+  function ttShowTab(tab) {
+    document.querySelectorAll('#ttTabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tttab === tab));
+    document.getElementById('ttPanelOverview').style.display = tab === 'overview' ? '' : 'none';
+    document.getElementById('ttPanelStatus').style.display = tab === 'status' ? '' : 'none';
+    document.querySelectorAll('#page-tiktok .tt-ov-ctrl').forEach(el => { el.style.display = tab === 'overview' ? '' : 'none'; });
+    if (tab === 'status') { renderTtsPage(); }
+    ttForceResize();
+  }
+  document.querySelectorAll('#ttTabs .tab-btn').forEach(b => b.addEventListener('click', () => ttShowTab(b.dataset.tttab)));
+
   function ttForceResize() { requestAnimationFrame(() => Object.values(ttCharts).forEach(c => { try { c.resize(); } catch (e) { /* noop */ } })); }
 
   // ---------- Sales Performance (per rep, snapshot style) ----------
@@ -5223,6 +5438,7 @@
     loadPipeData().then(renderBrandPipelines).catch(renderBrandPipelines);
     // TikTok card fills in when its tab arrives (re-render only if Master is already showing)
     loadTikTok().then(() => { if (masterMonthSel.value) { try { renderMasterCards(); } catch (e) { console.warn(e); } } try { renderTikTokPage(); } catch (e) { console.warn(e); } });
+    loadTts().then(() => { try { renderTtsPage(); } catch (e) { console.warn(e); } });
   }
 
   const EMBEDDED_USERS = [ { username: 'admin', password: 'Globish@2026' } ];
