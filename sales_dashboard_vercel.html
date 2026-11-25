@@ -546,7 +546,7 @@
       </details>
 
       <div class="footnote">
-        ข้อมูลรายออเดอร์จาก WH <code>/Internal/Tiktok/Orders</code> ผ่าน Snapshot Engine (แท็บ TT_Orders / TT_Status_Log / TT_Status_Daily → TT_Dash → DB แท็บ "TikTok Status") · sync วันละครั้งพร้อมยอด WH · ดึงออเดอร์ที่จ่ายในเดือนนี้และย้อนหลัง 2 เดือนทุกวัน (เดือนเก่ากว่านั้นแสดงสถานะ ณ วันที่ sync ล่าสุดที่ดึงถึง) ·
+        ข้อมูลรายออเดอร์จาก WH <code>/Internal/Tiktok/Orders</code> ผ่าน Snapshot Engine (แท็บ TT_Orders / TT_Status_Log / TT_Status_Daily → TT_Dash → DB แท็บ "TikTok Status") · sync วันละครั้งพร้อมยอด WH · ทุกวันดึงสถานะล่าสุดของทุกออเดอร์ตั้งแต่ เม.ย. 26 ·
         สถานะ: รอจัดส่ง = AWAITING_SHIPMENT · ระหว่างขนส่ง = IN_TRANSIT · ส่งถึงแล้ว = DELIVERED (รอ TikTok ปิดเป็น Completed) · เสร็จสมบูรณ์ = COMPLETED · ยกเลิก/คืนเงิน = isCancelled ·
         วันที่เปลี่ยนสถานะละเอียดระดับวัน และเริ่มเก็บประวัติตั้งแต่ 25 พ.ย. 26 (ออเดอร์ก่อนหน้านั้นรู้แค่สถานะปัจจุบัน)
       </div>
